@@ -100,22 +100,6 @@ SXMatrix SXFunction::hess(int iind, int oind){
   return (*this)->hess(iind,oind);
 }
 
-const SXMatrix& SXFunction::inputSX(int ind) const{
-  return (*this)->inputv_.at(ind);
-}
-
-const SXMatrix& SXFunction::outputSX(int ind) const{
-  return (*this)->outputv_.at(ind);
-}
-
-const std::vector<SXMatrix>& SXFunction::inputsSX() const {
-  return (*this)->inputv_;
-}
-  
-const std::vector<SXMatrix>& SXFunction::outputsSX() const {
-  return (*this)->outputv_;
-}
-
 const SXMatrix& SXFunction::inputExpr(int ind) const{
   return (*this)->inputv_.at(ind);
 }
@@ -174,7 +158,7 @@ SXFunction SXFunction::operator[](int k) const {
   casadi_assert(!temp.isNull());
   
   // Expand to SXFunction
-  SXFunction ret = temp.expand(inputsSX());
+  SXFunction ret = temp.expand(inputExpr());
 
   ret.init();
 

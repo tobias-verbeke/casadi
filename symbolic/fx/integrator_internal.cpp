@@ -45,6 +45,7 @@ IntegratorInternal::IntegratorInternal(const FX& f, const FX& g) : f_(f), g_(g){
   addOption("tf",                       OT_REAL,        1.0, "End of the time horizon");
   addOption("fwd_via_sct",              OT_BOOLEAN,     true, "Generate new functions for calculating forward directional derivatives");
   addOption("adj_via_sct",              OT_BOOLEAN,     true, "Generate new functions for calculating forward directional derivatives");
+  addOption("augmented_options",        OT_DICTIONARY,  GenericType(), "Options to be passed down to the augmented integrator, if one is constructed.");
   
   // Negative number of parameters for consistancy checking
   np_ = -1;
@@ -184,33 +185,39 @@ void IntegratorInternal::init(){
     nrp_ = g_.input(RDAE_RP).numel();
     nrq_ = g_.output(RDAE_QUAD).numel();
     casadi_assert_message(g_.input(RDAE_P).numel()==np_,"Inconsistent dimensions. Expecting RDAE_P input of size " << np_ << ", but got " << g_.input(RDAE_P).numel() << " instead.");
-    casadi_assert_message(g_.input(RDAE_X).numel()==nx_,"Inconsistent dimensions. Expecting RDAE_X input of size " << nx_ << ", but got " << g_.input(RDAE_P).numel() << " instead.");
-    casadi_assert_message(g_.input(RDAE_Z).numel()==nz_,"Inconsistent dimensions. Expecting RDAE_Z input of size " << nz_ << ", but got " << g_.input(RDAE_P).numel() << " instead.");
-    casadi_assert_message(g_.output(RDAE_ODE).numel()==nrx_,"Inconsistent dimensions. Expecting RDAE_ODE input of size " << nrx_ << ", but got " << g_.input(RDAE_P).numel() << " instead.");
-    casadi_assert_message(g_.output(RDAE_ALG).numel()==nrz_,"Inconsistent dimensions. Expecting RDAE_ALG input of size " << nrz_ << ", but got " << g_.input(RDAE_P).numel() << " instead.");
+    casadi_assert_message(g_.input(RDAE_X).numel()==nx_,"Inconsistent dimensions. Expecting RDAE_X input of size " << nx_ << ", but got " << g_.input(RDAE_X).numel() << " instead.");
+    casadi_assert_message(g_.input(RDAE_Z).numel()==nz_,"Inconsistent dimensions. Expecting RDAE_Z input of size " << nz_ << ", but got " << g_.input(RDAE_Z).numel() << " instead.");
+    casadi_assert_message(g_.output(RDAE_ODE).numel()==nrx_,"Inconsistent dimensions. Expecting RDAE_ODE output of size " << nrx_ << ", but got " << g_.output(RDAE_ODE).numel() << " instead.");
+    casadi_assert_message(g_.output(RDAE_ALG).numel()==nrz_,"Inconsistent dimensions. Expecting RDAE_ALG input of size " << nrz_ << ", but got " << g_.output(RDAE_ALG).numel() << " instead.");
   }
   
   // Allocate space for inputs
   input_.resize(INTEGRATOR_NUM_IN);
-  input(INTEGRATOR_X0)  = f_.input(DAE_X);
-  input(INTEGRATOR_P)   = f_.input(DAE_P);
+  input(INTEGRATOR_X0)  = DMatrix(f_.input(DAE_X).sparsity(),0);
+  input(INTEGRATOR_P)   = DMatrix(f_.input(DAE_P).sparsity(),0);
   if(!g_.isNull()){
-    input(INTEGRATOR_RX0)  = g_.input(RDAE_RX);
-    input(INTEGRATOR_RP)  = g_.input(RDAE_RP);
+    input(INTEGRATOR_RX0)  = DMatrix(g_.input(RDAE_RX).sparsity(),0);
+    input(INTEGRATOR_RP)  = DMatrix(g_.input(RDAE_RP).sparsity(),0);
   }
   
   // Allocate space for outputs
   output_.resize(INTEGRATOR_NUM_OUT);
-  output(INTEGRATOR_XF) = f_.output(DAE_ODE);
-  output(INTEGRATOR_QF) = f_.output(DAE_QUAD);
+  output(INTEGRATOR_XF) = DMatrix(f_.output(DAE_ODE).sparsity(),0);
+  output(INTEGRATOR_QF) = DMatrix(f_.output(DAE_QUAD).sparsity(),0);
   if(!g_.isNull()){
-    output(INTEGRATOR_RXF)  = g_.output(RDAE_ODE);
-    output(INTEGRATOR_RQF)  = g_.output(RDAE_QUAD);
+    output(INTEGRATOR_RXF)  = DMatrix(g_.output(RDAE_ODE).sparsity(),0);
+    output(INTEGRATOR_RQF)  = DMatrix(g_.output(RDAE_QUAD).sparsity(),0);
   }
   
   // Call the base class method
   FXInternal::init();
 
+  {
+   std::stringstream ss;
+   ss << "Integrator dimensions: nx=" << nx_ << ", nz="<< nz_ << ", nq=" << nq_ << ", np=" << np_;
+   log("IntegratorInternal::init",ss.str());
+  }
+  
   // read options
   t0_ = getOption("t0");
   tf_ = getOption("tf");
@@ -225,6 +232,7 @@ void IntegratorInternal::deepCopyMembers(std::map<SharedObjectNode*,SharedObject
 }
 
 std::pair<FX,FX> IntegratorInternal::getAugmented(int nfwd, int nadj){
+  log("IntegratorInternal::getAugmented","call");
   if(is_a<SXFunction>(f_)){
     casadi_assert_message(g_.isNull() || is_a<SXFunction>(g_), "Currently, g_ must be of the same type as f_");
     return getAugmentedGen<SXMatrix,SXFunction>(nfwd,nadj);
@@ -238,7 +246,9 @@ std::pair<FX,FX> IntegratorInternal::getAugmented(int nfwd, int nadj){
   
 template<class Mat,class XFunc>
 std::pair<FX,FX> IntegratorInternal::getAugmentedGen(int nfwd, int nadj){
-    
+  
+  log("IntegratorInternal::getAugmentedGen","begin");
+  
   // Get derivatived type
   XFunc f = shared_cast<XFunc>(f_);
   XFunc g = shared_cast<XFunc>(g_);
@@ -337,7 +347,7 @@ std::pair<FX,FX> IntegratorInternal::getAugmentedGen(int nfwd, int nadj){
     aseed[dir][DAE_NUM_OUT+RDAE_QUAD] = adj_rquad[dir];
     
     if(implicit_ode){
-      aseed[nadj+dir][DAE_ODE] = -adj_odedot[dir];
+      aseed[nadj+dir][DAE_ODE] = adj_odedot[dir];
       aseed[nadj+dir][DAE_ALG] = Mat(alg.sparsity());
       aseed[nadj+dir][DAE_QUAD] = Mat(quad.sparsity());
 
@@ -350,7 +360,7 @@ std::pair<FX,FX> IntegratorInternal::getAugmentedGen(int nfwd, int nadj){
         aseed[2*nadj+dir][DAE_ALG] = Mat(alg.sparsity());
         aseed[2*nadj+dir][DAE_QUAD] = Mat(quad.sparsity());
       
-        aseed[2*nadj+dir][DAE_NUM_OUT+RDAE_ODE] = -adj_rodedot[dir];
+        aseed[2*nadj+dir][DAE_NUM_OUT+RDAE_ODE] = adj_rodedot[dir];
         aseed[2*nadj+dir][DAE_NUM_OUT+RDAE_ALG] = Mat(ralg.sparsity());
         aseed[2*nadj+dir][DAE_NUM_OUT+RDAE_QUAD] = Mat(rquad.sparsity());
       }
@@ -467,10 +477,13 @@ std::pair<FX,FX> IntegratorInternal::getAugmentedGen(int nfwd, int nadj){
   // Workaround, delete g_aug if its empty
   if(g.isNull() && nadj==0) g_aug = XFunc();
   
+  log("IntegratorInternal::getAugmentedGen","end");
+    
   return pair<FX,FX>(f_aug,g_aug);
 }
 
 void IntegratorInternal::spEvaluate(bool fwd){
+  log("IntegratorInternal::spEvaluate","begin");
   /**  This is a bit better than the FXInternal implementation: XF and QF never depend on RX0 and RP, 
    *   i.e. the worst-case structure of the Jacobian is:
    *        x0  p rx0 rp
@@ -571,9 +584,11 @@ void IntegratorInternal::spEvaluate(bool fwd){
       }
     }
   }
+  log("IntegratorInternal::spEvaluate","end");
 }
 
 FX IntegratorInternal::getDerivative(int nfwd, int nadj){
+  log("IntegratorInternal::getDerivative","begin");
   // Generate augmented DAE
   std::pair<FX,FX> aug_dae = getAugmented(nfwd,nadj);
   
@@ -583,6 +598,10 @@ FX IntegratorInternal::getDerivative(int nfwd, int nadj){
   
   // Copy options
   integrator.setOption(dictionary());
+  
+  // Pass down specific options if provided
+  if (hasSetOption("augmented_options"))
+    integrator.setOption(getOption("augmented_options"));
   
   // Initialize the integrator since we will call it below
   integrator.init();
@@ -710,6 +729,7 @@ FX IntegratorInternal::getDerivative(int nfwd, int nadj){
     if( nrp_>0){ dd[INTEGRATOR_RP]  =  qf_aug[Slice(qf_offset,   qf_offset + nrp_)];  qf_offset += nrp_; }
     ret_out.insert(ret_out.end(),dd.begin(),dd.end());
   }
+  log("IntegratorInternal::getDerivative","end");
   
   // Create derivative function and return
   return MXFunction(ret_in,ret_out);
@@ -726,6 +746,7 @@ FX IntegratorInternal::getJacobian(int iind, int oind, bool compact, bool symmet
 }
 
 void IntegratorInternal::reset(int nsens, int nsensB, int nsensB_store){
+  log("IntegratorInternal::reset","begin");
   // Make sure that the numbers are consistent
   casadi_assert_message(nsens<=nfdir_,"Too many sensitivities going forward");
   casadi_assert_message(nsensB<=nfdir_,"Too many sensitivities going backward");
@@ -740,6 +761,7 @@ void IntegratorInternal::reset(int nsens, int nsensB, int nsensB_store){
   copy(input(INTEGRATOR_X0).begin(),input(INTEGRATOR_X0).end(),output(INTEGRATOR_XF).begin());
   for(int i=0; i<nfdir_; ++i)
     copy(fwdSeed(INTEGRATOR_X0,i).begin(),fwdSeed(INTEGRATOR_X0,i).end(),fwdSens(INTEGRATOR_XF,i).begin());
+  log("IntegratorInternal::reset","end");
 }
 
 

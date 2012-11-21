@@ -780,15 +780,9 @@ void MXFunctionInternal::evalMX(const std::vector<MX>& arg, std::vector<MX>& res
 
       // Copy answer of the evaluation, if known
       if(output_given){
-        if(it->data->isMultipleOutput()){
-          for(int oind=0; oind<output_p.size(); ++oind){
-            if(output_p[oind]){
-              *output_p[oind] = MX::create(new OutputNode(it->data,oind));
-            }
-          }
-        } else {
-          if(output_p[0]){
-            *output_p[0] = it->data;
+        for(int oind=0; oind<output_p.size(); ++oind){
+          if(output_p[oind]){
+            *output_p[oind] = it->data.getOutput(oind);
           }
         }
         
@@ -988,6 +982,24 @@ SXFunction MXFunctionInternal::expand(const std::vector<SXMatrix>& inputvsx ){
   // Create function
   SXFunction f(arg,res);
   return f;
+}
+
+void MXFunctionInternal::printWork(int nfwd, int nadj, ostream &stream){
+  for(int k=0; k<work_.size(); ++k){
+    stream << "work[" << k << "] = " << work_[k].data.data() << endl;
+  }
+  
+  for(int d=0; d<nfwd; ++d){
+    for(int k=0; k<work_.size(); ++k){
+      stream << "fwork[" << d << "][" << k << "] = " << work_[k].dataF[d].data() << endl;
+    }
+  }
+  
+  for(int d=0; d<nadj; ++d){
+    for(int k=0; k<work_.size(); ++k){
+      stream << "awork[" << d << "][" << k << "] = " << work_[k].dataA[d].data() << endl;
+    }
+  }
 }
 
 } // namespace CasADi

@@ -99,6 +99,7 @@ void CVodesInternal::init(){
   
   // Try to generate a jacobian if none provided
   if(!linsol_.isNull() && jac_.isNull()){
+    log("CVodesInternal::init","generate jacobian");
     SXFunction f = shared_cast<SXFunction>(f_);
     if(!f.isNull()){
       // Get the Jacobian in the Newton iteration
@@ -107,9 +108,9 @@ void CVodesInternal::init(){
       
       // Jacobian function
       vector<SXMatrix> jac_in(M_NUM_IN);
-      jac_in[M_T] = f.inputSX(DAE_T);
-      jac_in[M_Y] = f.inputSX(DAE_X);
-      jac_in[M_P] = f.inputSX(DAE_P);
+      jac_in[M_T] = f.inputExpr(DAE_T);
+      jac_in[M_Y] = f.inputExpr(DAE_X);
+      jac_in[M_P] = f.inputExpr(DAE_P);
       jac_in[M_GAMMA] = gamma;
       SXFunction M(jac_in,jac);
       
@@ -1379,6 +1380,7 @@ LinearSolver CVodesInternal::getLinearSolver(){
 
 void CVodesInternal::deepCopyMembers(std::map<SharedObjectNode*,SharedObject>& already_copied){
   SundialsInternal::deepCopyMembers(already_copied);
+  jac_ = deepcopy(jac_,already_copied);
   jac_f_ = deepcopy(jac_f_,already_copied);
 }
 

@@ -75,7 +75,7 @@ class IdasInternal : public SundialsInternal{
   /** \brief Initialize the taping */
   virtual void initTaping();
   
-  /** \brief Initialize the adjoint problem (can only be called after the first integration) */
+  /** \brief Initialize the backward problem (can only be called after the first integration) */
   virtual void initAdj();
   
   /** \brief  Reset the forward problem and bring the time back to t0 */
@@ -96,8 +96,19 @@ class IdasInternal : public SundialsInternal{
   /** \brief  Print solver statistics */  
   virtual void printStats(std::ostream &stream) const;
   
-  /// Get the Jacobian
-  virtual FX getJacobian();
+  /** \brief  Get the integrator Jacobian for the forward problem */
+  FX getJacobian();
+  
+  /** \brief  Get the integrator Jacobian for the forward problem (generic) */
+  template<typename FunctionType>
+  FunctionType getJacobianGen();
+  
+  /** \brief  Get the integrator Jacobian for the backward problem */
+  FX getJacobianB();
+  
+  /** \brief  Get the integrator Jacobian for the backward problem (generic) */
+  template<typename FunctionType>
+  FunctionType getJacobianGenB();
   
   /// Get the Linear solver
   virtual LinearSolver getLinearSolver();
@@ -221,6 +232,12 @@ class IdasInternal : public SundialsInternal{
   
   //  Initial values for xdot and z
   std::vector<double> init_z_, init_xdot_;
+  
+  // Jacobian of the DAE with respect to the state and state derivatives
+  FX jac_, jacB_;
+  
+  // Function that calculates xdot and z
+  FX odefcn_;
   
 };
 

@@ -286,7 +286,10 @@ bool isEqual(const MX& ex1,const MX &ex2);
 /** \brief Get a string representation for a binary MX, using custom arguments */
 std::string getOperatorRepresentation(const MX& x, const std::vector<std::string>& args);
 
-/** \brief Substitute variable var with expression expr in multiple expressions */
+/** \brief  Substitute variable v with expression vdef in an expression ex */
+MX substitute(const MX &ex, const MX& v, const MX& vdef);
+
+/** \brief  Substitute variable var with expression expr in multiple expressions */
 std::vector<MX> substitute(const std::vector<MX> &ex, const std::vector<MX> &v, const std::vector<MX> &vdef);
 
 /** \brief Inplace substitution
@@ -308,6 +311,14 @@ void substituteInPlace(const std::vector<MX>& v, std::vector<MX>& INOUT, std::ve
 
 template<> inline
 MX GenericMatrix<MX>::sym(const std::string& name, const CRSSparsity& sp){ return msym(name,sp);}
+
+/** \brief Extract shared subexpressions from an set of expressions */
+void extractShared(std::vector<MX>& ex, 
+                    std::vector<MX>& v, std::vector<MX>& vdef, 
+                    const std::string& v_prefix="v_", const std::string& v_suffix="");
+
+/** \brief Print compact, introducing new variables for shared subexpressions */
+void printCompact(const MX& ex, std::ostream &stream=std::cout);
 
 } // namespace CasADi
 
