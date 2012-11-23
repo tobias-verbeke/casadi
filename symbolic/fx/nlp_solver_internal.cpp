@@ -228,7 +228,10 @@ void NLPSolverInternal::init(){
         lfcn_in[2] = sigma;
         if (parametric_) lfcn_in[3] = G.inputExpr(1);
         SXFunction lfcn(lfcn_in, sigma*f + inner_prod(lam,g));
+        lfcn.setOption("verbose",verbose());
         lfcn.init();
+        if(verbose()) 
+          cout << "SX Lagrangian function generated: algorithm size " << lfcn.getAlgorithmSize() << ", work size = " << lfcn.getWorkSize() << endl;
         
         // Hessian of the Lagrangian
         H_ = lfcn.hessian();
@@ -278,8 +281,10 @@ void NLPSolverInternal::init(){
         lfcn_in[2] = sigma;
         if (parametric_) lfcn_in[3] = FG_in.at(1);
         MXFunction lfcn(lfcn_in,sigma*f + inner_prod(lam,g));
+        lfcn.setOption("verbose",verbose());
         lfcn.init();
-        log("SX Lagrangian function generated");
+        if(verbose())
+          cout << "MX Lagrangian function generated: algorithm size " << lfcn.getAlgorithmSize() << ", work size = " << lfcn.getWorkSize() << endl;
           
         // Hessian of the Lagrangian
         H_ = lfcn.hessian();

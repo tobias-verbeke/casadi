@@ -190,6 +190,8 @@ FX FXInternal::gradient(int iind, int oind){
 }
   
 FX FXInternal::hessian(int iind, int oind){
+  log("FXInternal::hessian");
+  
   // Assert scalar
   casadi_assert_message(output(oind).scalar(),"Only hessians of scalar functions allowed.");
   
@@ -209,12 +211,17 @@ FX FXInternal::getGradient(int iind, int oind){
 }
   
 FX FXInternal::getHessian(int iind, int oind){
+  log("FXInternal::getHessian");
+
   // Create gradient function
+  log("FXInternal::getHessian generating gradient");
   FX g = gradient(iind,oind);
   g.setOption("numeric_jacobian",getOption("numeric_hessian"));
+  g.setOption("verbose",getOption("verbose"));
   g.init();
   
   // Return the Jacobian of the gradient, exploiting symmetry (the gradient has output index 0)
+  log("FXInternal::getHessian generating Jacobian of gradient");
   return g.jacobian(iind,0,false,true);
 }
   
@@ -537,7 +544,7 @@ void FXInternal::getPartition(int iind, int oind, CRSSparsity& D1, CRSSparsity& 
       log("FXInternal::getPartition unidirectional coloring (forward mode)");
       D1 = AT.unidirectionalColoring(A);
       if(verbose()){
-        cout << "Forward mode coloring completed: " << D1.size1() << " directional derivatives needed." << endl;
+        cout << "Forward mode coloring completed: " << D1.size1() << " directional derivatives needed (" << A.size2() << " without coloring)." << endl;
       }
     }
       
@@ -546,7 +553,7 @@ void FXInternal::getPartition(int iind, int oind, CRSSparsity& D1, CRSSparsity& 
       log("FXInternal::getPartition unidirectional coloring (adjoint mode)");
       D2 = A.unidirectionalColoring(AT);
       if(verbose()){
-        cout << "Adjoint mode coloring completed: " << D2.size1() << " directional derivatives needed." << endl;
+        cout << "Adjoint mode coloring completed: " << D2.size1() << " directional derivatives needed (" << A.size1() << " without coloring)." << endl;
       }
     }
 
