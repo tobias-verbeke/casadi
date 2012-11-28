@@ -544,7 +544,9 @@ void MXFunctionInternal::evaluate(int nfdir, int nadir){
       } else if(it->op==OP_OUTPUT){
         // Pass the adjoint seeds
         for(int dir=0; dir<nadir; ++dir){
-          work_[it->arg.front()].dataA.at(dir).set(adjSeed(it->res.front(),dir));
+          const DMatrix& aseed = adjSeed(it->res.front(),dir);
+          DMatrix& aseed_dest = work_[it->arg.front()].dataA.at(dir);
+          transform(aseed_dest.begin(),aseed_dest.end(),aseed.begin(),aseed_dest.begin(),std::plus<double>());
         }
       } else if(it->op==OP_PARAMETER){
         //casadi_error("The algorithm contains free parameters"); // FIXME
@@ -683,7 +685,7 @@ void MXFunctionInternal::spEvaluate(bool fwd){
         bvec_t* iwork = get_bvec_t(w);
         bvec_t* swork = get_bvec_t(input(it->arg.front()).data());
         for(int k=0; k<w.size(); ++k){
-          swork[k] |= iwork[k];
+          swork[k] = iwork[k];
         }
       } else if(it->op==OP_OUTPUT){
         // Pass output seeds
