@@ -523,7 +523,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::AcadoIntegrator::gradient "
 
@@ -1169,7 +1169,9 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::AcadoIntegratorInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
 %feature("docstring")  CasADi::AcadoIntegratorInternal::input "
 
@@ -1984,7 +1986,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::AcadoOCP::gradient "
 
@@ -2550,9 +2552,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::AcadoOCPInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::AcadoOCPInternal::getDerivative "";
+%feature("docstring")  CasADi::AcadoOCPInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::AcadoOCPInternal::input "
 
@@ -3832,7 +3838,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::CFunction::gradient "
 
@@ -4344,9 +4350,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::CFunctionInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::CFunctionInternal::getDerivative "";
+%feature("docstring")  CasADi::CFunctionInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::CFunctionInternal::input "
 
@@ -5159,7 +5169,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::Collocation::gradient "
 
@@ -5925,20 +5935,14 @@ Create an integrator for explicit ODEs.
 Parameters:
 -----------
 
-f:  dynamical system >Input scheme: CasADi::DAEInput (DAE_NUM_IN = 5)
-+----------+------------------------------------------------+ |   Name   |
-Description                   |
-+==========+================================================+ | DAE_X    |
-Differential state [x].                        |
-+----------+------------------------------------------------+ | DAE_Z    |
-Algebraic state [z].                           |
-+----------+------------------------------------------------+ | DAE_P    |
-Parameter [p].                                 |
-+----------+------------------------------------------------+ | DAE_T    |
-Explicit time dependence [t].                  |
-+----------+------------------------------------------------+ | DAE_XDOT |
-Time derivative of differential states [xdot]. |
-+----------+------------------------------------------------+
+f:  dynamical system >Input scheme: CasADi::DAEInput (DAE_NUM_IN = 4)
++-------+-------------------------------+ | Name  |          Description
+| +=======+===============================+ | DAE_X | Differential state
+[x].       | +-------+-------------------------------+ | DAE_Z | Algebraic
+state [z].          | +-------+-------------------------------+ | DAE_P |
+Parameter [p].                | +-------+-------------------------------+ |
+DAE_T | Explicit time dependence [t]. |
++-------+-------------------------------+
 
 >Output scheme: CasADi::DAEOutput (DAE_NUM_OUT = 3)
 +----------+--------------------------------------------------+
@@ -5951,28 +5955,20 @@ Time derivative of differential states [xdot]. |
 | DAE_QUAD | Right hand side of quadratures equations [quad]. |
 +----------+--------------------------------------------------+
 
-g:  backwards system >Input scheme: CasADi::RDAEInput (RDAE_NUM_IN = 9)
-+------------+---------------------------------------------------------+ |
-Name    |                       Description                       |
-+============+=========================================================+ |
-RDAE_RX    | Backward differential state [rx].                       |
-+------------+---------------------------------------------------------+ |
-RDAE_RZ    | Backward algebraic state [rz].                          |
-+------------+---------------------------------------------------------+ |
-RDAE_RP    | Backward parameter vector [rp].                         |
-+------------+---------------------------------------------------------+ |
-RDAE_X     | Forward differential state [x].                         |
-+------------+---------------------------------------------------------+ |
-RDAE_Z     | Forward algebraic state [z].                            |
-+------------+---------------------------------------------------------+ |
-RDAE_P     | Parameter vector [p].                                   |
-+------------+---------------------------------------------------------+ |
-RDAE_T     | Explicit time dependence [t].                           |
-+------------+---------------------------------------------------------+ |
-RDAE_XDOT  | Time derivative of differential states [xdot].          |
-+------------+---------------------------------------------------------+ |
-RDAE_RXDOT | Time derivative of backward differential state [rxdot]. |
-+------------+---------------------------------------------------------+
+g:  backwards system >Input scheme: CasADi::RDAEInput (RDAE_NUM_IN = 7)
++---------+-----------------------------------+ |  Name   |
+Description            | +=========+===================================+ |
+RDAE_RX | Backward differential state [rx]. |
++---------+-----------------------------------+ | RDAE_RZ | Backward
+algebraic state [rz].    | +---------+-----------------------------------+ |
+RDAE_RP | Backward parameter vector [rp].   |
++---------+-----------------------------------+ | RDAE_X  | Forward
+differential state [x].   | +---------+-----------------------------------+
+| RDAE_Z  | Forward algebraic state [z].      |
++---------+-----------------------------------+ | RDAE_P  | Parameter vector
+[p].             | +---------+-----------------------------------+ | RDAE_T
+| Explicit time dependence [t].     |
++---------+-----------------------------------+
 
 >Output scheme: CasADi::RDAEOutput (RDAE_NUM_OUT = 3)
 +-----------+------------------------------------------------+
@@ -6107,7 +6103,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::CollocationIntegrator::gradient "
 
@@ -6741,7 +6737,9 @@ CasADi::CollocationIntegratorInternal::getNumericJacobian "";
 
 %feature("docstring")  CasADi::CollocationIntegratorInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
 %feature("docstring")  CasADi::CollocationIntegratorInternal::input "
 
@@ -7438,9 +7436,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::CollocationInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::CollocationInternal::getDerivative "";
+%feature("docstring")  CasADi::CollocationInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::CollocationInternal::input "
 
@@ -8466,7 +8468,7 @@ Parameters:
 -----------
 
 ffcn:  Continuous time dynamics, an CasADi::FX with the folowing mapping:
->Input scheme: CasADi::ControlledDAEInput (CONTROL_DAE_NUM_IN = 10)
+>Input scheme: CasADi::ControlledDAEInput (CONTROL_DAE_NUM_IN = 9)
 +------------------------------------+------------------------------------+
 |                Name                |            Description             |
 +====================================+====================================+
@@ -8489,11 +8491,6 @@ ffcn:  Continuous time dynamics, an CasADi::FX with the folowing mapping:
 | CONTROL_DAE_U_INTERP               | Control vector, linearly           |
 |                                    | interpolated (dimension nu-by-1).  |
 |                                    | [u_interp].                        |
-+------------------------------------+------------------------------------+
-| CONTROL_DAE_XDOT                   | State derivative vector (dimension |
-|                                    | nx-by-1). Should have same amount  |
-|                                    | of non-zeros as DAEOutput:DAE_RES  |
-|                                    | [xdot].                            |
 +------------------------------------+------------------------------------+
 | CONTROL_DAE_X_MAJOR                | State vector (dimension nx-by-1)   |
 |                                    | at the last major time-step        |
@@ -8518,22 +8515,16 @@ ffcn:  Continuous time dynamics, an CasADi::FX with the folowing mapping:
 +----------+--------------------------------------------------+
 
 output_fcn:  output function which maps ControlledDAEInput or DAEInput to n
-outputs. >Input scheme: CasADi::DAEInput (DAE_NUM_IN = 5)
-+----------+------------------------------------------------+ |   Name   |
-Description                   |
-+==========+================================================+ | DAE_X    |
-Differential state [x].                        |
-+----------+------------------------------------------------+ | DAE_Z    |
-Algebraic state [z].                           |
-+----------+------------------------------------------------+ | DAE_P    |
-Parameter [p].                                 |
-+----------+------------------------------------------------+ | DAE_T    |
-Explicit time dependence [t].                  |
-+----------+------------------------------------------------+ | DAE_XDOT |
-Time derivative of differential states [xdot]. |
-+----------+------------------------------------------------+
+outputs. >Input scheme: CasADi::DAEInput (DAE_NUM_IN = 4)
++-------+-------------------------------+ | Name  |          Description
+| +=======+===============================+ | DAE_X | Differential state
+[x].       | +-------+-------------------------------+ | DAE_Z | Algebraic
+state [z].          | +-------+-------------------------------+ | DAE_P |
+Parameter [p].                | +-------+-------------------------------+ |
+DAE_T | Explicit time dependence [t]. |
++-------+-------------------------------+
 
->Input scheme: CasADi::ControlledDAEInput (CONTROL_DAE_NUM_IN = 10)
+>Input scheme: CasADi::ControlledDAEInput (CONTROL_DAE_NUM_IN = 9)
 +------------------------------------+------------------------------------+
 |                Name                |            Description             |
 +====================================+====================================+
@@ -8556,11 +8547,6 @@ Time derivative of differential states [xdot]. |
 | CONTROL_DAE_U_INTERP               | Control vector, linearly           |
 |                                    | interpolated (dimension nu-by-1).  |
 |                                    | [u_interp].                        |
-+------------------------------------+------------------------------------+
-| CONTROL_DAE_XDOT                   | State derivative vector (dimension |
-|                                    | nx-by-1). Should have same amount  |
-|                                    | of non-zeros as DAEOutput:DAE_RES  |
-|                                    | [xdot].                            |
 +------------------------------------+------------------------------------+
 | CONTROL_DAE_X_MAJOR                | State vector (dimension nx-by-1)   |
 |                                    | at the last major time-step        |
@@ -8669,7 +8655,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::ControlSimulator::gradient "
 
@@ -9255,9 +9241,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::ControlSimulatorInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::ControlSimulatorInternal::getDerivative "";
+%feature("docstring")  CasADi::ControlSimulatorInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::ControlSimulatorInternal::input "
 
@@ -9871,9 +9861,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::CplexInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::CplexInternal::getDerivative "";
+%feature("docstring")  CasADi::CplexInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::CplexInternal::input "
 
@@ -10661,7 +10655,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::CplexSolver::gradient "
 
@@ -12112,7 +12106,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::CSparse::gradient "
 
@@ -12626,9 +12620,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::CSparseInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::CSparseInternal::getDerivative "";
+%feature("docstring")  CasADi::CSparseInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::CSparseInternal::input "
 
@@ -13076,7 +13074,7 @@ times t_i.
 | ive_solver   |              |              | ab|tfqmr)    | ialsInternal |
 +--------------+--------------+--------------+--------------+--------------+
 | asens_linear | OT_STRING    | \"dense\"      | (dense|bande | CasADi::Sund |
-| _solver      |              |              | d|iterative) | ialsInternal |
+| _solver_type |              |              | d|iterative) | ialsInternal |
 +--------------+--------------+--------------+--------------+--------------+
 | asens_lower_ | OT_INTEGER   | GenericType( | lower band-  | CasADi::Sund |
 | bandwidth    |              | )            | width of     | ialsInternal |
@@ -13229,13 +13227,8 @@ times t_i.
 | step_method  |              |              | scheme       | esInternal   |
 |              |              |              | (bdf|adams)  |              |
 +--------------+--------------+--------------+--------------+--------------+
-| linear_solve | OT_STRING    | \"dense\"      | (user_define | CasADi::Sund |
-| r            |              |              | d|dense|band | ialsInternal |
-|              |              |              | ed|iterative |              |
-|              |              |              | )            |              |
-+--------------+--------------+--------------+--------------+--------------+
 | linear_solve | OT_LINEARSOL | GenericType( | An linear    | CasADi::Sund |
-| r_creator    | VER          | )            | solver       | ialsInternal |
+| r            | VER          | )            | solver       | ialsInternal |
 |              |              |              | creator      |              |
 |              |              |              | function     |              |
 +--------------+--------------+--------------+--------------+--------------+
@@ -13243,6 +13236,11 @@ times t_i.
 | r_options    | Y            | )            | be passed to | ialsInternal |
 |              |              |              | the linear   |              |
 |              |              |              | solver       |              |
++--------------+--------------+--------------+--------------+--------------+
+| linear_solve | OT_STRING    | \"dense\"      | (user_define | CasADi::Sund |
+| r_type       |              |              | d|dense|band | ialsInternal |
+|              |              |              | ed|iterative |              |
+|              |              |              | )            |              |
 +--------------+--------------+--------------+--------------+--------------+
 | lower_bandwi | OT_INTEGER   | GenericType( | Lower band-  | CasADi::Sund |
 | dth          |              | )            | width of     | ialsInternal |
@@ -13571,20 +13569,14 @@ Create an integrator for explicit ODEs.
 Parameters:
 -----------
 
-f:  dynamical system >Input scheme: CasADi::DAEInput (DAE_NUM_IN = 5)
-+----------+------------------------------------------------+ |   Name   |
-Description                   |
-+==========+================================================+ | DAE_X    |
-Differential state [x].                        |
-+----------+------------------------------------------------+ | DAE_Z    |
-Algebraic state [z].                           |
-+----------+------------------------------------------------+ | DAE_P    |
-Parameter [p].                                 |
-+----------+------------------------------------------------+ | DAE_T    |
-Explicit time dependence [t].                  |
-+----------+------------------------------------------------+ | DAE_XDOT |
-Time derivative of differential states [xdot]. |
-+----------+------------------------------------------------+
+f:  dynamical system >Input scheme: CasADi::DAEInput (DAE_NUM_IN = 4)
++-------+-------------------------------+ | Name  |          Description
+| +=======+===============================+ | DAE_X | Differential state
+[x].       | +-------+-------------------------------+ | DAE_Z | Algebraic
+state [z].          | +-------+-------------------------------+ | DAE_P |
+Parameter [p].                | +-------+-------------------------------+ |
+DAE_T | Explicit time dependence [t]. |
++-------+-------------------------------+
 
 >Output scheme: CasADi::DAEOutput (DAE_NUM_OUT = 3)
 +----------+--------------------------------------------------+
@@ -13597,28 +13589,20 @@ Time derivative of differential states [xdot]. |
 | DAE_QUAD | Right hand side of quadratures equations [quad]. |
 +----------+--------------------------------------------------+
 
-g:  backwards system >Input scheme: CasADi::RDAEInput (RDAE_NUM_IN = 9)
-+------------+---------------------------------------------------------+ |
-Name    |                       Description                       |
-+============+=========================================================+ |
-RDAE_RX    | Backward differential state [rx].                       |
-+------------+---------------------------------------------------------+ |
-RDAE_RZ    | Backward algebraic state [rz].                          |
-+------------+---------------------------------------------------------+ |
-RDAE_RP    | Backward parameter vector [rp].                         |
-+------------+---------------------------------------------------------+ |
-RDAE_X     | Forward differential state [x].                         |
-+------------+---------------------------------------------------------+ |
-RDAE_Z     | Forward algebraic state [z].                            |
-+------------+---------------------------------------------------------+ |
-RDAE_P     | Parameter vector [p].                                   |
-+------------+---------------------------------------------------------+ |
-RDAE_T     | Explicit time dependence [t].                           |
-+------------+---------------------------------------------------------+ |
-RDAE_XDOT  | Time derivative of differential states [xdot].          |
-+------------+---------------------------------------------------------+ |
-RDAE_RXDOT | Time derivative of backward differential state [rxdot]. |
-+------------+---------------------------------------------------------+
+g:  backwards system >Input scheme: CasADi::RDAEInput (RDAE_NUM_IN = 7)
++---------+-----------------------------------+ |  Name   |
+Description            | +=========+===================================+ |
+RDAE_RX | Backward differential state [rx]. |
++---------+-----------------------------------+ | RDAE_RZ | Backward
+algebraic state [rz].    | +---------+-----------------------------------+ |
+RDAE_RP | Backward parameter vector [rp].   |
++---------+-----------------------------------+ | RDAE_X  | Forward
+differential state [x].   | +---------+-----------------------------------+
+| RDAE_Z  | Forward algebraic state [z].      |
++---------+-----------------------------------+ | RDAE_P  | Parameter vector
+[p].             | +---------+-----------------------------------+ | RDAE_T
+| Explicit time dependence [t].     |
++---------+-----------------------------------+
 
 >Output scheme: CasADi::RDAEOutput (RDAE_NUM_OUT = 3)
 +-----------+------------------------------------------------+
@@ -13757,7 +13741,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::CVodesIntegrator::gradient "
 
@@ -14183,7 +14167,7 @@ rx, rz and rp.
 | ive_solver   |              |              | ab|tfqmr)    | ialsInternal |
 +--------------+--------------+--------------+--------------+--------------+
 | asens_linear | OT_STRING    | \"dense\"      | (dense|bande | CasADi::Sund |
-| _solver      |              |              | d|iterative) | ialsInternal |
+| _solver_type |              |              | d|iterative) | ialsInternal |
 +--------------+--------------+--------------+--------------+--------------+
 | asens_lower_ | OT_INTEGER   | GenericType( | lower band-  | CasADi::Sund |
 | bandwidth    |              | )            | width of     | ialsInternal |
@@ -14336,13 +14320,8 @@ rx, rz and rp.
 | step_method  |              |              | scheme       | esInternal   |
 |              |              |              | (bdf|adams)  |              |
 +--------------+--------------+--------------+--------------+--------------+
-| linear_solve | OT_STRING    | \"dense\"      | (user_define | CasADi::Sund |
-| r            |              |              | d|dense|band | ialsInternal |
-|              |              |              | ed|iterative |              |
-|              |              |              | )            |              |
-+--------------+--------------+--------------+--------------+--------------+
 | linear_solve | OT_LINEARSOL | GenericType( | An linear    | CasADi::Sund |
-| r_creator    | VER          | )            | solver       | ialsInternal |
+| r            | VER          | )            | solver       | ialsInternal |
 |              |              |              | creator      |              |
 |              |              |              | function     |              |
 +--------------+--------------+--------------+--------------+--------------+
@@ -14350,6 +14329,11 @@ rx, rz and rp.
 | r_options    | Y            | )            | be passed to | ialsInternal |
 |              |              |              | the linear   |              |
 |              |              |              | solver       |              |
++--------------+--------------+--------------+--------------+--------------+
+| linear_solve | OT_STRING    | \"dense\"      | (user_define | CasADi::Sund |
+| r_type       |              |              | d|dense|band | ialsInternal |
+|              |              |              | ed|iterative |              |
+|              |              |              | )            |              |
 +--------------+--------------+--------------+--------------+--------------+
 | lower_bandwi | OT_INTEGER   | GenericType( | Lower band-  | CasADi::Sund |
 | dth          |              | )            | width of     | ialsInternal |
@@ -14575,7 +14559,9 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::CVodesInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
 %feature("docstring")  CasADi::CVodesInternal::input "
 
@@ -15531,7 +15517,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::Derivative::gradient "
 
@@ -16047,9 +16033,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::DerivativeInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::DerivativeInternal::getDerivative "";
+%feature("docstring")  CasADi::DerivativeInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::DerivativeInternal::input "
 
@@ -16925,7 +16915,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::ExternalFunction::gradient "
 
@@ -17434,9 +17424,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::ExternalFunctionInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::ExternalFunctionInternal::getDerivative "";
+%feature("docstring")  CasADi::ExternalFunctionInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::ExternalFunctionInternal::input "
 
@@ -18488,7 +18482,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::FX::gradient "
 
@@ -19036,9 +19030,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::FXInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::FXInternal::getDerivative "";
+%feature("docstring")  CasADi::FXInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::FXInternal::input "
 
@@ -19877,7 +19875,7 @@ Joel Andersson
 | ive_solver   |              |              | ab|tfqmr)    | ialsInternal |
 +--------------+--------------+--------------+--------------+--------------+
 | asens_linear | OT_STRING    | \"dense\"      | (dense|bande | CasADi::Sund |
-| _solver      |              |              | d|iterative) | ialsInternal |
+| _solver_type |              |              | d|iterative) | ialsInternal |
 +--------------+--------------+--------------+--------------+--------------+
 | asens_lower_ | OT_INTEGER   | GenericType( | lower band-  | CasADi::Sund |
 | bandwidth    |              | )            | width of     | ialsInternal |
@@ -20089,13 +20087,8 @@ Joel Andersson
 |              |              |              | internal     |              |
 |              |              |              | routines     |              |
 +--------------+--------------+--------------+--------------+--------------+
-| linear_solve | OT_STRING    | \"dense\"      | (user_define | CasADi::Sund |
-| r            |              |              | d|dense|band | ialsInternal |
-|              |              |              | ed|iterative |              |
-|              |              |              | )            |              |
-+--------------+--------------+--------------+--------------+--------------+
 | linear_solve | OT_LINEARSOL | GenericType( | An linear    | CasADi::Sund |
-| r_creator    | VER          | )            | solver       | ialsInternal |
+| r            | VER          | )            | solver       | ialsInternal |
 |              |              |              | creator      |              |
 |              |              |              | function     |              |
 +--------------+--------------+--------------+--------------+--------------+
@@ -20103,6 +20096,11 @@ Joel Andersson
 | r_options    | Y            | )            | be passed to | ialsInternal |
 |              |              |              | the linear   |              |
 |              |              |              | solver       |              |
++--------------+--------------+--------------+--------------+--------------+
+| linear_solve | OT_STRING    | \"dense\"      | (user_define | CasADi::Sund |
+| r_type       |              |              | d|dense|band | ialsInternal |
+|              |              |              | ed|iterative |              |
+|              |              |              | )            |              |
 +--------------+--------------+--------------+--------------+--------------+
 | lower_bandwi | OT_INTEGER   | GenericType( | Lower band-  | CasADi::Sund |
 | dth          |              | )            | width of     | ialsInternal |
@@ -20146,7 +20144,7 @@ Joel Andersson
 |              |              |              | uts)  (corre | ernal        |
 |              |              |              | ctInitialCon |              |
 |              |              |              | ditions|res| |              |
-|              |              |              | resS)        |              |
+|              |              |              | resS|rhsQB)  |              |
 +--------------+--------------+--------------+--------------+--------------+
 | name         | OT_STRING    | \"unnamed_sha | name of the  | CasADi::Opti |
 |              |              | red_object\"  | object       | onsFunctiona |
@@ -20309,6 +20307,8 @@ Joel Andersson
 +--------------------------+----------------------+
 | resS                     | CasADi::IdasInternal |
 +--------------------------+----------------------+
+| rhsQB                    | CasADi::IdasInternal |
++--------------------------+----------------------+
 
 C++ includes: idas_integrator.hpp ";
 
@@ -20439,20 +20439,14 @@ the number of states not to be included in the state vector)
 Parameters:
 -----------
 
-f:  dynamical system >Input scheme: CasADi::DAEInput (DAE_NUM_IN = 5)
-+----------+------------------------------------------------+ |   Name   |
-Description                   |
-+==========+================================================+ | DAE_X    |
-Differential state [x].                        |
-+----------+------------------------------------------------+ | DAE_Z    |
-Algebraic state [z].                           |
-+----------+------------------------------------------------+ | DAE_P    |
-Parameter [p].                                 |
-+----------+------------------------------------------------+ | DAE_T    |
-Explicit time dependence [t].                  |
-+----------+------------------------------------------------+ | DAE_XDOT |
-Time derivative of differential states [xdot]. |
-+----------+------------------------------------------------+
+f:  dynamical system >Input scheme: CasADi::DAEInput (DAE_NUM_IN = 4)
++-------+-------------------------------+ | Name  |          Description
+| +=======+===============================+ | DAE_X | Differential state
+[x].       | +-------+-------------------------------+ | DAE_Z | Algebraic
+state [z].          | +-------+-------------------------------+ | DAE_P |
+Parameter [p].                | +-------+-------------------------------+ |
+DAE_T | Explicit time dependence [t]. |
++-------+-------------------------------+
 
 >Output scheme: CasADi::DAEOutput (DAE_NUM_OUT = 3)
 +----------+--------------------------------------------------+
@@ -20465,28 +20459,20 @@ Time derivative of differential states [xdot]. |
 | DAE_QUAD | Right hand side of quadratures equations [quad]. |
 +----------+--------------------------------------------------+
 
-g:  backwards system >Input scheme: CasADi::RDAEInput (RDAE_NUM_IN = 9)
-+------------+---------------------------------------------------------+ |
-Name    |                       Description                       |
-+============+=========================================================+ |
-RDAE_RX    | Backward differential state [rx].                       |
-+------------+---------------------------------------------------------+ |
-RDAE_RZ    | Backward algebraic state [rz].                          |
-+------------+---------------------------------------------------------+ |
-RDAE_RP    | Backward parameter vector [rp].                         |
-+------------+---------------------------------------------------------+ |
-RDAE_X     | Forward differential state [x].                         |
-+------------+---------------------------------------------------------+ |
-RDAE_Z     | Forward algebraic state [z].                            |
-+------------+---------------------------------------------------------+ |
-RDAE_P     | Parameter vector [p].                                   |
-+------------+---------------------------------------------------------+ |
-RDAE_T     | Explicit time dependence [t].                           |
-+------------+---------------------------------------------------------+ |
-RDAE_XDOT  | Time derivative of differential states [xdot].          |
-+------------+---------------------------------------------------------+ |
-RDAE_RXDOT | Time derivative of backward differential state [rxdot]. |
-+------------+---------------------------------------------------------+
+g:  backwards system >Input scheme: CasADi::RDAEInput (RDAE_NUM_IN = 7)
++---------+-----------------------------------+ |  Name   |
+Description            | +=========+===================================+ |
+RDAE_RX | Backward differential state [rx]. |
++---------+-----------------------------------+ | RDAE_RZ | Backward
+algebraic state [rz].    | +---------+-----------------------------------+ |
+RDAE_RP | Backward parameter vector [rp].   |
++---------+-----------------------------------+ | RDAE_X  | Forward
+differential state [x].   | +---------+-----------------------------------+
+| RDAE_Z  | Forward algebraic state [z].      |
++---------+-----------------------------------+ | RDAE_P  | Parameter vector
+[p].             | +---------+-----------------------------------+ | RDAE_T
+| Explicit time dependence [t].     |
++---------+-----------------------------------+
 
 >Output scheme: CasADi::RDAEOutput (RDAE_NUM_OUT = 3)
 +-----------+------------------------------------------------+
@@ -20629,7 +20615,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::IdasIntegrator::gradient "
 
@@ -21058,7 +21044,7 @@ rx, rz and rp.
 | ive_solver   |              |              | ab|tfqmr)    | ialsInternal |
 +--------------+--------------+--------------+--------------+--------------+
 | asens_linear | OT_STRING    | \"dense\"      | (dense|bande | CasADi::Sund |
-| _solver      |              |              | d|iterative) | ialsInternal |
+| _solver_type |              |              | d|iterative) | ialsInternal |
 +--------------+--------------+--------------+--------------+--------------+
 | asens_lower_ | OT_INTEGER   | GenericType( | lower band-  | CasADi::Sund |
 | bandwidth    |              | )            | width of     | ialsInternal |
@@ -21270,13 +21256,8 @@ rx, rz and rp.
 |              |              |              | internal     |              |
 |              |              |              | routines     |              |
 +--------------+--------------+--------------+--------------+--------------+
-| linear_solve | OT_STRING    | \"dense\"      | (user_define | CasADi::Sund |
-| r            |              |              | d|dense|band | ialsInternal |
-|              |              |              | ed|iterative |              |
-|              |              |              | )            |              |
-+--------------+--------------+--------------+--------------+--------------+
 | linear_solve | OT_LINEARSOL | GenericType( | An linear    | CasADi::Sund |
-| r_creator    | VER          | )            | solver       | ialsInternal |
+| r            | VER          | )            | solver       | ialsInternal |
 |              |              |              | creator      |              |
 |              |              |              | function     |              |
 +--------------+--------------+--------------+--------------+--------------+
@@ -21284,6 +21265,11 @@ rx, rz and rp.
 | r_options    | Y            | )            | be passed to | ialsInternal |
 |              |              |              | the linear   |              |
 |              |              |              | solver       |              |
++--------------+--------------+--------------+--------------+--------------+
+| linear_solve | OT_STRING    | \"dense\"      | (user_define | CasADi::Sund |
+| r_type       |              |              | d|dense|band | ialsInternal |
+|              |              |              | ed|iterative |              |
+|              |              |              | )            |              |
 +--------------+--------------+--------------+--------------+--------------+
 | lower_bandwi | OT_INTEGER   | GenericType( | Lower band-  | CasADi::Sund |
 | dth          |              | )            | width of     | ialsInternal |
@@ -21327,7 +21313,7 @@ rx, rz and rp.
 |              |              |              | uts)  (corre | ernal        |
 |              |              |              | ctInitialCon |              |
 |              |              |              | ditions|res| |              |
-|              |              |              | resS)        |              |
+|              |              |              | resS|rhsQB)  |              |
 +--------------+--------------+--------------+--------------+--------------+
 | name         | OT_STRING    | \"unnamed_sha | name of the  | CasADi::Opti |
 |              |              | red_object\"  | object       | onsFunctiona |
@@ -21490,6 +21476,8 @@ rx, rz and rp.
 +--------------------------+----------------------+
 | resS                     | CasADi::IdasInternal |
 +--------------------------+----------------------+
+| rhsQB                    | CasADi::IdasInternal |
++--------------------------+----------------------+
 
 C++ includes: idas_internal.hpp ";
 
@@ -21513,7 +21501,9 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::IdasInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
 %feature("docstring")  CasADi::IdasInternal::input "
 
@@ -22000,7 +21990,7 @@ Assert that the object has been initialized. ";
 |              |              |              | routines     |              |
 +--------------+--------------+--------------+--------------+--------------+
 | linear_solve | OT_LINEARSOL | GenericType( | User-defined | CasADi::Impl |
-| r_creator    | VER          | )            | linear       | icitFunction |
+| r            | VER          | )            | linear       | icitFunction |
 |              |              |              | solver       | Internal     |
 |              |              |              | class.       |              |
 |              |              |              | Needed for s |              |
@@ -22319,7 +22309,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::ImplicitFunction::gradient "
 
@@ -22702,7 +22692,7 @@ Internal class.
 |              |              |              | routines     |              |
 +--------------+--------------+--------------+--------------+--------------+
 | linear_solve | OT_LINEARSOL | GenericType( | User-defined | CasADi::Impl |
-| r_creator    | VER          | )            | linear       | icitFunction |
+| r            | VER          | )            | linear       | icitFunction |
 |              |              |              | solver       | Internal     |
 |              |              |              | class.       |              |
 |              |              |              | Needed for s |              |
@@ -22859,9 +22849,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::ImplicitFunctionInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::ImplicitFunctionInternal::getDerivative "";
+%feature("docstring")  CasADi::ImplicitFunctionInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::ImplicitFunctionInternal::input "
 
@@ -23913,7 +23907,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::Integrator::gradient "
 
@@ -24496,7 +24490,9 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::IntegratorInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
 %feature("docstring")  CasADi::IntegratorInternal::input "
 
@@ -25197,9 +25193,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::IPInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::IPInternal::getDerivative "";
+%feature("docstring")  CasADi::IPInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::IPInternal::input "
 
@@ -26068,7 +26068,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::IPMethod::gradient "
 
@@ -27332,7 +27332,7 @@ n: number of decision variables (x)     m: number of constraints (A)
 |              |              |              | ocumentation |              |
 |              |              |              | )            |              |
 +--------------+--------------+--------------+--------------+--------------+
-| jacobian_gen | OT_JACOBIANG |              | Function     | CasADi::Ipop |
+| jacobian_gen | OT_JACOBIANG | None         | Function     | CasADi::Ipop |
 | erator       | ENERATOR     |              | pointer that | tInternal    |
 |              |              |              | returns a    |              |
 |              |              |              | Jacobian     |              |
@@ -28930,7 +28930,7 @@ n: number of decision variables (x)     m: number of constraints (A)
 | sparse       | OT_BOOLEAN   | True         | function is  | CasADi::Ipop |
 |              |              |              | sparse       | tInternal    |
 +--------------+--------------+--------------+--------------+--------------+
-| sparsity_gen | OT_SPARSITYG |              | Function     | CasADi::Ipop |
+| sparsity_gen | OT_SPARSITYG | None         | Function     | CasADi::Ipop |
 | erator       | ENERATOR     |              | that         | tInternal    |
 |              |              |              | provides     |              |
 |              |              |              | sparsity for |              |
@@ -29032,7 +29032,7 @@ n: number of decision variables (x)     m: number of constraints (A)
 |              |              |              | ocumentation |              |
 |              |              |              | )            |              |
 +--------------+--------------+--------------+--------------+--------------+
-| user_data    | OT_VOIDPTR   |              | A user-      | CasADi::Ipop |
+| user_data    | OT_VOIDPTR   | None         | A user-      | CasADi::Ipop |
 |              |              |              | defined      | tInternal    |
 |              |              |              | field that   |              |
 |              |              |              | can be used  |              |
@@ -29420,9 +29420,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::IpoptInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::IpoptInternal::getDerivative "";
+%feature("docstring")  CasADi::IpoptInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::IpoptInternal::input "
 
@@ -30716,7 +30720,7 @@ wrong for equality constraints. Change the 'fixed_variable_treatment' to
 |              |              |              | ocumentation |              |
 |              |              |              | )            |              |
 +--------------+--------------+--------------+--------------+--------------+
-| jacobian_gen | OT_JACOBIANG |              | Function     | CasADi::Ipop |
+| jacobian_gen | OT_JACOBIANG | None         | Function     | CasADi::Ipop |
 | erator       | ENERATOR     |              | pointer that | tInternal    |
 |              |              |              | returns a    |              |
 |              |              |              | Jacobian     |              |
@@ -32314,7 +32318,7 @@ wrong for equality constraints. Change the 'fixed_variable_treatment' to
 | sparse       | OT_BOOLEAN   | True         | function is  | CasADi::Ipop |
 |              |              |              | sparse       | tInternal    |
 +--------------+--------------+--------------+--------------+--------------+
-| sparsity_gen | OT_SPARSITYG |              | Function     | CasADi::Ipop |
+| sparsity_gen | OT_SPARSITYG | None         | Function     | CasADi::Ipop |
 | erator       | ENERATOR     |              | that         | tInternal    |
 |              |              |              | provides     |              |
 |              |              |              | sparsity for |              |
@@ -32416,7 +32420,7 @@ wrong for equality constraints. Change the 'fixed_variable_treatment' to
 |              |              |              | ocumentation |              |
 |              |              |              | )            |              |
 +--------------+--------------+--------------+--------------+--------------+
-| user_data    | OT_VOIDPTR   |              | A user-      | CasADi::Ipop |
+| user_data    | OT_VOIDPTR   | None         | A user-      | CasADi::Ipop |
 |              |              |              | defined      | tInternal    |
 |              |              |              | field that   |              |
 |              |              |              | can be used  |              |
@@ -33010,7 +33014,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::IpoptSolver::gradient "
 
@@ -33466,8 +33470,8 @@ Retrieve information about variables and constraints ";
 | f_scale      | OT_REALVECTO |              |              | CasADi::Kins |
 |              | R            |              |              | olInternal   |
 +--------------+--------------+--------------+--------------+--------------+
-| iterative_so | OT_STRING    | \"gmres\"      |              | CasADi::Kins |
-| lver         |              |              |              | olInternal   |
+| iterative_so | OT_STRING    | \"gmres\"      | gmres|bcgsta | CasADi::Kins |
+| lver         |              |              | b|tfqmr      | olInternal   |
 +--------------+--------------+--------------+--------------+--------------+
 | jacobian_gen | OT_JACOBIANG | GenericType( | Function     | CasADi::FXIn |
 | erator       | ENERATOR     | )            | pointer that | ternal       |
@@ -33482,11 +33486,8 @@ Retrieve information about variables and constraints ";
 |              |              |              | internal     |              |
 |              |              |              | routines     |              |
 +--------------+--------------+--------------+--------------+--------------+
-| linear_solve | OT_STRING    | \"dense\"      |              | CasADi::Kins |
-| r            |              |              |              | olInternal   |
-+--------------+--------------+--------------+--------------+--------------+
 | linear_solve | OT_LINEARSOL | GenericType( | User-defined | CasADi::Impl |
-| r_creator    | VER          | )            | linear       | icitFunction |
+| r            | VER          | )            | linear       | icitFunction |
 |              |              |              | solver       | Internal     |
 |              |              |              | class.       |              |
 |              |              |              | Needed for s |              |
@@ -33497,6 +33498,10 @@ Retrieve information about variables and constraints ";
 | r_options    | Y            | )            | be passed to | icitFunction |
 |              |              |              | the linear   | Internal     |
 |              |              |              | solver.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| linear_solve | OT_STRING    | \"dense\"      | dense|banded | CasADi::Kins |
+| r_type       |              |              | |iterative|u | olInternal   |
+|              |              |              | ser_defined  |              |
 +--------------+--------------+--------------+--------------+--------------+
 | lower_bandwi | OT_INTEGER   |              |              | CasADi::Kins |
 | dth          |              |              |              | olInternal   |
@@ -33680,9 +33685,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::KinsolInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::KinsolInternal::getDerivative "";
+%feature("docstring")  CasADi::KinsolInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::KinsolInternal::input "
 
@@ -34141,8 +34150,8 @@ See:   ImplicitFunction for more information
 | f_scale      | OT_REALVECTO |              |              | CasADi::Kins |
 |              | R            |              |              | olInternal   |
 +--------------+--------------+--------------+--------------+--------------+
-| iterative_so | OT_STRING    | \"gmres\"      |              | CasADi::Kins |
-| lver         |              |              |              | olInternal   |
+| iterative_so | OT_STRING    | \"gmres\"      | gmres|bcgsta | CasADi::Kins |
+| lver         |              |              | b|tfqmr      | olInternal   |
 +--------------+--------------+--------------+--------------+--------------+
 | jacobian_gen | OT_JACOBIANG | GenericType( | Function     | CasADi::FXIn |
 | erator       | ENERATOR     | )            | pointer that | ternal       |
@@ -34157,11 +34166,8 @@ See:   ImplicitFunction for more information
 |              |              |              | internal     |              |
 |              |              |              | routines     |              |
 +--------------+--------------+--------------+--------------+--------------+
-| linear_solve | OT_STRING    | \"dense\"      |              | CasADi::Kins |
-| r            |              |              |              | olInternal   |
-+--------------+--------------+--------------+--------------+--------------+
 | linear_solve | OT_LINEARSOL | GenericType( | User-defined | CasADi::Impl |
-| r_creator    | VER          | )            | linear       | icitFunction |
+| r            | VER          | )            | linear       | icitFunction |
 |              |              |              | solver       | Internal     |
 |              |              |              | class.       |              |
 |              |              |              | Needed for s |              |
@@ -34172,6 +34178,10 @@ See:   ImplicitFunction for more information
 | r_options    | Y            | )            | be passed to | icitFunction |
 |              |              |              | the linear   | Internal     |
 |              |              |              | solver.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| linear_solve | OT_STRING    | \"dense\"      | dense|banded | CasADi::Kins |
+| r_type       |              |              | |iterative|u | olInternal   |
+|              |              |              | ser_defined  |              |
 +--------------+--------------+--------------+--------------+--------------+
 | lower_bandwi | OT_INTEGER   |              |              | CasADi::Kins |
 | dth          |              |              |              | olInternal   |
@@ -34547,7 +34557,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::KinsolSolver::gradient "
 
@@ -35449,9 +35459,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::KnitroInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::KnitroInternal::getDerivative "";
+%feature("docstring")  CasADi::KnitroInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::KnitroInternal::input "
 
@@ -36453,7 +36467,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::KnitroSolver::gradient "
 
@@ -37185,7 +37199,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::LapackLUDense::gradient "
 
@@ -37707,9 +37721,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::LapackLUDenseInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::LapackLUDenseInternal::getDerivative "";
+%feature("docstring")  CasADi::LapackLUDenseInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::LapackLUDenseInternal::input "
 
@@ -38443,7 +38461,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::LapackQRDense::gradient "
 
@@ -38957,9 +38975,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::LapackQRDenseInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::LapackQRDenseInternal::getDerivative "";
+%feature("docstring")  CasADi::LapackQRDenseInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::LapackQRDenseInternal::input "
 
@@ -39912,7 +39934,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::LiftedSQP::gradient "
 
@@ -40651,9 +40673,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::LiftedSQPInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::LiftedSQPInternal::getDerivative "";
+%feature("docstring")  CasADi::LiftedSQPInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::LiftedSQPInternal::input "
 
@@ -41315,9 +41341,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::LiftoptInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::LiftoptInternal::getDerivative "";
+%feature("docstring")  CasADi::LiftoptInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::LiftoptInternal::input "
 
@@ -42187,7 +42217,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::LiftoptSolver::gradient "
 
@@ -42883,7 +42913,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::LinearSolver::gradient "
 
@@ -43397,9 +43427,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::LinearSolverInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::LinearSolverInternal::getDerivative "";
+%feature("docstring")  CasADi::LinearSolverInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::LinearSolverInternal::input "
 
@@ -45483,20 +45517,14 @@ Parameters:
 -----------
 
 ffcn:  Continuous time dynamics, an CasADi::FX with the folowing mapping:
->Input scheme: CasADi::DAEInput (DAE_NUM_IN = 5)
-+----------+------------------------------------------------+ |   Name   |
-Description                   |
-+==========+================================================+ | DAE_X    |
-Differential state [x].                        |
-+----------+------------------------------------------------+ | DAE_Z    |
-Algebraic state [z].                           |
-+----------+------------------------------------------------+ | DAE_P    |
-Parameter [p].                                 |
-+----------+------------------------------------------------+ | DAE_T    |
-Explicit time dependence [t].                  |
-+----------+------------------------------------------------+ | DAE_XDOT |
-Time derivative of differential states [xdot]. |
-+----------+------------------------------------------------+
+>Input scheme: CasADi::DAEInput (DAE_NUM_IN = 4)
++-------+-------------------------------+ | Name  |          Description
+| +=======+===============================+ | DAE_X | Differential state
+[x].       | +-------+-------------------------------+ | DAE_Z | Algebraic
+state [z].          | +-------+-------------------------------+ | DAE_P |
+Parameter [p].                | +-------+-------------------------------+ |
+DAE_T | Explicit time dependence [t]. |
++-------+-------------------------------+
 
 >Output scheme: CasADi::DAEOutput (DAE_NUM_OUT = 3)
 +----------+--------------------------------------------------+
@@ -45530,20 +45558,13 @@ Problem parameters (np x 1) [p].               |
 +---------+------------------------------------------------+
 
 cfcn:  Path constraints, CasADi::FX mapping to (nh x 1) >Input scheme:
-CasADi::DAEInput (DAE_NUM_IN = 5)
-+----------+------------------------------------------------+ |   Name   |
-Description                   |
-+==========+================================================+ | DAE_X    |
-Differential state [x].                        |
-+----------+------------------------------------------------+ | DAE_Z    |
-Algebraic state [z].                           |
-+----------+------------------------------------------------+ | DAE_P    |
-Parameter [p].                                 |
-+----------+------------------------------------------------+ | DAE_T    |
-Explicit time dependence [t].                  |
-+----------+------------------------------------------------+ | DAE_XDOT |
-Time derivative of differential states [xdot]. |
-+----------+------------------------------------------------+
+CasADi::DAEInput (DAE_NUM_IN = 4) +-------+-------------------------------+
+| Name  |          Description          |
++=======+===============================+ | DAE_X | Differential state [x].
+| +-------+-------------------------------+ | DAE_Z | Algebraic state [z].
+| +-------+-------------------------------+ | DAE_P | Parameter [p].
+| +-------+-------------------------------+ | DAE_T | Explicit time
+dependence [t]. | +-------+-------------------------------+
 
 rfcn:  Initial value constraints ";
 
@@ -45646,7 +45667,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::MultipleShooting::gradient "
 
@@ -46263,9 +46284,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::MultipleShootingInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::MultipleShootingInternal::getDerivative "";
+%feature("docstring")  CasADi::MultipleShootingInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::MultipleShootingInternal::input "
 
@@ -48352,7 +48377,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::MXFunction::gradient "
 
@@ -48858,7 +48883,9 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::MXFunctionInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
 %feature("docstring")  CasADi::MXFunctionInternal::input "
 
@@ -49592,7 +49619,7 @@ Joel Andersson
 |              |              |              | routines     |              |
 +--------------+--------------+--------------+--------------+--------------+
 | linear_solve | OT_LINEARSOL | GenericType( | User-defined | CasADi::Impl |
-| r_creator    | VER          | )            | linear       | icitFunction |
+| r            | VER          | )            | linear       | icitFunction |
 |              |              |              | solver       | Internal     |
 |              |              |              | class.       |              |
 |              |              |              | Needed for s |              |
@@ -49748,9 +49775,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::NLPImplicitInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::NLPImplicitInternal::getDerivative "";
+%feature("docstring")  CasADi::NLPImplicitInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::NLPImplicitInternal::input "
 
@@ -50164,7 +50195,7 @@ Joris Gillis
 |              |              |              | routines     |              |
 +--------------+--------------+--------------+--------------+--------------+
 | linear_solve | OT_LINEARSOL | GenericType( | User-defined | CasADi::Impl |
-| r_creator    | VER          | )            | linear       | icitFunction |
+| r            | VER          | )            | linear       | icitFunction |
 |              |              |              | solver       | Internal     |
 |              |              |              | class.       |              |
 |              |              |              | Needed for s |              |
@@ -50489,7 +50520,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::NLPImplicitSolver::gradient "
 
@@ -51060,9 +51091,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::NLPQPInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::NLPQPInternal::getDerivative "";
+%feature("docstring")  CasADi::NLPQPInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::NLPQPInternal::input "
 
@@ -51803,7 +51838,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::NLPQPSolver::gradient "
 
@@ -52651,7 +52686,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::NLPSolver::gradient "
 
@@ -53305,9 +53340,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::NLPSolverInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::NLPSolverInternal::getDerivative "";
+%feature("docstring")  CasADi::NLPSolverInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::NLPSolverInternal::input "
 
@@ -55518,7 +55557,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::OCPSolver::gradient "
 
@@ -56115,9 +56154,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::OCPSolverInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::OCPSolverInternal::getDerivative "";
+%feature("docstring")  CasADi::OCPSolverInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::OCPSolverInternal::input "
 
@@ -56795,9 +56838,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::OOQPInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::OOQPInternal::getDerivative "";
+%feature("docstring")  CasADi::OOQPInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::OOQPInternal::input "
 
@@ -57566,7 +57613,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::OOQPSolver::gradient "
 
@@ -58775,7 +58822,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::Parallelizer::gradient "
 
@@ -59316,7 +59363,9 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::ParallelizerInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
 %feature("docstring")  CasADi::ParallelizerInternal::input "
 
@@ -59742,7 +59791,7 @@ If H is not positive-definite, the solver should throw an error.
 +--------------+--------------+--------------+--------------+--------------+
 |      Id      |     Type     |   Default    | Description  |   Used in    |
 +==============+==============+==============+==============+==============+
-| CPUtime      | OT_REAL      |              | The maximum  | CasADi::QPOa |
+| CPUtime      | OT_REAL      | None         | The maximum  | CasADi::QPOa |
 |              |              |              | allowed CPU  | sesInternal  |
 |              |              |              | time in      |              |
 |              |              |              | seconds for  |              |
@@ -59774,7 +59823,7 @@ If H is not positive-definite, the solver should throw an error.
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
 +--------------+--------------+--------------+--------------+--------------+
-| jacobian_gen | OT_JACOBIANG |              | Function     | CasADi::QPOa |
+| jacobian_gen | OT_JACOBIANG | None         | Function     | CasADi::QPOa |
 | erator       | ENERATOR     |              | pointer that | sesInternal  |
 |              |              |              | returns a    |              |
 |              |              |              | Jacobian     |              |
@@ -59801,10 +59850,10 @@ If H is not positive-definite, the solver should throw an error.
 |              |              |              | reaches this |              |
 |              |              |              | number       |              |
 +--------------+--------------+--------------+--------------+--------------+
-| monitor      | OT_STRINGVEC |              | Monitors to  | CasADi::QPOa |
+| monitor      | OT_STRINGVEC | None         | Monitors to  | CasADi::QPOa |
 |              | TOR          |              | be activated | sesInternal  |
 +--------------+--------------+--------------+--------------+--------------+
-| nWSR         | OT_INTEGER   |              | The maximum  | CasADi::QPOa |
+| nWSR         | OT_INTEGER   | None         | The maximum  | CasADi::QPOa |
 |              |              |              | number of    | sesInternal  |
 |              |              |              | working set  |              |
 |              |              |              | recalculatio |              |
@@ -59873,7 +59922,7 @@ If H is not positive-definite, the solver should throw an error.
 | sparse       | OT_BOOLEAN   | True         | function is  | CasADi::QPOa |
 |              |              |              | sparse       | sesInternal  |
 +--------------+--------------+--------------+--------------+--------------+
-| sparsity_gen | OT_SPARSITYG |              | Function     | CasADi::QPOa |
+| sparsity_gen | OT_SPARSITYG | None         | Function     | CasADi::QPOa |
 | erator       | ENERATOR     |              | that         | sesInternal  |
 |              |              |              | provides     |              |
 |              |              |              | sparsity for |              |
@@ -59896,7 +59945,7 @@ If H is not positive-definite, the solver should throw an error.
 |              |              |              | multiple     |              |
 |              |              |              | times        |              |
 +--------------+--------------+--------------+--------------+--------------+
-| user_data    | OT_VOIDPTR   |              | A user-      | CasADi::QPOa |
+| user_data    | OT_VOIDPTR   | None         | A user-      | CasADi::QPOa |
 |              |              |              | defined      | sesInternal  |
 |              |              |              | field that   |              |
 |              |              |              | can be used  |              |
@@ -59936,9 +59985,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::QPOasesInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::QPOasesInternal::getDerivative "";
+%feature("docstring")  CasADi::QPOasesInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::QPOasesInternal::input "
 
@@ -60332,7 +60385,7 @@ Joris Gillis, Joel Andersson
 +--------------+--------------+--------------+--------------+--------------+
 |      Id      |     Type     |   Default    | Description  |   Used in    |
 +==============+==============+==============+==============+==============+
-| CPUtime      | OT_REAL      |              | The maximum  | CasADi::QPOa |
+| CPUtime      | OT_REAL      | None         | The maximum  | CasADi::QPOa |
 |              |              |              | allowed CPU  | sesInternal  |
 |              |              |              | time in      |              |
 |              |              |              | seconds for  |              |
@@ -60364,7 +60417,7 @@ Joris Gillis, Joel Andersson
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
 +--------------+--------------+--------------+--------------+--------------+
-| jacobian_gen | OT_JACOBIANG |              | Function     | CasADi::QPOa |
+| jacobian_gen | OT_JACOBIANG | None         | Function     | CasADi::QPOa |
 | erator       | ENERATOR     |              | pointer that | sesInternal  |
 |              |              |              | returns a    |              |
 |              |              |              | Jacobian     |              |
@@ -60391,10 +60444,10 @@ Joris Gillis, Joel Andersson
 |              |              |              | reaches this |              |
 |              |              |              | number       |              |
 +--------------+--------------+--------------+--------------+--------------+
-| monitor      | OT_STRINGVEC |              | Monitors to  | CasADi::QPOa |
+| monitor      | OT_STRINGVEC | None         | Monitors to  | CasADi::QPOa |
 |              | TOR          |              | be activated | sesInternal  |
 +--------------+--------------+--------------+--------------+--------------+
-| nWSR         | OT_INTEGER   |              | The maximum  | CasADi::QPOa |
+| nWSR         | OT_INTEGER   | None         | The maximum  | CasADi::QPOa |
 |              |              |              | number of    | sesInternal  |
 |              |              |              | working set  |              |
 |              |              |              | recalculatio |              |
@@ -60463,7 +60516,7 @@ Joris Gillis, Joel Andersson
 | sparse       | OT_BOOLEAN   | True         | function is  | CasADi::QPOa |
 |              |              |              | sparse       | sesInternal  |
 +--------------+--------------+--------------+--------------+--------------+
-| sparsity_gen | OT_SPARSITYG |              | Function     | CasADi::QPOa |
+| sparsity_gen | OT_SPARSITYG | None         | Function     | CasADi::QPOa |
 | erator       | ENERATOR     |              | that         | sesInternal  |
 |              |              |              | provides     |              |
 |              |              |              | sparsity for |              |
@@ -60486,7 +60539,7 @@ Joris Gillis, Joel Andersson
 |              |              |              | multiple     |              |
 |              |              |              | times        |              |
 +--------------+--------------+--------------+--------------+--------------+
-| user_data    | OT_VOIDPTR   |              | A user-      | CasADi::QPOa |
+| user_data    | OT_VOIDPTR   | None         | A user-      | CasADi::QPOa |
 |              |              |              | defined      | sesInternal  |
 |              |              |              | field that   |              |
 |              |              |              | can be used  |              |
@@ -60695,7 +60748,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::QPOasesSolver::gradient "
 
@@ -61424,7 +61477,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::QPSolver::gradient "
 
@@ -61976,9 +62029,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::QPSolverInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::QPSolverInternal::getDerivative "";
+%feature("docstring")  CasADi::QPSolverInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::QPSolverInternal::input "
 
@@ -62762,20 +62819,14 @@ Create an integrator for explicit ODEs.
 Parameters:
 -----------
 
-f:  dynamical system >Input scheme: CasADi::DAEInput (DAE_NUM_IN = 5)
-+----------+------------------------------------------------+ |   Name   |
-Description                   |
-+==========+================================================+ | DAE_X    |
-Differential state [x].                        |
-+----------+------------------------------------------------+ | DAE_Z    |
-Algebraic state [z].                           |
-+----------+------------------------------------------------+ | DAE_P    |
-Parameter [p].                                 |
-+----------+------------------------------------------------+ | DAE_T    |
-Explicit time dependence [t].                  |
-+----------+------------------------------------------------+ | DAE_XDOT |
-Time derivative of differential states [xdot]. |
-+----------+------------------------------------------------+
+f:  dynamical system >Input scheme: CasADi::DAEInput (DAE_NUM_IN = 4)
++-------+-------------------------------+ | Name  |          Description
+| +=======+===============================+ | DAE_X | Differential state
+[x].       | +-------+-------------------------------+ | DAE_Z | Algebraic
+state [z].          | +-------+-------------------------------+ | DAE_P |
+Parameter [p].                | +-------+-------------------------------+ |
+DAE_T | Explicit time dependence [t]. |
++-------+-------------------------------+
 
 >Output scheme: CasADi::DAEOutput (DAE_NUM_OUT = 3)
 +----------+--------------------------------------------------+
@@ -62910,7 +62961,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::RKIntegrator::gradient "
 
@@ -63495,7 +63546,9 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::RKIntegratorInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
 %feature("docstring")  CasADi::RKIntegratorInternal::input "
 
@@ -64578,20 +64631,13 @@ Parameters:
 -----------
 
 output_fcn:  output function which maps to n outputs. >Input scheme:
-CasADi::DAEInput (DAE_NUM_IN = 5)
-+----------+------------------------------------------------+ |   Name   |
-Description                   |
-+==========+================================================+ | DAE_X    |
-Differential state [x].                        |
-+----------+------------------------------------------------+ | DAE_Z    |
-Algebraic state [z].                           |
-+----------+------------------------------------------------+ | DAE_P    |
-Parameter [p].                                 |
-+----------+------------------------------------------------+ | DAE_T    |
-Explicit time dependence [t].                  |
-+----------+------------------------------------------------+ | DAE_XDOT |
-Time derivative of differential states [xdot]. |
-+----------+------------------------------------------------+ ";
+CasADi::DAEInput (DAE_NUM_IN = 4) +-------+-------------------------------+
+| Name  |          Description          |
++=======+===============================+ | DAE_X | Differential state [x].
+| +-------+-------------------------------+ | DAE_Z | Algebraic state [z].
+| +-------+-------------------------------+ | DAE_P | Parameter [p].
+| +-------+-------------------------------+ | DAE_T | Explicit time
+dependence [t]. | +-------+-------------------------------+ ";
 
 %feature("docstring")  CasADi::Simulator::Simulator "";
 
@@ -64674,7 +64720,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::Simulator::gradient "
 
@@ -65213,9 +65259,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::SimulatorInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::SimulatorInternal::getDerivative "";
+%feature("docstring")  CasADi::SimulatorInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::SimulatorInternal::input "
 
@@ -65627,6 +65677,206 @@ casadi_calculus.hpp ";
 // File: structCasADi_1_1SmoothChecker_3_01OP__SIGN_01_4.xml
 %feature("docstring") CasADi::SmoothChecker< OP_SIGN > " C++ includes:
 casadi_calculus.hpp ";
+
+
+// File: classCasADi_1_1Solve.xml
+%feature("docstring") CasADi::Solve "
+
+An MX atomic for solving a linear system of equations (backslash in Matlab)
+
+Joel Andersson
+
+C++ includes: solve.hpp ";
+
+%feature("docstring")  CasADi::Solve::Solve "
+
+Constructor. ";
+
+%feature("docstring")  CasADi::Solve::~Solve "
+
+Destructor. ";
+
+%feature("docstring")  CasADi::Solve::clone "
+
+Clone function. ";
+
+%feature("docstring")  CasADi::Solve::printPart "
+
+Print a part of the expression. ";
+
+%feature("docstring")  CasADi::Solve::evaluateD "
+
+Evaluate the function numerically. ";
+
+%feature("docstring")  CasADi::Solve::evaluateSX "
+
+Evaluate the function symbolically ( SX) ";
+
+%feature("docstring")  CasADi::Solve::evaluateMX "
+
+Evaluate the function symbolically ( MX) ";
+
+%feature("docstring")  CasADi::Solve::propagateSparsity "
+
+Propagate sparsity. ";
+
+%feature("docstring")  CasADi::Solve::getOp "
+
+Get the operation. ";
+
+%feature("docstring")  CasADi::Solve::__nonzero__ "
+
+Check the truth value of this node. ";
+
+%feature("docstring")  CasADi::Solve::deepCopyMembers "
+
+Deep copy data members. ";
+
+%feature("docstring")  CasADi::Solve::repr "
+
+Print a representation. ";
+
+%feature("docstring")  CasADi::Solve::print "
+
+Print a description. ";
+
+%feature("docstring")  CasADi::Solve::print "
+
+Print expression (make sure number of calls is not exceeded) ";
+
+%feature("docstring")  CasADi::Solve::evaluateD "
+
+Evaluate the function, no derivatives. ";
+
+%feature("docstring")  CasADi::Solve::evaluateSX "
+
+Evaluate symbolically ( SX), no derivatives. ";
+
+%feature("docstring")  CasADi::Solve::evaluateMX "
+
+Evaluate symbolically ( MX), no derivatives. ";
+
+%feature("docstring")  CasADi::Solve::getName "
+
+Get the name. ";
+
+%feature("docstring")  CasADi::Solve::isOutputNode "
+
+Check if evaluation output. ";
+
+%feature("docstring")  CasADi::Solve::isMultipleOutput "
+
+Check if a multiple output node. ";
+
+%feature("docstring")  CasADi::Solve::getFunction "
+
+Get function reference. ";
+
+%feature("docstring")  CasADi::Solve::getFunctionInput "
+
+Get function input. ";
+
+%feature("docstring")  CasADi::Solve::getFunctionOutput "
+
+Get function output. ";
+
+%feature("docstring")  CasADi::Solve::dep "
+
+dependencies - functions that have to be evaluated before this one ";
+
+%feature("docstring")  CasADi::Solve::dep "";
+
+%feature("docstring")  CasADi::Solve::ndep "
+
+Number of dependencies. ";
+
+%feature("docstring")  CasADi::Solve::hasDep "
+
+Does the node depend on other nodes. ";
+
+%feature("docstring")  CasADi::Solve::getNumOutputs "
+
+Number of outputs. ";
+
+%feature("docstring")  CasADi::Solve::getOutput "
+
+Get an output. ";
+
+%feature("docstring")  CasADi::Solve::sparsity "
+
+Get the sparsity. ";
+
+%feature("docstring")  CasADi::Solve::sparsity "
+
+Get the sparsity of output oind. ";
+
+%feature("docstring")  CasADi::Solve::isNonLinear "
+
+Is the node nonlinear. ";
+
+%feature("docstring")  CasADi::Solve::setSparsity "
+
+Set the sparsity. ";
+
+%feature("docstring")  CasADi::Solve::setDependencies "
+
+Set unary dependency. ";
+
+%feature("docstring")  CasADi::Solve::setDependencies "
+
+Set binary dependencies. ";
+
+%feature("docstring")  CasADi::Solve::setDependencies "
+
+Set ternary dependencies. ";
+
+%feature("docstring")  CasADi::Solve::setDependencies "
+
+Set multiple dependencies. ";
+
+%feature("docstring")  CasADi::Solve::addDependency "
+
+Add a dependency. ";
+
+%feature("docstring")  CasADi::Solve::assign "
+
+Assign nonzeros (mapping matrix) ";
+
+%feature("docstring")  CasADi::Solve::assign "
+
+Assign nonzeros (mapping matrix), output indices sequential. ";
+
+%feature("docstring")  CasADi::Solve::numel "
+
+Number of elements. ";
+
+%feature("docstring")  CasADi::Solve::size "
+
+Get size. ";
+
+%feature("docstring")  CasADi::Solve::size1 "
+
+Get size. ";
+
+%feature("docstring")  CasADi::Solve::size2 "
+
+Get size. ";
+
+%feature("docstring")  CasADi::Solve::getCount "
+
+Get the reference count. ";
+
+%feature("docstring")  CasADi::Solve::init "
+
+Initialize the object. ";
+
+%feature("docstring")  CasADi::Solve::isInit "
+
+Check if the object has been initialized. ";
+
+%feature("docstring")  CasADi::Solve::assertInit "
+
+Assert that the object has been initialized. ";
 
 
 // File: classCasADi_1_1SparseSparseOp.xml
@@ -66235,9 +66485,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::SQPInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::SQPInternal::getDerivative "";
+%feature("docstring")  CasADi::SQPInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::SQPInternal::input "
 
@@ -67210,7 +67464,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::SQPMethod::gradient "
 
@@ -67642,7 +67896,7 @@ Constructor. ";
 | ive_solver   |              |              | ab|tfqmr)    | ialsInternal |
 +--------------+--------------+--------------+--------------+--------------+
 | asens_linear | OT_STRING    | \"dense\"      | (dense|bande | CasADi::Sund |
-| _solver      |              |              | d|iterative) | ialsInternal |
+| _solver_type |              |              | d|iterative) | ialsInternal |
 +--------------+--------------+--------------+--------------+--------------+
 | asens_lower_ | OT_INTEGER   | GenericType( | lower band-  | CasADi::Sund |
 | bandwidth    |              | )            | width of     | ialsInternal |
@@ -67777,13 +68031,8 @@ Constructor. ";
 |              |              |              | internal     |              |
 |              |              |              | routines     |              |
 +--------------+--------------+--------------+--------------+--------------+
-| linear_solve | OT_STRING    | \"dense\"      | (user_define | CasADi::Sund |
-| r            |              |              | d|dense|band | ialsInternal |
-|              |              |              | ed|iterative |              |
-|              |              |              | )            |              |
-+--------------+--------------+--------------+--------------+--------------+
 | linear_solve | OT_LINEARSOL | GenericType( | An linear    | CasADi::Sund |
-| r_creator    | VER          | )            | solver       | ialsInternal |
+| r            | VER          | )            | solver       | ialsInternal |
 |              |              |              | creator      |              |
 |              |              |              | function     |              |
 +--------------+--------------+--------------+--------------+--------------+
@@ -67791,6 +68040,11 @@ Constructor. ";
 | r_options    | Y            | )            | be passed to | ialsInternal |
 |              |              |              | the linear   |              |
 |              |              |              | solver       |              |
++--------------+--------------+--------------+--------------+--------------+
+| linear_solve | OT_STRING    | \"dense\"      | (user_define | CasADi::Sund |
+| r_type       |              |              | d|dense|band | ialsInternal |
+|              |              |              | ed|iterative |              |
+|              |              |              | )            |              |
 +--------------+--------------+--------------+--------------+--------------+
 | lower_bandwi | OT_INTEGER   | GenericType( | Lower band-  | CasADi::Sund |
 | dth          |              | )            | width of     | ialsInternal |
@@ -68214,7 +68468,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::SundialsIntegrator::gradient "
 
@@ -68626,7 +68880,7 @@ Return a string with a destription (for SWIG) ";
 | ive_solver   |              |              | ab|tfqmr)    | ialsInternal |
 +--------------+--------------+--------------+--------------+--------------+
 | asens_linear | OT_STRING    | \"dense\"      | (dense|bande | CasADi::Sund |
-| _solver      |              |              | d|iterative) | ialsInternal |
+| _solver_type |              |              | d|iterative) | ialsInternal |
 +--------------+--------------+--------------+--------------+--------------+
 | asens_lower_ | OT_INTEGER   | GenericType( | lower band-  | CasADi::Sund |
 | bandwidth    |              | )            | width of     | ialsInternal |
@@ -68761,13 +69015,8 @@ Return a string with a destription (for SWIG) ";
 |              |              |              | internal     |              |
 |              |              |              | routines     |              |
 +--------------+--------------+--------------+--------------+--------------+
-| linear_solve | OT_STRING    | \"dense\"      | (user_define | CasADi::Sund |
-| r            |              |              | d|dense|band | ialsInternal |
-|              |              |              | ed|iterative |              |
-|              |              |              | )            |              |
-+--------------+--------------+--------------+--------------+--------------+
 | linear_solve | OT_LINEARSOL | GenericType( | An linear    | CasADi::Sund |
-| r_creator    | VER          | )            | solver       | ialsInternal |
+| r            | VER          | )            | solver       | ialsInternal |
 |              |              |              | creator      |              |
 |              |              |              | function     |              |
 +--------------+--------------+--------------+--------------+--------------+
@@ -68775,6 +69024,11 @@ Return a string with a destription (for SWIG) ";
 | r_options    | Y            | )            | be passed to | ialsInternal |
 |              |              |              | the linear   |              |
 |              |              |              | solver       |              |
++--------------+--------------+--------------+--------------+--------------+
+| linear_solve | OT_STRING    | \"dense\"      | (user_define | CasADi::Sund |
+| r_type       |              |              | d|dense|band | ialsInternal |
+|              |              |              | ed|iterative |              |
+|              |              |              | )            |              |
 +--------------+--------------+--------------+--------------+--------------+
 | lower_bandwi | OT_INTEGER   | GenericType( | Lower band-  | CasADi::Sund |
 | dth          |              | )            | width of     | ialsInternal |
@@ -68977,7 +69231,9 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::SundialsInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
 %feature("docstring")  CasADi::SundialsInternal::input "
 
@@ -70163,7 +70419,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::SXFunction::gradient "
 
@@ -70675,7 +70931,9 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::SXFunctionInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
 %feature("docstring")  CasADi::SXFunctionInternal::input "
 
@@ -73362,7 +73620,7 @@ n: number of decision variables (x)     m: number of constraints (A)
 |              |              |              | every few    |              |
 |              |              |              | iterations.  |              |
 +--------------+--------------+--------------+--------------+--------------+
-| jacobian_gen | OT_JACOBIANG |              | Function     | CasADi::Worh |
+| jacobian_gen | OT_JACOBIANG | None         | Function     | CasADi::Worh |
 | erator       | ENERATOR     |              | pointer that | pInternal    |
 |              |              |              | returns a    |              |
 |              |              |              | Jacobian     |              |
@@ -73389,7 +73647,7 @@ n: number of decision variables (x)     m: number of constraints (A)
 |              |              |              | reaches this |              |
 |              |              |              | number       |              |
 +--------------+--------------+--------------+--------------+--------------+
-| monitor      | OT_STRINGVEC |              | Monitors to  | CasADi::Worh |
+| monitor      | OT_STRINGVEC | None         | Monitors to  | CasADi::Worh |
 |              | TOR          |              | be activated | pInternal    |
 +--------------+--------------+--------------+--------------+--------------+
 | name         | OT_STRING    | unnamed_shar | n/a          | CasADi::Worh |
@@ -73459,7 +73717,7 @@ n: number of decision variables (x)     m: number of constraints (A)
 | sparse       | OT_BOOLEAN   | True         | function is  | CasADi::Worh |
 |              |              |              | sparse       | pInternal    |
 +--------------+--------------+--------------+--------------+--------------+
-| sparsity_gen | OT_SPARSITYG |              | Function     | CasADi::Worh |
+| sparsity_gen | OT_SPARSITYG | None         | Function     | CasADi::Worh |
 | erator       | ENERATOR     |              | that         | pInternal    |
 |              |              |              | provides     |              |
 |              |              |              | sparsity for |              |
@@ -73482,7 +73740,7 @@ n: number of decision variables (x)     m: number of constraints (A)
 |              |              |              | multiple     |              |
 |              |              |              | times        |              |
 +--------------+--------------+--------------+--------------+--------------+
-| user_data    | OT_VOIDPTR   |              | A user-      | CasADi::Worh |
+| user_data    | OT_VOIDPTR   | None         | A user-      | CasADi::Worh |
 |              |              |              | defined      | pInternal    |
 |              |              |              | field that   |              |
 |              |              |              | can be used  |              |
@@ -73568,9 +73826,13 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::WorhpInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
-%feature("docstring")  CasADi::WorhpInternal::getDerivative "";
+%feature("docstring")  CasADi::WorhpInternal::getDerivative "
+
+Constructs and returns a function that calculates forward derivatives. ";
 
 %feature("docstring")  CasADi::WorhpInternal::input "
 
@@ -74782,7 +75044,7 @@ n: number of decision variables (x)     m: number of constraints (A)
 |              |              |              | every few    |              |
 |              |              |              | iterations.  |              |
 +--------------+--------------+--------------+--------------+--------------+
-| jacobian_gen | OT_JACOBIANG |              | Function     | CasADi::Worh |
+| jacobian_gen | OT_JACOBIANG | None         | Function     | CasADi::Worh |
 | erator       | ENERATOR     |              | pointer that | pInternal    |
 |              |              |              | returns a    |              |
 |              |              |              | Jacobian     |              |
@@ -74809,7 +75071,7 @@ n: number of decision variables (x)     m: number of constraints (A)
 |              |              |              | reaches this |              |
 |              |              |              | number       |              |
 +--------------+--------------+--------------+--------------+--------------+
-| monitor      | OT_STRINGVEC |              | Monitors to  | CasADi::Worh |
+| monitor      | OT_STRINGVEC | None         | Monitors to  | CasADi::Worh |
 |              | TOR          |              | be activated | pInternal    |
 +--------------+--------------+--------------+--------------+--------------+
 | name         | OT_STRING    | unnamed_shar | n/a          | CasADi::Worh |
@@ -74879,7 +75141,7 @@ n: number of decision variables (x)     m: number of constraints (A)
 | sparse       | OT_BOOLEAN   | True         | function is  | CasADi::Worh |
 |              |              |              | sparse       | pInternal    |
 +--------------+--------------+--------------+--------------+--------------+
-| sparsity_gen | OT_SPARSITYG |              | Function     | CasADi::Worh |
+| sparsity_gen | OT_SPARSITYG | None         | Function     | CasADi::Worh |
 | erator       | ENERATOR     |              | that         | pInternal    |
 |              |              |              | provides     |              |
 |              |              |              | sparsity for |              |
@@ -74902,7 +75164,7 @@ n: number of decision variables (x)     m: number of constraints (A)
 |              |              |              | multiple     |              |
 |              |              |              | times        |              |
 +--------------+--------------+--------------+--------------+--------------+
-| user_data    | OT_VOIDPTR   |              | A user-      | CasADi::Worh |
+| user_data    | OT_VOIDPTR   | None         | A user-      | CasADi::Worh |
 |              |              |              | defined      | pInternal    |
 |              |              |              | field that   |              |
 |              |              |              | can be used  |              |
@@ -75191,7 +75453,7 @@ calculated is known to be symmetric (usually a Hessian), which can be
 exploited by the algorithm.
 
 The generated Jacobian has one more output than the calling function
-corresponding to the Jacobian. ";
+corresponding to the Jacobian and the same number of inputs. ";
 
 %feature("docstring")  CasADi::WorhpSolver::gradient "
 
@@ -75710,7 +75972,9 @@ Return Jacobian function. ";
 
 %feature("docstring")  CasADi::XFunctionInternal::derivative "
 
-Return function that calculates forward derivatives. ";
+Return function that calculates forward derivatives This method returns a
+cached instance if available, and calls FX getDerivative(int nfwd, int nadj)
+if no cached version is available. ";
 
 %feature("docstring")  CasADi::XFunctionInternal::input "
 
@@ -76570,7 +76834,7 @@ Helper function for 'ACADO_FCN_Input' Input arguments of an ACADO function
 Helper function for 'ControlledDAEInput' Input arguments of an ODE/DAE
 function
 
->Input scheme: CasADi::ControlledDAEInput (CONTROL_DAE_NUM_IN = 10)
+>Input scheme: CasADi::ControlledDAEInput (CONTROL_DAE_NUM_IN = 9)
 +------------------------------------+------------------------------------+
 |                Name                |            Description             |
 +====================================+====================================+
@@ -76593,11 +76857,6 @@ function
 | CONTROL_DAE_U_INTERP               | Control vector, linearly           |
 |                                    | interpolated (dimension nu-by-1).  |
 |                                    | [u_interp].                        |
-+------------------------------------+------------------------------------+
-| CONTROL_DAE_XDOT                   | State derivative vector (dimension |
-|                                    | nx-by-1). Should have same amount  |
-|                                    | of non-zeros as DAEOutput:DAE_RES  |
-|                                    | [xdot].                            |
 +------------------------------------+------------------------------------+
 | CONTROL_DAE_X_MAJOR                | State vector (dimension nx-by-1)   |
 |                                    | at the last major time-step        |
@@ -76637,20 +76896,18 @@ simulator
 
 Helper function for 'DAEInput' Input arguments of an ODE/DAE function
 
->Input scheme: CasADi::DAEInput (DAE_NUM_IN = 5)
-+----------+------------------------------------------------+
-|   Name   |                  Description                   |
-+==========+================================================+
-| DAE_X    | Differential state [x].                        |
-+----------+------------------------------------------------+
-| DAE_Z    | Algebraic state [z].                           |
-+----------+------------------------------------------------+
-| DAE_P    | Parameter [p].                                 |
-+----------+------------------------------------------------+
-| DAE_T    | Explicit time dependence [t].                  |
-+----------+------------------------------------------------+
-| DAE_XDOT | Time derivative of differential states [xdot]. |
-+----------+------------------------------------------------+
+>Input scheme: CasADi::DAEInput (DAE_NUM_IN = 4)
++-------+-------------------------------+
+| Name  |          Description          |
++=======+===============================+
+| DAE_X | Differential state [x].       |
++-------+-------------------------------+
+| DAE_Z | Algebraic state [z].          |
++-------+-------------------------------+
+| DAE_P | Parameter [p].                |
++-------+-------------------------------+
+| DAE_T | Explicit time dependence [t]. |
++-------+-------------------------------+
 ";
 
 %feature("docstring")  CasADi::daeOut "
@@ -76674,28 +76931,24 @@ Helper function for 'DAEOutput' Output arguments of an DAE function
 Helper function for 'RDAEInput' Input arguments of an ODE/DAE backward
 integration function
 
->Input scheme: CasADi::RDAEInput (RDAE_NUM_IN = 9)
-+------------+---------------------------------------------------------+
-|    Name    |                       Description                       |
-+============+=========================================================+
-| RDAE_RX    | Backward differential state [rx].                       |
-+------------+---------------------------------------------------------+
-| RDAE_RZ    | Backward algebraic state [rz].                          |
-+------------+---------------------------------------------------------+
-| RDAE_RP    | Backward parameter vector [rp].                         |
-+------------+---------------------------------------------------------+
-| RDAE_X     | Forward differential state [x].                         |
-+------------+---------------------------------------------------------+
-| RDAE_Z     | Forward algebraic state [z].                            |
-+------------+---------------------------------------------------------+
-| RDAE_P     | Parameter vector [p].                                   |
-+------------+---------------------------------------------------------+
-| RDAE_T     | Explicit time dependence [t].                           |
-+------------+---------------------------------------------------------+
-| RDAE_XDOT  | Time derivative of differential states [xdot].          |
-+------------+---------------------------------------------------------+
-| RDAE_RXDOT | Time derivative of backward differential state [rxdot]. |
-+------------+---------------------------------------------------------+
+>Input scheme: CasADi::RDAEInput (RDAE_NUM_IN = 7)
++---------+-----------------------------------+
+|  Name   |            Description            |
++=========+===================================+
+| RDAE_RX | Backward differential state [rx]. |
++---------+-----------------------------------+
+| RDAE_RZ | Backward algebraic state [rz].    |
++---------+-----------------------------------+
+| RDAE_RP | Backward parameter vector [rp].   |
++---------+-----------------------------------+
+| RDAE_X  | Forward differential state [x].   |
++---------+-----------------------------------+
+| RDAE_Z  | Forward algebraic state [z].      |
++---------+-----------------------------------+
+| RDAE_P  | Parameter vector [p].             |
++---------+-----------------------------------+
+| RDAE_T  | Explicit time dependence [t].     |
++---------+-----------------------------------+
 ";
 
 %feature("docstring")  CasADi::rdaeOut "
@@ -77683,6 +77936,12 @@ Extract shared subexpressions from an set of expressions. ";
 %feature("docstring")  CasADi::printCompact "
 
 Print compact, introducing new variables for shared subexpressions. ";
+
+%feature("docstring")  CasADi::solve "
+
+Solve a system of equations: A*x = b The solve routine works similar to
+Matlab's backslash when A is square and nonsingular. This algorithm is under
+development. ";
 
 %feature("docstring")  CasADi::vertcat "
 
@@ -79518,6 +79777,12 @@ This file does absolutely nothing but including all headers ";
 
 
 // File: slice_8hpp.xml
+
+
+// File: solve_8cpp.xml
+
+
+// File: solve_8hpp.xml
 
 
 // File: sparsity__tools_8cpp.xml
