@@ -22,9 +22,10 @@
 
 #include "cvodes_internal.hpp"
 #include "symbolic/stl_vector_tools.hpp"
-#include "symbolic/sx/sx_tools.hpp"
 #include "symbolic/fx/linear_solver_internal.hpp"
 #include "symbolic/fx/mx_function.hpp"
+#include "symbolic/sx/sx_tools.hpp"
+#include "symbolic/mx/mx_tools.hpp"
 
 using namespace std;
 namespace CasADi{
@@ -33,7 +34,6 @@ CVodesInternal* CVodesInternal::clone() const{
   // Return a deep copy
   CVodesInternal* node = new CVodesInternal(f_,g_);
   node->setOption(dictionary());
-  node->jac_f_ = jac_f_;
   node->jac_ = jac_;
   node->linsol_ = linsol_;
   return node;
@@ -97,33 +97,17 @@ void CVodesInternal::init(){
   monitor_rhs_   = monitored("res");
   monitor_rhsQB_ = monitored("resQB");
   
-  // Try to generate a jacobian if none provided
-  if(!linsol_.isNull() && jac_.isNull()){
-    log("CVodesInternal::init","generate jacobian");
-    SXFunction f = shared_cast<SXFunction>(f_);
-    if(!f.isNull()){
-      // Get the Jacobian in the Newton iteration
-      SX gamma("gamma");
-      SXMatrix jac = SXMatrix::eye(nx_) - gamma * f.jac(DAE_X,DAE_ODE);
-      
-      // Jacobian function
-      vector<SXMatrix> jac_in(M_NUM_IN);
-      jac_in[M_T] = f.inputExpr(DAE_T);
-      jac_in[M_Y] = f.inputExpr(DAE_X);
-      jac_in[M_P] = f.inputExpr(DAE_P);
-      jac_in[M_GAMMA] = gamma;
-      SXFunction M(jac_in,jac);
-      
-      // Pass sparsity to linear solver
-      linsol_.setSparsity(jac.sparsity());
-      
-      // Save function
-      jac_ = M;
-    }
+  // Generate a jacobian if none provided
+  if(!linsol_.isNull()){
+    if(jac_.isNull()) jac_ = getJacobian();
   }
-  
   if(!jac_.isNull()) jac_.init();
-  if(!linsol_.isNull()) linsol_.init();
+
+  // Pass sparsity to linear solver and initialize
+  if(!linsol_.isNull()){
+    linsol_.setSparsity(jac_.output().sparsity());
+    linsol_.init();
+  }
 
   // Get the number of forward and adjoint directions
   nfdir_f_ = f_.getOption("number_of_fwd_dir");
@@ -332,7 +316,7 @@ void CVodesInternal::initAdj(){
 //   if(flag != CV_SUCCESS) cvodes_error("CVodeInitBS",flag);
 
   // Set tolerances
-  flag = CVodeSStolerancesB(mem_, whichB_, asens_reltol_, asens_abstol_);
+  flag = CVodeSStolerancesB(mem_, whichB_, reltolB_, abstolB_);
   if(flag!=CV_SUCCESS) cvodes_error("CVodeSStolerancesB",flag);
 
   // User data
@@ -364,7 +348,7 @@ void CVodesInternal::initAdj(){
     flag = CVodeSetQuadErrConB(mem_, whichB_,true);
     if(flag != CV_SUCCESS) cvodes_error("CVodeSetQuadErrConB",flag);
       
-    flag = CVodeQuadSStolerancesB(mem_, whichB_, asens_reltol_, asens_abstol_);
+    flag = CVodeQuadSStolerancesB(mem_, whichB_, reltolB_, abstolB_);
     if(flag != CV_SUCCESS) cvodes_error("CVodeQuadSStolerancesB",flag);
   }
   
@@ -664,10 +648,10 @@ void CVodesInternal::cvodes_error(const string& module, int flag){
   casadi_error(ss.str());
 }
   
-void CVodesInternal::ehfun_wrapper(int error_code, const char *module, const char *function, char *msg, void *eh_data){
+void CVodesInternal::ehfun_wrapper(int error_code, const char *module, const char *function, char *msg, void *user_data){
 try{
-    casadi_assert(eh_data);
-    CVodesInternal *this_ = (CVodesInternal*)eh_data;
+    casadi_assert(user_data);
+    CVodesInternal *this_ = static_cast<CVodesInternal*>(user_data);
     this_->ehfun(error_code,module,function,msg);        
   } catch(exception& e){
     cerr << "ehfun failed: " << e.what() << endl;
@@ -1031,17 +1015,19 @@ void CVodesInternal::djac(long N, double t, N_Vector x, N_Vector xdot, DlsMat Ja
   time1 = clock();
 
   // Pass inputs to the jacobian function
-  jac_f_.setInput(&t,DAE_T);
-  jac_f_.setInput(NV_DATA_S(x),DAE_X);
-  jac_f_.setInput(f_.input(DAE_P),DAE_P);
+  jac_.setInput(&t,DAE_T);
+  jac_.setInput(NV_DATA_S(x),DAE_X);
+  jac_.setInput(f_.input(DAE_P),DAE_P);
+  jac_.setInput(1.0,DAE_NUM_IN);
+  jac_.setInput(0.0,DAE_NUM_IN+1);
 
   // Evaluate
-  jac_f_.evaluate();
+  jac_.evaluate();
   
   // Get sparsity and non-zero elements
-  const vector<int>& rowind = jac_f_.output().rowind();
-  const vector<int>& col = jac_f_.output().col();
-  const vector<double>& val = jac_f_.output().data();
+  const vector<int>& rowind = jac_.output().rowind();
+  const vector<int>& col = jac_.output().col();
+  const vector<double>& val = jac_.output().data();
 
   // Loop over rows
   for(int i=0; i<rowind.size()-1; ++i){
@@ -1078,17 +1064,19 @@ void CVodesInternal::bjac(long N, long mupper, long mlower, double t, N_Vector x
   time1 = clock();
 
   // Pass inputs to the jacobian function
-  jac_f_.setInput(&t,DAE_T);
-  jac_f_.setInput(NV_DATA_S(x),DAE_X);
-  jac_f_.setInput(f_.input(DAE_P),DAE_P);
+  jac_.setInput(&t,DAE_T);
+  jac_.setInput(NV_DATA_S(x),DAE_X);
+  jac_.setInput(f_.input(DAE_P),DAE_P);
+  jac_.setInput(1.0,DAE_NUM_IN);
+  jac_.setInput(0.0,DAE_NUM_IN+1);
 
   // Evaluate
-  jac_f_.evaluate();
+  jac_.evaluate();
   
   // Get sparsity and non-zero elements
-  const vector<int>& rowind = jac_f_.output().rowind();
-  const vector<int>& col = jac_f_.output().col();
-  const vector<double>& val = jac_f_.output().data();
+  const vector<int>& rowind = jac_.output().rowind();
+  const vector<int>& col = jac_.output().col();
+  const vector<double>& val = jac_.output().data();
 
   // Loop over rows
   for(int i=0; i<rowind.size()-1; ++i){
@@ -1161,10 +1149,11 @@ void CVodesInternal::psetup(double t, N_Vector x, N_Vector xdot, booleantype jok
   time1 = clock();
 
   // Pass input to the jacobian function
-  jac_.setInput(t,M_T);
-  jac_.setInput(NV_DATA_S(x),M_Y);
-  jac_.setInput(input(INTEGRATOR_P),M_P);
-  jac_.setInput(gamma,M_GAMMA);
+  jac_.setInput(&t,DAE_T);
+  jac_.setInput(NV_DATA_S(x),DAE_X);
+  jac_.setInput(input(INTEGRATOR_P),DAE_P);
+  jac_.setInput(-gamma,DAE_NUM_IN);
+  jac_.setInput(1.0,DAE_NUM_IN+1);
 
   // Evaluate jacobian
   jac_.evaluate();
@@ -1197,7 +1186,7 @@ void CVodesInternal::lsetup(CVodeMem cv_mem, int convfail, N_Vector x, N_Vector 
 
 int CVodesInternal::lsetup_wrapper(CVodeMem cv_mem, int convfail, N_Vector x, N_Vector xdot, booleantype *jcurPtr, N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3){
   try{
-    CVodesInternal *this_ = (CVodesInternal*)(cv_mem->cv_lmem);
+    CVodesInternal *this_ = static_cast<CVodesInternal*>(cv_mem->cv_lmem);
     casadi_assert(this_);
     this_->lsetup(cv_mem, convfail, x, xdot, jcurPtr, vtemp1, vtemp2, vtemp3);
     return 0;
@@ -1226,7 +1215,7 @@ void CVodesInternal::lsolve(CVodeMem cv_mem, N_Vector b, N_Vector weight, N_Vect
 
 int CVodesInternal::lsolve_wrapper(CVodeMem cv_mem, N_Vector b, N_Vector weight, N_Vector x, N_Vector xdot){
   try{
-    CVodesInternal *this_ = (CVodesInternal*)(cv_mem->cv_lmem);
+    CVodesInternal *this_ = static_cast<CVodesInternal*>(cv_mem->cv_lmem);
     casadi_assert(this_);
     this_->lsolve(cv_mem, b, weight, x, xdot);
     return 0;
@@ -1240,9 +1229,9 @@ void CVodesInternal::initDenseLinearSolver(){
   int flag = CVDense(mem_, nx_);
   if(flag!=CV_SUCCESS) cvodes_error("CVDense",flag);
   if(exact_jacobian_){
-    // Create jacobian if it does not exist
-    if(jac_f_.isNull()) jac_f_ = f_.jacobian(DAE_X,DAE_ODE);
-    jac_f_.init();
+    // Generate jacobians if not already provided
+    if(jac_.isNull()) jac_ = getJacobian();
+    if(!jac_.isInit()) jac_.init();
     
     // Pass to CVodes
     flag = CVDlsSetDenseJacFn(mem_, djac_wrapper);
@@ -1254,6 +1243,10 @@ void CVodesInternal::initBandedLinearSolver(){
   int flag = CVBand(mem_, nx_, getOption("upper_bandwidth").toInt(), getOption("lower_bandwidth").toInt());
   if(flag!=CV_SUCCESS) cvodes_error("CVBand",flag);
   if(exact_jacobian_){
+    // Generate jacobians if not already provided
+    if(jac_.isNull()) jac_ = getJacobian();
+    if(!jac_.isInit()) jac_.init();
+    
     flag = CVDlsSetBandJacFn(mem_, bjac_wrapper);
     if(flag!=CV_SUCCESS) cvodes_error("CVDlsSetBandJacFn",flag);
   }
@@ -1321,12 +1314,12 @@ void CVodesInternal::initDenseLinearSolverB(){
 }
   
 void CVodesInternal::initBandedLinearSolverB(){
-  int flag = CVBandB(mem_, whichB_, nrx_, getOption("asens_upper_bandwidth").toInt(), getOption("asens_lower_bandwidth").toInt());
+  int flag = CVBandB(mem_, whichB_, nrx_, getOption("upper_bandwidthB").toInt(), getOption("lower_bandwidthB").toInt());
   if(flag!=CV_SUCCESS) cvodes_error("CVBandB",flag);
 }
   
 void CVodesInternal::initIterativeLinearSolverB(){
-  int maxl = getOption("asens_max_krylov");
+  int maxl = getOption("max_krylovB");
   int flag;
   switch(itsol_g_){
     case SD_GMRES:
@@ -1348,25 +1341,70 @@ void CVodesInternal::initUserDefinedLinearSolverB(){
   casadi_assert_message(false, "Not implemented");
 }
 
-void CVodesInternal::setLinearSolver(const LinearSolver& linsol, const FX& jac){
-  linsol_ = linsol;
-  jac_ = jac;
-}
-
-FX CVodesInternal::getJacobian(){
-  return jac_;
-}
-  
-LinearSolver CVodesInternal::getLinearSolver(){
-  return linsol_;
-}
-
-
 void CVodesInternal::deepCopyMembers(std::map<SharedObjectNode*,SharedObject>& already_copied){
   SundialsInternal::deepCopyMembers(already_copied);
   jac_ = deepcopy(jac_,already_copied);
-  jac_f_ = deepcopy(jac_f_,already_copied);
 }
+
+template<typename FunctionType>
+FunctionType CVodesInternal::getJacobianGen(){
+  FunctionType f = shared_cast<FunctionType>(f_);
+  casadi_assert(!f.isNull());
+  
+  // Get the Jacobian in the Newton iteration
+  typename FunctionType::MatType c_x = FunctionType::MatType::sym("c_x");
+  typename FunctionType::MatType c_xdot = FunctionType::MatType::sym("c_xdot");
+  typename FunctionType::MatType jac = c_x*f.jac(DAE_X,DAE_ODE) + c_xdot*FunctionType::MatType::eye(nx_);
+  
+  // Jacobian function
+  std::vector<typename FunctionType::MatType> jac_in = f.inputExpr();
+  jac_in.push_back(c_x);
+  jac_in.push_back(c_xdot);
+  
+  // Return generated function
+  return FunctionType(jac_in,jac);
+}
+
+
+FX CVodesInternal::getJacobian(){
+  if(is_a<SXFunction>(f_)){
+    return getJacobianGen<SXFunction>();
+  } else if(is_a<MXFunction>(f_)){
+    return getJacobianGen<MXFunction>();
+  } else {
+    throw CasadiException("CVodesInternal::getJacobian(): Not an SXFunction or MXFunction");
+  }
+}
+
+template<typename FunctionType>
+FunctionType CVodesInternal::getJacobianGenB(){
+  FunctionType g = shared_cast<FunctionType>(g_);
+  casadi_assert(!g.isNull());
+  
+  // Get the Jacobian in the Newton iteration
+  typename FunctionType::MatType c_x = FunctionType::MatType::sym("c_x");
+  typename FunctionType::MatType c_xdot = FunctionType::MatType::sym("c_xdot");
+  typename FunctionType::MatType jac = c_x*g.jac(RDAE_RX,RDAE_ODE) + c_xdot*FunctionType::MatType::eye(nrx_);
+    
+  // Jacobian function
+  std::vector<typename FunctionType::MatType> jac_in = g.inputExpr();
+  jac_in.push_back(c_x);
+  jac_in.push_back(c_xdot);
+  
+  // return generated function
+  return FunctionType(jac_in,jac);
+}
+
+FX CVodesInternal::getJacobianB(){
+  if(is_a<SXFunction>(g_)){
+    return getJacobianGenB<SXFunction>();
+  } else if(is_a<MXFunction>(g_)){
+    return getJacobianGenB<MXFunction>();
+  } else {
+    throw CasadiException("CVodesInternal::getJacobianB(): Not an SXFunction or MXFunction");
+  }
+}
+
 
 } // namespace CasADi
 

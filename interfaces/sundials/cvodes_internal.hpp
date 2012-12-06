@@ -84,15 +84,24 @@ public:
 
   /** \brief  Set the stop time of the forward integration */
   virtual void setStopTime(double tf);
-
-  /** \brief Get the jacobian in the nonlinear iteration
-  * The result is an CasADi::FX mapping from CasADi::Sundials::MInput to CasADi::Sundials::MOutput
-  */
-  virtual FX getJacobian();
   
-  /// Get the Linear solver
-  virtual LinearSolver getLinearSolver();
+  /** \brief  Print solver statistics */  
+  virtual void printStats(std::ostream &stream) const;
 
+  /** \brief  Get the integrator Jacobian for the forward problem */
+  FX getJacobian();
+  
+  /** \brief  Get the integrator Jacobian for the forward problem (generic) */
+  template<typename FunctionType>
+  FunctionType getJacobianGen();
+  
+  /** \brief  Get the integrator Jacobian for the backward problem */
+  FX getJacobianB();
+  
+  /** \brief  Get the integrator Jacobian for the backward problem (generic) */
+  template<typename FunctionType>
+  FunctionType getJacobianGenB();
+  
   protected:
 
   // Sundials callback functions
@@ -115,7 +124,7 @@ public:
   
   // Static wrappers to be passed to Sundials
   static int rhs_wrapper(double t, N_Vector x, N_Vector xdot, void *user_data);
-  static void ehfun_wrapper(int error_code, const char *module, const char *function, char *msg, void *eh_data);
+  static void ehfun_wrapper(int error_code, const char *module, const char *function, char *msg, void *user_data);
   static int rhsS_wrapper(int Ns, double t, N_Vector x, N_Vector xdot, N_Vector *xF, N_Vector *xdotF, void *user_data, N_Vector tmp1, N_Vector tmp2);
   static int rhsS1_wrapper(int Ns, double t, N_Vector x, N_Vector xdot, int iS, N_Vector xF, N_Vector xdotF, void *user_data, N_Vector tmp1, N_Vector tmp2);
   static int rhsQ_wrapper(double t, N_Vector x, N_Vector qdot, void *user_data);
@@ -131,13 +140,8 @@ public:
   static int lsetup_wrapper(CVodeMem cv_mem, int convfail, N_Vector x, N_Vector xdot, booleantype *jcurPtr, N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3);
   static int lsolve_wrapper(CVodeMem cv_mem, N_Vector b, N_Vector weight, N_Vector x, N_Vector xdot);
   
-  virtual void printStats(std::ostream &stream) const;
-  
   // CVodes memory block
   void* mem_;
-  
-  // The jacobian of the ODE rhs fcn
-  FX jac_f_;
   
   // For timings
   clock_t time1, time2;
@@ -201,9 +205,6 @@ public:
   
   // Initialize the user defined linear solver (backward integration)
   void initUserDefinedLinearSolverB();
-
-  // Set linear solver
-  virtual void setLinearSolver(const LinearSolver& linsol, const FX& jac);
 
   int lmm_; // linear multistep method
   int iter_; // nonlinear solver iteration

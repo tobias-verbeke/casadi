@@ -55,8 +55,82 @@ print "Will test these integrators:"
 for cl, t, options in integrators:
   print cl.__name__, " : ", t
   
-#@run_only(["X"])
 class Integrationtests(casadiTestCase):
+
+  def test_lsolvers(self):
+    self.message("Test different linear solvers")
+    
+    num=self.num
+    tend=num['tend']
+    x0=num['q0']
+    p_=num['p']
+    rx0_= 0.13
+    t=SX("t")
+    x=SX("x")
+    rx=SX("rx")
+    p=SX("p")
+    dp=SX("dp")
+
+    z=SX("z")
+    rz=SX("rz")
+    rp=SX("rp")
+    
+    tstart = 0.2
+    
+    f = SXFunction(daeIn(**{'x': x, 'z': z}),daeOut(**{'alg': x-z, 'ode': z}))
+    f.init()
+    g = SXFunction(rdaeIn(**{'x': x, 'z': z, 'rx': rx, 'rz': rz}),rdaeOut(**{'alg': x-rz, 'ode': rz}))
+    g.init()
+    
+    solution = {'rxf': rx+x*(exp(tend-tstart)-1), 'xf':x*exp(tend-tstart)}
+
+    fs = SXFunction(integratorIn(x0=x,p=p,rx0=rx,rp=rp),integratorOut(**solution))
+    fs.init()
+              
+    integrators = [(IdasIntegrator,["dae","ode"],{"abstol": 1e-9,"reltol":1e-9,"fsens_err_con": True,"calc_ic":True,"calc_icB":True})]
+    for Integrator, features, options in integrators:
+      self.message(Integrator.__name__)
+      
+      def itoptions(post=""):
+        yield {"iterative_solver"+post: "gmres"}
+        yield {"iterative_solver"+post: "bcgstab"}
+        yield {"iterative_solver"+post: "tfqmr", "use_preconditionerB": True, "linear_solverB" : CSparse} # Bug in Sundials? Preconditioning seems to be needed
+       
+      def solveroptions(post=""):
+        yield {"linear_solver_type" +post: "user_defined", "linear_solver"+post: CSparse }
+        yield {"linear_solver_type" +post: "dense" }
+        for it in itoptions(post):
+          d = {"linear_solver_type" +post: "iterative" }
+          d.update(it)
+          yield d
+          
+      for a_options in solveroptions("B"):
+        for f_options in solveroptions():
+          message = "f_options: %s , a_options: %s" % (str(f_options) , str(a_options))
+          print message
+          integrator = Integrator(f,g)
+          integrator.setOption("exact_jacobianB",True)
+          integrator.setOption("t0",tstart)
+          integrator.setOption("tf",tend)
+          integrator.setOption(options)
+          integrator.setOption(f_options)
+          integrator.setOption(a_options)
+          integrator.init()
+          
+          for ff in [fs,integrator]:
+            ff.input(INTEGRATOR_X0).set(7.1)
+            if not ff.input(INTEGRATOR_P).empty():
+              ff.input(INTEGRATOR_P).set(2)
+            if not integrator.input(INTEGRATOR_RX0).empty():
+              ff.input(INTEGRATOR_RX0).set(0.13)
+            if not integrator.input(INTEGRATOR_RP).empty():
+              ff.input(INTEGRATOR_RP).set(0.127)
+
+          integrator.evaluate(1,0)
+          
+          self.checkfx(integrator,fs,gradient=False,hessian=False,sens_der=False,digits=4,digits_sens=4,failmessage=message,verbose=False)
+
+
 
   def test_X(self):
     self.message("Extensive integrator tests")
@@ -214,9 +288,9 @@ class Integrationtests(casadiTestCase):
                   ff.input(INTEGRATOR_RX0).set(rx0_)
                 if not ff.input(INTEGRATOR_RP).empty():
                   ff.input(INTEGRATOR_RP).set(0.127)
-                  
+
               integrator.evaluate(1,0)
-                  
+              
               self.checkfx(integrator,fs,gradient=False,hessian=False,sens_der=False,digits=4,digits_sens=4,failmessage=message,verbose=False)
 
         
@@ -1031,6 +1105,38 @@ class Integrationtests(casadiTestCase):
     
     #self.checkarray(H1,H2,"hessian")
 
+  def test_issue535(self):
+    self.message("regression test for #535")
+    t=ssym("t")
+    x=ssym("x")
+    rx=ssym("rx")
+    p=ssym("p")
+    dp=ssym("dp")
+
+    z=ssym("z")
+    rz=ssym("rz")
+    rp=ssym("rp")
+    f = SXFunction(daeIn(**{'x': x, 'z': z}),daeOut(**{'alg': x-z, 'ode': z}))
+    f.init()
+    g = SXFunction(rdaeIn(**{'x': x, 'z': z, 'rx': rx, 'rz': rz}),rdaeOut(**{'alg': x-rz, 'ode': rz}))
+    g.init()
+
+    integrator = IdasIntegrator(f,g)
+    integrator.setOption({'calc_ic': True, 'tf': 2.3, 'reltol': 1e-10, "verbose": True, 'augmented_options': {'reltol': 1e-09, 'abstol': 1e-09 }, 'calc_icB': True, 'abstol': 1e-10, 't0': 0.2})
+    integrator.init()
+
+    integrator.input(INTEGRATOR_X0).set(7.1)
+    if not integrator.input(INTEGRATOR_P).empty():
+      integrator.input(INTEGRATOR_P).set(2)
+    if not integrator.input(INTEGRATOR_RX0).empty():
+      integrator.input(INTEGRATOR_RX0).set(0.13)
+    if not integrator.input(INTEGRATOR_RP).empty():
+      integrator.input(INTEGRATOR_RP).set(0.127)
+
+    integrator.evaluate(0,0)
+
+    integrator.fwdSeed(0).set([1])
+    integrator.evaluate(1,0) # fail
     
 if __name__ == '__main__':
     unittest.main()
