@@ -44,7 +44,7 @@ CVodesInternal::CVodesInternal(const FX& f, const FX& g) : SundialsInternal(f,g)
   addOption("nonlinear_solver_iteration",       OT_STRING,              "newton",       "","newton|functional");
   addOption("fsens_all_at_once",                OT_BOOLEAN,             true,           "Calculate all right hand sides of the sensitivity equations at once");
   addOption("disable_internal_warnings",        OT_BOOLEAN,             false,          "Disable CVodes internal warning messages");
-  addOption("monitor",                          OT_STRINGVECTOR,        GenericType(),  "", "res|resB|resQB|reset|psetupB", true);
+  addOption("monitor",                          OT_STRINGVECTOR,        GenericType(),  "", "res|resB|resQB|reset|psetupB|djacB", true);
     
   mem_ = 0;
 
@@ -442,6 +442,10 @@ void CVodesInternal::reset(int nsens, int nsensB, int nsensB_store){
 
 void CVodesInternal::integrate(double t_out){
   log("CVODES::integrate begin");
+  
+  casadi_assert_message(t_out>=t0_,"CVodesInternal::integrate(" << t_out << "): Cannot integrate to a time earlier than t0 (" << t0_ << ")");
+  casadi_assert_message(t_out<=tf_ || !stop_at_end_,"CVodesInternal::integrate(" << t_out << "): Cannot integrate past a time later than tf (" << tf_ << ") unless stop_at_end is set to False.");
+  
   int flag;
     
   // tolerance
@@ -479,6 +483,18 @@ void CVodesInternal::integrate(double t_out){
   
   // Print statistics
   if(getOption("print_stats")) printStats(std::cout);
+  
+  if (gather_stats_) {
+    long nsteps, nfevals, nlinsetups, netfails;
+    int qlast, qcur;
+    double hinused, hlast, hcur, tcur;
+    int flag = CVodeGetIntegratorStats(mem_, &nsteps, &nfevals,&nlinsetups, &netfails, &qlast, &qcur,&hinused, &hlast, &hcur, &tcur);
+    if(flag!=CV_SUCCESS) cvodes_error("CVodeGetIntegratorStats",flag);
+  
+    stats_["nsteps"] = 1.0*nsteps;
+    stats_["nlinsetups"] = 1.0*nlinsetups;
+    
+  }
   
   log("CVODES::integrate end");
 }
@@ -1093,14 +1109,29 @@ void CVodesInternal::djacB(long NeqB, double t, N_Vector x, N_Vector xB, N_Vecto
   // Pass inputs to the jacobian function
   jacB_.setInput(&t,RDAE_T);
   jacB_.setInput(NV_DATA_S(x),RDAE_X);
-  jacB_.setInput(input(INTEGRATOR_P),DAE_P);
+  jacB_.setInput(input(INTEGRATOR_P),RDAE_P);
   jacB_.setInput(NV_DATA_S(xB),RDAE_RX);
   jacB_.setInput(input(INTEGRATOR_RP),RDAE_RP);
   jacB_.setInput(-1.0,RDAE_NUM_IN);
   jacB_.setInput(0.0,RDAE_NUM_IN+1);
 
+  
+  if(monitored("djacB")){
+    cout << "RDAE_T    = " << t << endl;
+    cout << "RDAE_X    = " << jacB_.input(RDAE_X) << endl;
+    cout << "RDAE_P    = " << jacB_.input(RDAE_P) << endl;
+    cout << "RDAE_RX    = " << jacB_.input(RDAE_RX) << endl;
+    cout << "RDAE_RP    = " << jacB_.input(RDAE_RP) << endl;
+    cout << "c_x = " << jacB_.input(RDAE_NUM_IN) << endl;
+    cout << "c_xdot = " << jacB_.input(RDAE_NUM_IN+1) << endl;
+  }
+  
   // Evaluate
   jacB_.evaluate();
+  
+  if(monitored("djacB")){
+    cout << "jacB = " << jacB_.output() << endl;
+  }
   
   // Get sparsity and non-zero elements
   const vector<int>& rowind = jacB_.output().rowind();
@@ -1200,14 +1231,28 @@ void CVodesInternal::bjacB(long NeqB, long mupperB, long mlowerB, double t, N_Ve
   // Pass inputs to the jacobian function
   jacB_.setInput(&t,RDAE_T);
   jacB_.setInput(NV_DATA_S(x),RDAE_X);
-  jacB_.setInput(input(INTEGRATOR_P),DAE_P);
+  jacB_.setInput(input(INTEGRATOR_P),RDAE_P);
   jacB_.setInput(NV_DATA_S(xB),RDAE_RX);
   jacB_.setInput(input(INTEGRATOR_RP),RDAE_RP);
-  jacB_.setInput(-1.0,DAE_NUM_IN);
-  jacB_.setInput(0.0,DAE_NUM_IN+1);
+  jacB_.setInput(-1.0,RDAE_NUM_IN);
+  jacB_.setInput(0.0,RDAE_NUM_IN+1);
+  
+  if(monitored("bjacB")){
+    cout << "RDAE_T    = " << t << endl;
+    cout << "RDAE_X    = " << jacB_.input(RDAE_X) << endl;
+    cout << "RDAE_P    = " << jacB_.input(RDAE_P) << endl;
+    cout << "RDAE_RX    = " << jacB_.input(RDAE_RX) << endl;
+    cout << "RDAE_RP    = " << jacB_.input(RDAE_RP) << endl;
+    cout << "c_x = " << jacB_.input(RDAE_NUM_IN) << endl;
+    cout << "c_xdot = " << jacB_.input(RDAE_NUM_IN+1) << endl;
+  }
 
   // Evaluate
   jacB_.evaluate();
+  
+  if(monitored("bjacB")){
+    cout << "jacB = " << jacB_.output() << endl;
+  }
   
   // Get sparsity and non-zero elements
   const vector<int>& rowind = jacB_.output().rowind();
@@ -1364,7 +1409,7 @@ void CVodesInternal::psetupB(double t, N_Vector x, N_Vector xB, N_Vector xdotB, 
   // Pass inputs to the jacobian function
   jacB_.setInput(&t,RDAE_T);
   jacB_.setInput(NV_DATA_S(x),RDAE_X);
-  jacB_.setInput(input(INTEGRATOR_P),DAE_P);
+  jacB_.setInput(input(INTEGRATOR_P),RDAE_P);
   jacB_.setInput(NV_DATA_S(xB),RDAE_RX);
   jacB_.setInput(input(INTEGRATOR_RP),RDAE_RP);
   jacB_.setInput(gammaB,RDAE_NUM_IN); // FIXME? Is this right
@@ -1461,6 +1506,8 @@ int CVodesInternal::lsetupB_wrapper(CVodeMem cv_mem, int convfail, N_Vector x, N
 }
 
 void CVodesInternal::lsolve(CVodeMem cv_mem, N_Vector b, N_Vector weight, N_Vector x, N_Vector xdot){
+  log("IdasInternal::lsolve","begin");
+  
   // Current time
   double t = cv_mem->cv_tn;
 
@@ -1475,9 +1522,12 @@ void CVodesInternal::lsolve(CVodeMem cv_mem, N_Vector b, N_Vector weight, N_Vect
   
   // Call the preconditioner solve function (which solves the linear system)
   psolve(t, x, xdot, b, b, gamma, delta, lr, 0);
+  
+  log("IdasInternal::lsolve","end");
 }
 
 void CVodesInternal::lsolveB(double t, double gamma, N_Vector b, N_Vector weight, N_Vector x, N_Vector xB, N_Vector xdotB) {
+  log("IdasInternal::lsolveB","begin");
   // Accuracy
   double delta = 0.0;
   
@@ -1486,6 +1536,8 @@ void CVodesInternal::lsolveB(double t, double gamma, N_Vector b, N_Vector weight
   
   // Call the preconditioner solve function (which solves the linear system)
   psolveB(t, x, xB, xdotB, b, b, gamma, delta, lr, 0);
+  
+  log("IdasInternal::lsolveB","end");
 }
 
 int CVodesInternal::lsolve_wrapper(CVodeMem cv_mem, N_Vector b, N_Vector weight, N_Vector x, N_Vector xdot){

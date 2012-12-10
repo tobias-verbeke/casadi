@@ -48,7 +48,7 @@ void IdasInternal::deepCopyMembers(std::map<SharedObjectNode*,SharedObject>& alr
 IdasInternal::IdasInternal(const FX& f, const FX& g) : SundialsInternal(f,g){
   addOption("suppress_algebraic",          OT_BOOLEAN,          false,          "Supress algebraic variables in the error testing");
   addOption("calc_ic",                     OT_BOOLEAN,          true,           "Use IDACalcIC to get consistent initial conditions.");
-  addOption("calc_icB",                    OT_BOOLEAN,          true,           "Use IDACalcIC to get consistent initial conditions.");
+  addOption("calc_icB",                    OT_BOOLEAN,          true,           "Use IDACalcIC to get consistent initial conditions for backwards system.");
   addOption("abstolv",                     OT_REALVECTOR);
   addOption("fsens_abstolv",               OT_REALVECTOR); 
   addOption("max_step_size",               OT_REAL,             0,              "Maximim step size");
@@ -869,6 +869,10 @@ void IdasInternal::correctInitialConditions(){
   
 void IdasInternal::integrate(double t_out){
   log("IdasInternal::integrate","begin");
+  
+  casadi_assert_message(t_out>=t0_,"IdasInternal::integrate(" << t_out << "): Cannot integrate to a time earlier than t0 (" << t0_ << ")");
+  casadi_assert_message(t_out<=tf_ || !stop_at_end_,"IdasInternal::integrate(" << t_out << "): Cannot integrate past a time later than tf (" << tf_ << ") unless stop_at_end is set to False.");
+  
   int flag;
   
   // Check if we are already at the output time
@@ -922,6 +926,19 @@ void IdasInternal::integrate(double t_out){
     
   // Print statistics
   if(getOption("print_stats")) printStats(std::cout);
+  
+  if (gather_stats_) {
+    long nsteps, nfevals, nlinsetups, netfails;
+    int qlast, qcur;
+    double hinused, hlast, hcur, tcur;
+    int flag = IDAGetIntegratorStats(mem_, &nsteps, &nfevals, &nlinsetups,&netfails, &qlast, &qcur, &hinused,&hlast, &hcur, &tcur);
+    if(flag!=IDA_SUCCESS) idas_error("IDAGetIntegratorStats",flag);
+
+    stats_["nsteps"] = 1.0*nsteps;
+    stats_["nlinsetups"] = 1.0*nlinsetups;
+    
+  }
+  
   
   log("IdasInternal::integrate","end");
 }

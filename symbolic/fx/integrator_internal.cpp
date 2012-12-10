@@ -155,6 +155,8 @@ void IntegratorInternal::evaluate(int nfdir, int nadir){
   
   // Print statistics
   if(getOption("print_stats")) printStats(std::cout);
+  
+  //if (!integrator.isNull()) stats_["augmented_stats"] =  integrator.getStats();
 }
 
 void IntegratorInternal::init(){
