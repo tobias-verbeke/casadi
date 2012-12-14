@@ -530,19 +530,40 @@ MatType XFunctionInternal<PublicType,DerivedType,MatType,NodeType>::jac(int iind
   // A vector used to resolve collitions between directions
   std::vector<int> hits;
   
+  // Progress
+  int progress = -10;
+  
+  // Number of sweeps
+  int nsweep_fwd = nfdir/max_nfdir;   // Number of sweeps needed for the forward mode
+  if(nfdir%max_nfdir>0) nsweep_fwd++;
+  int nsweep_adj = nadir/max_nadir;   // Number of sweeps needed for the adjoint mode
+  if(nadir%max_nadir>0) nsweep_adj++;
+  int nsweep = std::max(nsweep_fwd,nsweep_adj);
+  if(verbose())   std::cout << "XFunctionInternal::jac " << nsweep << " sweeps needed for " << nfdir << " forward and " << nadir << " adjoint directions"  << std::endl;
+  
   // Evaluate until everything has been determinated
-  while (offset_nfdir < nfdir || offset_nadir < nadir) {
-      
+  for(int s=0; s<nsweep; ++s){
+    // Print progress
+    if(verbose()){
+      int progress_new = (s*100)/nsweep;
+      // Print when entering a new decade
+      if(progress_new / 10 > progress / 10){
+        progress = progress_new;
+        std::cout << progress << " %"  << std::endl;
+      }
+    }
+    
     // Number of forward and adjoint directions in the current "batch"
     int nfdir_batch = std::min(nfdir - offset_nfdir, max_nfdir);
     int nadir_batch = std::min(nadir - offset_nadir, max_nadir);
     
     // Forward seeds
     fseed.resize(nfdir_batch);
-    for(int d=0; d<nfdir; ++d){
+    for(int d=0; d<nfdir_batch; ++d){
+      
       // initialize to zero
       fseed[d].resize(getNumInputs());
-      for(int ind=0; ind<fseed[offset_nfdir+d].size(); ++ind){
+      for(int ind=0; ind<fseed[d].size(); ++ind){
         fseed[d][ind] = MatType(input(ind).sparsity(),0);
       }
       
@@ -562,7 +583,7 @@ MatType XFunctionInternal<PublicType,DerivedType,MatType,NodeType>::jac(int iind
     for(int d=0; d<nadir_batch; ++d){
       //initialize to zero
       aseed[d].resize(getNumOutputs());
-      for(int ind=0; ind<aseed[offset_nadir+d].size(); ++ind){
+      for(int ind=0; ind<aseed[d].size(); ++ind){
         aseed[d][ind] = MatType(output(ind).sparsity(),0);
       }
       
@@ -582,7 +603,7 @@ MatType XFunctionInternal<PublicType,DerivedType,MatType,NodeType>::jac(int iind
     for(int d=0; d<nfdir_batch; ++d){
       // initialize to zero
       fsens[d].resize(getNumOutputs());
-      for(int oind=0; oind<fsens[offset_nfdir+d].size(); ++oind){
+      for(int oind=0; oind<fsens[d].size(); ++oind){
         fsens[d][oind] = MatType(output(oind).sparsity(),0);
       }
     }
@@ -592,7 +613,7 @@ MatType XFunctionInternal<PublicType,DerivedType,MatType,NodeType>::jac(int iind
     for(int d=0; d<nadir_batch; ++d){
       // initialize to zero
       asens[d].resize(getNumInputs());
-      for(int ind=0; ind<asens[offset_nadir+d].size(); ++ind){
+      for(int ind=0; ind<asens[d].size(); ++ind){
         asens[d][ind] = MatType(input(ind).sparsity(),0);
       }
     }
