@@ -205,24 +205,19 @@ void SQPInternal::evaluate(int nfdir, int nadir){
   // Storage for merit function
   std::deque<double> merit_mem;
 
-  // Printing header
-  stringstream header;
-  header << "   It.     ";
-  header << "obj           ";
-  header << "pr_inf        "; 
-  header << "du_inf        ";
-  header << "corr_norm    ";
-  header << "stepsize     ";
-  header << "ls-trials    " << endl;
-  cout << header.str();
   int it_counter = 1;
 
   sigma_ = 0.;
 
+  // Print header
+  printIteration(cout);
+  
   // MAIN OPTIMIZATION LOOP
   while(true){
-    // Printing header occasionally
-    if (it_counter % 10 == 0) cout << header.str();
+    // Print header occasionally
+    if(it_counter % 10 == 0)
+      printIteration(cout);
+    
     // Evaluating Hessian if needed
     if (getOption("hessian_approximation") == "exact") {
       int n_hess_in = H_.getNumInputs() - (parametric_ ? 1 : 0);
@@ -363,7 +358,7 @@ void SQPInternal::evaluate(int nfdir, int nadir){
 //    if ((norm_2(p) / norm_2(x)).at(0) > 500.){
 //      casadi_warning("Search direction has very large values, indefinite Hessian might have ouccured.");
 //    }
-    double gain = inner_prod(DMatrix(dx), mul(Bk_, DMatrix(dx))).at(0); // FIXME
+    double gain = quad_form(dx,Bk_);
     if (gain < 0){
       casadi_warning("Indefinite Hessian detected...");
     }
@@ -577,20 +572,7 @@ void SQPInternal::evaluate(int nfdir, int nadir){
     for(vector<double>::const_iterator it=dx.begin(); it!=dx.end(); ++it) dx_norm1 += fabs(*it);
     
     // Printing information about the actual iterate
-    cout << setprecision(3);
-    cout << "  ";
-    cout << setw(3);
-    cout << it_counter            << "     ";
-    cout << scientific;
-    cout << fk_cand               << "     ";
-    cout << pr_inf                << "     ";
-    cout << gLag_norm1            << "     ";
-    cout << dx_norm1              << "     ";
-    cout << t                     << "     ";
-    char ls_success = (ls_counter == maxiter_ls_) ? 'F' :  ' ';
-       
-    cout << ls_counter << ls_success << "    "; 
-    cout << endl;
+    printIteration(cout,it_counter,fk_cand,pr_inf,gLag_norm1,dx_norm1,t,ls_counter!=maxiter_ls_,ls_counter);
     
     // Call callback function if present
     if (!callback_.isNull()) {
@@ -629,6 +611,61 @@ void SQPInternal::evaluate(int nfdir, int nadir){
   
   // Save statistics
   stats_["iter_count"] = it_counter;
+}
+
+void SQPInternal::printIteration(std::ostream &stream){
+  const int w=15;
+  stream << setw(w) << "iter";
+  stream << setw(w) << "obj";
+  stream << setw(w) << "pr_inf";
+  stream << setw(w) << "du_inf";
+  stream << setw(w) << "corr_norm";
+  stream << setw(w) << "ls_param";
+  stream << ' ';
+  stream << setw(w) << "ls_trials";
+  stream << endl;
+}
+  
+void SQPInternal::printIteration(std::ostream &stream, int iter, double obj, double pr_inf, double du_inf, 
+                                 double corr_norm, double ls_param, bool ls_success, int ls_trials){
+  const int w=15;
+  stream << scientific;
+  stream << setw(w) << iter;
+  stream << setw(w) << obj;
+  stream << setw(w) << pr_inf;
+  stream << setw(w) << du_inf;
+  stream << setw(w) << corr_norm;
+  stream << setw(w) << ls_param;
+  stream << (ls_success ? ' ' : 'F');
+  stream << setw(w) << ls_trials;
+  stream << endl;
+}
+
+double SQPInternal::quad_form(const std::vector<double>& x, const DMatrix& A){
+  // Assert dimensions
+  casadi_assert(x.size()==A.size1() && x.size()==A.size2());
+  
+  // Access the internal data of A
+  const std::vector<int> &A_rowind = A.rowind();
+  const std::vector<int> &A_col = A.col();
+  const std::vector<double> &A_data = A.data();
+  
+  // Return value
+  double ret=0;
+
+  // Loop over the rows of A
+  for(int i=0; i<x.size(); ++i){
+    // Loop over the nonzeros of A
+    for(int el=A_rowind[i]; el<A_rowind[i+1]; ++el){
+      // Get column
+      int j = A_col[el];
+      
+      // Add contribution
+      ret += x[i]*A_data[el]*x[j];
+    }
+  }
+  
+  return ret;
 }
 
 } // namespace CasADi
