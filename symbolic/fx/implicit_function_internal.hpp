@@ -50,7 +50,7 @@ class ImplicitFunctionInternal : public FXInternal{
     /// Solve the system of equations
     virtual void evaluate(int nfdir, int nadir) = 0;
     
-    /// Sparsity in CRS format
+    /// The function F(z, x1, x2, ..., xn) == 0
     FX f_;
     
     /// Number of equations
@@ -77,10 +77,14 @@ class ImplicitFunctionInternal : public FXInternal{
     /// Jacobian
     FX J_;
     
-    // Linear solver
+    /// Linear solver
     LinearSolver linsol_; 
   protected:
-    void evaluate_sens(int nfdir, int nadir);
+  
+    /** Calculate sensitivities of implicit solver
+    * \param linsol_prepared may specify that the linear solver is already prepared with the Jacobian
+    */
+    void evaluate_sens(int nfdir, int nadir, bool linsol_prepared=false);
 };
 
 
