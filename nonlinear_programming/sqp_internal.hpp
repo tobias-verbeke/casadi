@@ -26,6 +26,7 @@
 #include "sqp_method.hpp"
 #include "symbolic/fx/nlp_solver_internal.hpp"
 #include "symbolic/fx/qp_solver.hpp"
+#include <deque>
 
 namespace CasADi{
     
@@ -79,13 +80,37 @@ public:
   /// Constraint function value
   std::vector<double> gk_, gk_cand_;
   
+  /// Gradient of the objective function
+  std::vector<double> gf_;
+
   /// BFGS update function
-  enum{ BFGS_BK, BFGS_X, BFGS_X_OLD, BFGS_GLAG, BFGS_GLAG_OLD, BFGS_NUM_IN}; 
+  enum BFGSMdoe{ BFGS_BK, BFGS_X, BFGS_X_OLD, BFGS_GLAG, BFGS_GLAG_OLD, BFGS_NUM_IN}; 
   FX bfgs_;
   
+  /// Supported Hessian modes
+  enum HessMode{ HESS_EXACT, HESS_BFGS};
+
+  /// Hessian mode
+  HessMode hess_mode_;
+
   /// Current Hessian approximation
   DMatrix Bk_;
   
+  // Current Jacobian
+  DMatrix Jk_;
+
+  // Bounds of the QP
+  std::vector<double> qp_LBA_, qp_UBA_, qp_LBX_, qp_UBX_;
+
+  // QP solution
+  std::vector<double> dx_, qp_DUAL_X_, qp_DUAL_A_;
+
+  /// Regularization
+  bool regularize_;
+
+  // Storage for merit function
+  std::deque<double> merit_mem_;
+
   /// Calculates inner_prod(x,mul(A,x))
   static double quad_form(const std::vector<double>& x, const DMatrix& A);
   
@@ -95,6 +120,28 @@ public:
   /// Print iteration
   void printIteration(std::ostream &stream, int iter, double obj, double pr_inf, double du_inf, 
                       double corr_norm, double ls_param, bool ls_success, int ls_trials);
+
+  // Reset the Hessian or Hessian approximation
+  void reset_h();
+
+  // Evaluate the Hessian of the Lagrangian
+  virtual void eval_h(const std::vector<double>& x, const std::vector<double>& lambda, double sigma, Matrix<double>& H);
+
+  // Evaluate the constraints
+  virtual void eval_g(const std::vector<double>& x, std::vector<double>& g);
+
+  // Evaluate the Jacobian of the constraints
+  virtual void eval_jac_g(const std::vector<double>& x, std::vector<double>& g, Matrix<double>& J);
+
+  // Evaluate the gradient of the objective
+  virtual void eval_grad_f(const std::vector<double>& x, double& f, std::vector<double>& grad_f);
+
+  // Solve the QP subproblem
+  virtual void solve_QP(const Matrix<double>& H, const std::vector<double>& g,
+			const std::vector<double>& lbx, const std::vector<double>& ubx,
+			const Matrix<double>& A, const std::vector<double>& lbA, const std::vector<double>& ubA,
+			std::vector<double>& x_opt, std::vector<double>& lambda_x_opt, std::vector<double>& lambda_A_opt);
+
 };
 
 } // namespace CasADi

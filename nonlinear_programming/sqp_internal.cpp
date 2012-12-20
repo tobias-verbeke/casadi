@@ -32,10 +32,11 @@
 #include <fstream>
 #include <cmath>
 #include <cfloat>
-#include <deque>
 
 using namespace std;
 namespace CasADi{
+
+double inf = numeric_limits<double>::infinity();
 
 SQPInternal::SQPInternal(const FX& F, const FX& G, const FX& H, const FX& J) : NLPSolverInternal(F,G,H,J){
   casadi_warning("The SQP method is under development");
@@ -50,7 +51,7 @@ SQPInternal::SQPInternal(const FX& F, const FX& G, const FX& H, const FX& J) : N
   addOption("beta",              OT_REAL,       0.8,              "Line-search parameter, restoration factor of stepsize");
   addOption("merit_memory",      OT_INTEGER,      4,              "Size of memory to store history of merit function values");
   addOption("lbfgs_memory",      OT_INTEGER,     10,              "Size of L-BFGS memory.");
-  addOption("regularize",        OT_BOOLEAN,      0,              "Automatic regularization of Lagrange Hessian.");
+  addOption("regularize",        OT_BOOLEAN,  false,              "Automatic regularization of Lagrange Hessian.");
   
   // Monitors
   addOption("monitor",      OT_STRINGVECTOR, GenericType(),  "", "eval_f|eval_g|eval_jac_g|eval_grad_f|eval_h|qp|dx", true);
@@ -73,8 +74,13 @@ void SQPInternal::init(){
   lbfgs_memory_ = getOption("lbfgs_memory");
   tol_pr_ = getOption("tol_pr");
   tol_du_ = getOption("tol_du");
-  
-  if (getOption("hessian_approximation")=="exact" && H_.isNull()) {
+  regularize_ = getOption("regularize");
+  if(getOption("hessian_approximation")=="exact")
+    hess_mode_ = HESS_EXACT;
+  else if(getOption("hessian_approximation")=="limited-memory")
+    hess_mode_ = HESS_BFGS;
+   
+  if (hess_mode_== HESS_EXACT && H_.isNull()) {
     if (!getOption("generate_hessian")){
       casadi_error("SQPInternal::evaluate: you set option 'hessian_approximation' to 'exact', but no hessian was supplied. Try with option \"generate_hessian\".");
     }
@@ -86,7 +92,7 @@ void SQPInternal::init(){
   }
   
   // Allocate a QP solver
-  CRSSparsity H_sparsity = getOption("hessian_approximation")=="exact"? H_.output().sparsity() : sp_dense(n_,n_);
+  CRSSparsity H_sparsity = hess_mode_==HESS_EXACT ? H_.output().sparsity() : sp_dense(n_,n_);
   H_sparsity = H_sparsity + DMatrix::eye(n_).sparsity();
   CRSSparsity A_sparsity = J_.isNull() ? CRSSparsity(0,n_,false) : J_.output().sparsity();
 
@@ -120,8 +126,25 @@ void SQPInternal::init(){
   // Hessian approximation
   Bk_ = DMatrix(H_sparsity);
   
+  // Jacobian
+  Jk_ = DMatrix(A_sparsity);
+
+  // Bounds of the QP
+  qp_LBA_.resize(m_);
+  qp_UBA_.resize(m_);
+  qp_LBX_.resize(n_);
+  qp_UBX_.resize(n_);
+
+  // QP solution
+  dx_.resize(n_);
+  qp_DUAL_X_.resize(n_);
+  qp_DUAL_A_.resize(m_);
+
+  // Gradient of the objective
+  gf_.resize(n_);
+
   // Create Hessian update function
-  if(getOption("hessian_approximation") == "limited-memory"){
+  if(hess_mode_ == HESS_BFGS){
     // Create expressions corresponding to Bk, x, x_old, gLag and gLag_old
     SXMatrix Bk = ssym("Bk",H_sparsity);
     SXMatrix x = ssym("x",input(NLP_X_INIT).sparsity());
@@ -188,194 +211,63 @@ void SQPInternal::evaluate(int nfdir, int nadir){
   // Lagrange gradient in the next iterate
   fill(gLag_.begin(),gLag_.end(),0);
 
-  // Initial Hessian approximation of BFGS
-  if ( getOption("hessian_approximation") == "limited-memory") {
-    Bk_.set(DMatrix::eye(n_));
-  }
+  // Reset the Hessian or Hessian approximation
+  reset_h();
 
-  if (monitored("eval_h")) {
-    cout << "(pre) B = " << endl;
-    Bk_.printSparse();
-  }
-    
-  double inf = numeric_limits<double>::infinity();
-  qp_solver_.input(QP_LBX).setAll(-inf);
-  qp_solver_.input(QP_UBX).setAll( inf);
-
-  // Storage for merit function
-  std::deque<double> merit_mem;
-
-  int it_counter = 1;
-
+  // Reset
+  merit_mem_.clear();
   sigma_ = 0.;
 
   // Print header
   printIteration(cout);
   
   // MAIN OPTIMIZATION LOOP
+  int iter = 1;
   while(true){
     // Print header occasionally
-    if(it_counter % 10 == 0)
-      printIteration(cout);
+    if(iter % 10 == 0) printIteration(cout);
     
     // Evaluating Hessian if needed
-    if (getOption("hessian_approximation") == "exact") {
-      int n_hess_in = H_.getNumInputs() - (parametric_ ? 1 : 0);
-      H_.setInput(x_);
-      if(n_hess_in>1){
-        H_.setInput(mu_, n_hess_in == 4 ? 2 : 1);
-        H_.setInput(1, n_hess_in == 4 ? 3 : 2);
-      }
-      H_.evaluate();
-      H_.getOutput(Bk_);
-      // Determing regularization parameter with Gershgorin theorem
-      if (bool(getOption("regularize"))){
-        const vector<int>& rowind = Bk_.rowind();
-        const vector<int>& col = Bk_.col();
-        vector<double>& data = Bk_.data();
-        double reg_param = 0;
-        for(int i=0; i<rowind.size()-1; ++i){
-          double mineig = 0;
-          for(int el=rowind[i]; el<rowind[i+1]; ++el){
-            int j = col[el];
-            if(i == j){
-              mineig += data[el];
-            } else {
-              mineig -= fabs(data[el]);
-            }
-  //          cout << "(" << r << "," << col[el] << "): " << data[el] << endl; 
-          }
-          reg_param = fmin(reg_param,mineig);
-        }
-  //      cout << "Regularization parameter: " << -reg_param << endl;
-        if ( reg_param < 0.){
-          for(int i=0; i<rowind.size()-1; ++i){
-            for(int el=rowind[i]; el<rowind[i+1]; ++el){
-              int j = col[el];
-              if(i==j){
-                data[el] += -reg_param;
-              }
-            }
-          }
-        }
-      }
-    }
-    if (monitored("eval_h")) {
-      cout << "(main loop) B = " << endl;
-      Bk_.printSparse();
-    }
-    // Use identity Hessian
-    //Bk = DMatrix::eye(Bk.size1());
+    eval_h(x_,mu_,1.0,Bk_);
 
     if(m_>0){
-      // Evaluate the constraint function
-      G_.setInput(x_);
-      G_.evaluate();
-      G_.getOutput(gk_);
-      
-      if (monitored("eval_g")) {
-        cout << "(main loop) x = " << x_ << endl;
-        cout << "(main loop) G = " << endl;
-        G_.output().printSparse();
-      }
+      // Evaluate the constraint function (NOTE: This is not needed. The constraint function should be evaluated as a byproduct of the Jacobian below)
+      eval_g(x_,gk_);
       
       // Evaluate the constraint Jacobian
-      J_.setInput(x_);
-      J_.evaluate();
+      eval_jac_g(x_,gk_,Jk_);
+    }
+    
+    // Evaluate the gradient of the objective function (NOTE: This should not be needed when exact Hessian is used. The Hessian of the Lagrangian gives the gradient of the Lagrangian. The gradient of the objective function can be obtained from knowing the Jacobian of the constraints. The calculation could be desirable anyway, due to numeric cancellation
+    eval_grad_f(x_,fk_,gf_);
 
-      if (monitored("eval_jac_g")) {
-        cout << "(main loop) x = " << x_ << endl;
-        cout << "(main loop) J = " << endl;
-        J_.output().printSparse();
-      }
-    }
-    
-    // Evaluate the gradient of the objective function
-    F_.setInput(x_);
-    F_.setAdjSeed(1.0);
-    F_.evaluate(0,1);
-    F_.getOutput(fk_);
-    
-    // Gradient of objective
-    const DMatrix& gfk = F_.adjSens();
-    
-    if (monitored("eval_f")){
-      cout << "(main loop) x = " << x_ << endl;
-      cout << "(main loop) F = " << endl;
-      F_.output().printSparse();
-    }
-    
-    if (monitored("eval_grad_f")) {
-      cout << "(main loop) x = " << x_ << endl;
-      cout << "(main loop) gradF = " << endl;
-      gfk.printSparse();
-    }
-    
-    // Pass data to QP solver
-    qp_solver_.setInput(Bk_, QP_H);
-    qp_solver_.setInput(gfk,QP_G);
-    // Hot-starting if possible
-    qp_solver_.setInput(qp_solver_.output(QP_PRIMAL), QP_X_INIT);
-    //TODO: Fix hot-starting of dual variables
-    //qp_solver_.setInput(mu_qp, QP_LAMBDA_INIT);
-      
-    if(m_>0){
-      qp_solver_.setInput(J_.output(),QP_A);
-      transform(lbg.begin(),lbg.end(),gk_.begin(),qp_solver_.input(QP_LBA).begin(),minus<double>());
-      transform(ubg.begin(),ubg.end(),gk_.begin(),qp_solver_.input(QP_UBA).begin(),minus<double>());
-    }
+    // Formulate the QP
+    transform(lbx.begin(),lbx.end(),x_.begin(),qp_LBX_.begin(),minus<double>());
+    transform(ubx.begin(),ubx.end(),x_.begin(),qp_UBX_.begin(),minus<double>());
+    transform(lbg.begin(),lbg.end(),gk_.begin(),qp_LBA_.begin(),minus<double>());
+    transform(ubg.begin(),ubg.end(),gk_.begin(),qp_UBA_.begin(),minus<double>());
 
-    transform(lbx.begin(),lbx.end(),x_.begin(),qp_solver_.input(QP_LBX).begin(),minus<double>());
-    transform(ubx.begin(),ubx.end(),x_.begin(),qp_solver_.input(QP_UBX).begin(),minus<double>());
-    
-    if (monitored("qp")) {
-      cout << "(main loop) QP_H = " << endl;
-      qp_solver_.input(QP_H).printDense();
-      cout << "(main loop) QP_A = " << endl;
-      qp_solver_.input(QP_A).printDense();
-      cout << "(main loop) QP_G = " << endl;
-      qp_solver_.input(QP_G).printDense();
-      cout << "(main loop) QP_LBA = " << endl;
-      qp_solver_.input(QP_LBA).printDense();
-      cout << "(main loop) QP_UBA = " << endl;
-      qp_solver_.input(QP_UBA).printDense();
-      cout << "(main loop) QP_LBX = " << endl;
-      qp_solver_.input(QP_LBX).printDense();
-      cout << "(main loop) QP_UBX = " << endl;
-      qp_solver_.input(QP_UBX).printDense();
-    }
+    // Solve the QP
+    solve_QP(Bk_,gf_,qp_LBX_,qp_UBX_,Jk_,qp_LBA_,qp_UBA_,dx_,qp_DUAL_X_,qp_DUAL_A_);
 
-    // Solve the QP subproblem
-    qp_solver_.evaluate();
-
-    // Get the optimal solution
-    const vector<double>& dx = qp_solver_.output(QP_PRIMAL).data();
-    if (monitored("dx")){
-      cout << "(main loop) dx = " << endl;
-      cout << dx << endl;
-    }
     // Detecting indefiniteness
 //    if ((norm_2(p) / norm_2(x)).at(0) > 500.){
 //      casadi_warning("Search direction has very large values, indefinite Hessian might have ouccured.");
 //    }
-    double gain = quad_form(dx,Bk_);
+    double gain = quad_form(dx_,Bk_);
     if (gain < 0){
       casadi_warning("Indefinite Hessian detected...");
     }
         
-    // Get the dual solution for the inequalities
-    const vector<double>& mu_qp = qp_solver_.output(QP_LAMBDA_A).data();
-    const vector<double>& mu_x_qp = qp_solver_.output(QP_LAMBDA_X).data();
-
     // Calculate penalty parameter of merit function
     for(int j=0; j<m_; ++j){
-      if( fabs(mu_qp[j]) > sigma_){
-        sigma_ = fabs(mu_qp[j]) * 1.01;
+      if( fabs(qp_DUAL_A_[j]) > sigma_){
+        sigma_ = fabs(qp_DUAL_A_[j]) * 1.01;
       }
     }
 //    for(int j = 0; j < n; ++j){
-//      if( fabs(mu_x_qp[j]) > sigma_){
-//        sigma_ = fabs(mu_x_qp[j]) * 1.01;
+//      if( fabs(qp_DUAL_X_[j]) > sigma_){
+//        sigma_ = fabs(qp_DUAL_X_[j]) * 1.01;
 //      }
 //    }
 
@@ -392,7 +284,7 @@ void SQPInternal::evaluate(int nfdir, int nadir){
     }
 
     // Right-hand side of Armijo condition
-    F_.setFwdSeed(dx);
+    F_.setFwdSeed(dx_);
     F_.evaluate(1, 0);
     double F_sens;
     F_.getFwdSens(F_sens);
@@ -401,9 +293,9 @@ void SQPInternal::evaluate(int nfdir, int nadir){
     double L1merit = fk_ + sigma_ * l1_infeas;
 
     // Storing the actual merit function value in a list
-    merit_mem.push_back(L1merit);
-    if (merit_mem.size() > merit_memsize_){
-      merit_mem.pop_front();
+    merit_mem_.push_back(L1merit);
+    if (merit_mem_.size() > merit_memsize_){
+      merit_mem_.pop_front();
     }
 
     // Default stepsize
@@ -415,7 +307,7 @@ void SQPInternal::evaluate(int nfdir, int nadir){
     // Line-search loop
     int ls_counter = 1;
     while (true){
-      for(int i=0; i<n_; ++i) x_cand_[i] = x_[i] + t * dx[i]; 
+      for(int i=0; i<n_; ++i) x_cand_[i] = x_[i] + t * dx_[i]; 
       // Evaluating objective and constraints
       F_.setInput(x_cand_);
       F_.evaluate();
@@ -440,9 +332,9 @@ void SQPInternal::evaluate(int nfdir, int nadir){
       L1merit_cand = fk_cand + sigma_ * l1_infeas;
       // Calculating maximal merit function value so far
       double meritmax = -1E20;
-      for(int k = 0; k < merit_mem.size(); ++k){
-        if (merit_mem[k] > meritmax){
-          meritmax = merit_mem[k];
+      for(int k = 0; k < merit_mem_.size(); ++k){
+        if (merit_mem_[k] > meritmax){
+          meritmax = merit_mem_[k];
         }
       }
       if (L1merit_cand <= meritmax + t * c1_ * L1dir){ 
@@ -465,8 +357,8 @@ void SQPInternal::evaluate(int nfdir, int nadir){
     copy(x_cand_.begin(),x_cand_.end(),x_.begin());
     fk_ = fk_cand;
     copy(gk_cand_.begin(),gk_cand_.end(),gk_.begin());
-    for(int i=0; i<m_; ++i) mu_[i] = t * mu_qp[i] + (1 - t) * mu_[i];
-    for(int i=0; i<n_; ++i) mu_x_[i] = t * mu_x_qp[i] + (1 - t) * mu_x_[i];
+    for(int i=0; i<m_; ++i) mu_[i] = t * qp_DUAL_A_[i] + (1 - t) * mu_[i];
+    for(int i=0; i<n_; ++i) mu_x_[i] = t * qp_DUAL_X_[i] + (1 - t) * mu_x_[i];
 
     // Evaluating objective gradient
     F_.setInput(x_);
@@ -495,8 +387,8 @@ void SQPInternal::evaluate(int nfdir, int nadir){
     transform(gLag_old_.begin(),gLag_old_.end(),mu_x_.begin(),gLag_old_.begin(),plus<double>()); // gLag_old += mu_x_;
 
     // Updating Lagrange Hessian if needed. (BFGS with careful updates and restarts)
-    if (getOption("hessian_approximation") == "limited-memory") { 
-      if (it_counter % lbfgs_memory_ == 0){
+    if( hess_mode_ == HESS_BFGS){
+      if (iter % lbfgs_memory_ == 0){
         // Remove off-diagonal entries
         const vector<int>& rowind = Bk_.rowind();
         const vector<int>& col = Bk_.col();
@@ -569,10 +461,10 @@ void SQPInternal::evaluate(int nfdir, int nadir){
 
     // 1-norm of step
     double dx_norm1 = 0;
-    for(vector<double>::const_iterator it=dx.begin(); it!=dx.end(); ++it) dx_norm1 += fabs(*it);
+    for(vector<double>::const_iterator it=dx_.begin(); it!=dx_.end(); ++it) dx_norm1 += fabs(*it);
     
     // Printing information about the actual iterate
-    printIteration(cout,it_counter,fk_cand,pr_inf,gLag_norm1,dx_norm1,t,ls_counter!=maxiter_ls_,ls_counter);
+    printIteration(cout,iter,fk_cand,pr_inf,gLag_norm1,dx_norm1,t,ls_counter!=maxiter_ls_,ls_counter);
     
     // Call callback function if present
     if (!callback_.isNull()) {
@@ -591,15 +483,15 @@ void SQPInternal::evaluate(int nfdir, int nadir){
 
     // Checking convergence criteria
     if (pr_inf < tol_pr_ && gLag_norm1 < tol_du_){
-      cout << "SQP: Convergence achieved after " << it_counter << " iterations.\n";
+      cout << "SQP: Convergence achieved after " << iter << " iterations.\n";
       break;
     }
 
-    if (it_counter == maxiter_){
+    if (iter == maxiter_){
       cout << "SQP: Maximum number of iterations reached, quiting...\n"; 
       break;
     }
-    ++it_counter;
+    ++iter;
   }
   
   // Save results to outputs
@@ -610,7 +502,7 @@ void SQPInternal::evaluate(int nfdir, int nadir){
   output(NLP_G).set(gk_);
   
   // Save statistics
-  stats_["iter_count"] = it_counter;
+  stats_["iter_count"] = iter;
 }
 
 void SQPInternal::printIteration(std::ostream &stream){
@@ -667,5 +559,162 @@ double SQPInternal::quad_form(const std::vector<double>& x, const DMatrix& A){
   
   return ret;
 }
+
+void SQPInternal::reset_h(){
+  // Initial Hessian approximation of BFGS
+  if ( hess_mode_ == HESS_BFGS){
+    Bk_.set(DMatrix::eye(n_));
+  }
+
+  if (monitored("eval_h")) {
+    cout << "(pre) B = " << endl;
+    Bk_.printSparse();
+  }
+}
+
+  void SQPInternal::eval_h(const std::vector<double>& x, const std::vector<double>& lambda, double sigma, Matrix<double>& H){
+
+  if(hess_mode_==HESS_EXACT){
+
+    int n_hess_in = H_.getNumInputs() - (parametric_ ? 1 : 0);
+    H_.setInput(x);
+    if(n_hess_in>1){
+      H_.setInput(lambda, n_hess_in == 4 ? 2 : 1);
+      H_.setInput(sigma, n_hess_in == 4 ? 3 : 2);
+    }
+    H_.evaluate();
+    H_.getOutput(H);
+    // Determing regularization parameter with Gershgorin theorem
+    if(regularize_){
+      const vector<int>& rowind = H.rowind();
+      const vector<int>& col = H.col();
+      vector<double>& data = H.data();
+      double reg_param = 0;
+      for(int i=0; i<rowind.size()-1; ++i){
+	double mineig = 0;
+	for(int el=rowind[i]; el<rowind[i+1]; ++el){
+	  int j = col[el];
+	  if(i == j){
+	    mineig += data[el];
+	  } else {
+	    mineig -= fabs(data[el]);
+	  }
+	  //          cout << "(" << r << "," << col[el] << "): " << data[el] << endl; 
+	}
+	reg_param = fmin(reg_param,mineig);
+      }
+      //      cout << "Regularization parameter: " << -reg_param << endl;
+      if ( reg_param < 0.){
+	for(int i=0; i<rowind.size()-1; ++i){
+	  for(int el=rowind[i]; el<rowind[i+1]; ++el){
+	    int j = col[el];
+	    if(i==j){
+	      data[el] += -reg_param;
+	    }
+	  }
+	}
+      }
+    }
+  }
+  
+  if (monitored("eval_h")) {
+    cout << "(main loop) B = " << endl;
+    H.printSparse();
+  }
+}
+
+  void SQPInternal::eval_g(const std::vector<double>& x, std::vector<double>& g){
+  G_.setInput(x);
+  G_.evaluate();
+  G_.output().get(g,DENSE);
+  
+  if (monitored("eval_g")) {
+    cout << "(main loop) x = " << x << endl;
+    cout << "(main loop) G = " << g << endl;
+  } 
+}
+
+void SQPInternal::eval_jac_g(const std::vector<double>& x, std::vector<double>& g, Matrix<double>& J){
+  J_.setInput(x);
+  J_.evaluate();
+  J_.output(1).get(g,DENSE);
+  J_.output(0).get(J);
+
+  if (monitored("eval_jac_g")) {
+    cout << "x = " << x << endl;
+    cout << "g = " << g << endl;
+    cout << "J = " << endl;
+    J.printSparse();
+  }
+}
+
+void SQPInternal::eval_grad_f(const std::vector<double>& x, double& f, std::vector<double>& grad_f){
+  F_.setInput(x);
+  F_.setAdjSeed(1.0);
+  F_.evaluate(0,1);
+  F_.output().get(f);
+  F_.adjSens().get(grad_f,DENSE);
+  
+  if (monitored("eval_f")){
+    cout << "x = " << x << endl;
+    cout << "f = " << f << endl;
+  }
+  
+  if (monitored("eval_grad_f")) {
+    cout << "x      = " << x << endl;
+    cout << "grad_f = " << grad_f << endl;
+  }
+}
+
+void SQPInternal::solve_QP(const Matrix<double>& H, const std::vector<double>& g,
+			   const std::vector<double>& lbx, const std::vector<double>& ubx,
+			   const Matrix<double>& A, const std::vector<double>& lbA, const std::vector<double>& ubA,
+			   std::vector<double>& x_opt, std::vector<double>& lambda_x_opt, std::vector<double>& lambda_A_opt){
+
+  // Pass data to QP solver
+  qp_solver_.setInput(H, QP_H);
+  qp_solver_.setInput(g,QP_G);
+
+  // Hot-starting if possible
+  qp_solver_.setInput(x_opt, QP_X_INIT);
+  
+  //TODO: Fix hot-starting of dual variables
+  //qp_solver_.setInput(lambda_A_opt, QP_LAMBDA_INIT);
+  
+  // Pass simple bounds
+  qp_solver_.setInput(lbx, QP_LBX);
+  qp_solver_.setInput(ubx, QP_UBX);
+
+  // Pass linear bounds
+  if(m_>0){
+    qp_solver_.setInput(A, QP_A);
+    qp_solver_.setInput(lbA, QP_LBA);
+    qp_solver_.setInput(ubA, QP_UBA);
+  }
+  
+  if (monitored("qp")) {
+    cout << "H = " << endl;
+    H.printDense();
+    cout << "A = " << endl;
+    A.printDense();
+    cout << "g = " << g << endl;
+    cout << "lbx = " << lbx << endl;
+    cout << "ubx = " << ubx << endl;
+    cout << "lbA = " << lbA << endl;
+    cout << "ubA = " << ubA << endl;
+  }
+
+  // Solve the QP
+  qp_solver_.evaluate();
+  
+  // Get the optimal solution
+  qp_solver_.getOutput(x_opt,QP_PRIMAL);
+  qp_solver_.getOutput(lambda_x_opt,QP_LAMBDA_X);
+  qp_solver_.getOutput(lambda_A_opt,QP_LAMBDA_A);
+  if (monitored("dx")){
+    cout << "dx = " << x_opt << endl;
+  }
+}
+  
 
 } // namespace CasADi
