@@ -47,6 +47,9 @@ class ImplicitFunctionInternal : public FXInternal{
     /// Initialize
     virtual void init();
     
+    /** \brief  Update the number of sensitivity directions during or after initialization */
+    virtual void updateNumSens(bool recursive);
+
     /// Solve the system of equations
     virtual void evaluate(int nfdir, int nadir) = 0;
     
@@ -59,12 +62,6 @@ class ImplicitFunctionInternal : public FXInternal{
     /// Number of right hand sides
     int nrhs_;
     
-    /// Number of forward derivative directions of the function
-    int nfdir_fcn_;
-    
-    /// Number of adjoint derivative directions of the function
-    int nadir_fcn_;
-
     /** \brief  Create a new ImplicitFunctionInternal */
     virtual ImplicitFunctionInternal* create(const FX& f, int nrhs=1) const = 0;
     
