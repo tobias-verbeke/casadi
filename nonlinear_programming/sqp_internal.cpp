@@ -177,6 +177,9 @@ void SQPInternal::init(){
     bfgs_.setOption("number_of_fwd_dir",0);
     bfgs_.setOption("number_of_adj_dir",0);
     bfgs_.init();
+    
+    // Initial Hessian approximation
+    B_init_ = DMatrix::eye(n_);
   }
 }
 
@@ -211,9 +214,19 @@ void SQPInternal::evaluate(int nfdir, int nadir){
   // Lagrange gradient in the next iterate
   fill(gLag_.begin(),gLag_.end(),0);
 
-  // Reset the Hessian or Hessian approximation
-  reset_h();
+  // Initialize or reset the Hessian or Hessian approximation
+  if( hess_mode_ == HESS_BFGS){
+    reset_h();
+  } else {
+    eval_h(x_,mu_,1.0,Bk_);
+  }
+  
+  // Initial constraint Jacobian
+  eval_jac_g(x_,gk_,Jk_);
 
+  // Initial objective gradient
+  eval_grad_f(x_,fk_,gf_);
+  
   // Reset
   merit_mem_.clear();
   sigma_ = 0.;
@@ -227,20 +240,6 @@ void SQPInternal::evaluate(int nfdir, int nadir){
     // Print header occasionally
     if(iter % 10 == 0) printIteration(cout);
     
-    // Evaluating Hessian if needed
-    eval_h(x_,mu_,1.0,Bk_);
-
-    if(m_>0){
-      // Evaluate the constraint function (NOTE: This is not needed. The constraint function should be evaluated as a byproduct of the Jacobian below)
-      eval_g(x_,gk_);
-      
-      // Evaluate the constraint Jacobian
-      eval_jac_g(x_,gk_,Jk_);
-    }
-    
-    // Evaluate the gradient of the objective function (NOTE: This should not be needed when exact Hessian is used. The Hessian of the Lagrangian gives the gradient of the Lagrangian. The gradient of the objective function can be obtained from knowing the Jacobian of the constraints. The calculation could be desirable anyway, due to numeric cancellation
-    eval_grad_f(x_,fk_,gf_);
-
     // Formulate the QP
     transform(lbx.begin(),lbx.end(),x_.begin(),qp_LBX_.begin(),minus<double>());
     transform(ubx.begin(),ubx.end(),x_.begin(),qp_UBX_.begin(),minus<double>());
@@ -251,44 +250,20 @@ void SQPInternal::evaluate(int nfdir, int nadir){
     solve_QP(Bk_,gf_,qp_LBX_,qp_UBX_,Jk_,qp_LBA_,qp_UBA_,dx_,qp_DUAL_X_,qp_DUAL_A_);
 
     // Detecting indefiniteness
-//    if ((norm_2(p) / norm_2(x)).at(0) > 500.){
-//      casadi_warning("Search direction has very large values, indefinite Hessian might have ouccured.");
-//    }
     double gain = quad_form(dx_,Bk_);
     if (gain < 0){
       casadi_warning("Indefinite Hessian detected...");
     }
         
     // Calculate penalty parameter of merit function
-    for(int j=0; j<m_; ++j){
-      if( fabs(qp_DUAL_A_[j]) > sigma_){
-        sigma_ = fabs(qp_DUAL_A_[j]) * 1.01;
-      }
-    }
-//    for(int j = 0; j < n; ++j){
-//      if( fabs(qp_DUAL_X_[j]) > sigma_){
-//        sigma_ = fabs(qp_DUAL_X_[j]) * 1.01;
-//      }
-//    }
+    sigma_ = std::max(sigma_,1.01*norm1(qp_DUAL_A_));
+    // sigma_ = std::max(sigma_,1.01*norm1(qp_DUAL_X_)); // FIXME: What about simple bounds?
 
     // Calculate L1-merit function in the actual iterate
-    double l1_infeas = 0.;
-    for(int j=0; j<m_; ++j){
-      // Left-hand side violated
-      if(lbg[j] - gk_[j] > 0.){
-        l1_infeas += lbg[j] - gk_[j];
-      }
-      else if (gk_[j] - ubg[j] > 0.){
-        l1_infeas += gk_[j] - ubg[j];
-      }
-    }
+    double l1_infeas = l1_merit(gk_, lbg, ubg); // FIXME: What about simple bounds?
 
     // Right-hand side of Armijo condition
-    F_.setFwdSeed(dx_);
-    F_.evaluate(1, 0);
-    double F_sens;
-    F_.getFwdSens(F_sens);
-    
+    double F_sens = inner_prod(dx_, gf_);    
     double L1dir = F_sens - sigma_ * l1_infeas;
     double L1merit = fk_ + sigma_ * l1_infeas;
 
@@ -297,7 +272,6 @@ void SQPInternal::evaluate(int nfdir, int nadir){
     if (merit_mem_.size() > merit_memsize_){
       merit_mem_.pop_front();
     }
-
     // Default stepsize
     double t = 1.0;   
     double fk_cand;
@@ -307,37 +281,19 @@ void SQPInternal::evaluate(int nfdir, int nadir){
     // Line-search loop
     int ls_counter = 1;
     while (true){
-      for(int i=0; i<n_; ++i) x_cand_[i] = x_[i] + t * dx_[i]; 
+      for(int i=0; i<n_; ++i) x_cand_[i] = x_[i] + t * dx_[i];
+      
       // Evaluating objective and constraints
-      F_.setInput(x_cand_);
-      F_.evaluate();
-      F_.getOutput(fk_cand);
-      l1_infeas = 0.;
-      if (!G_.isNull()){
-        G_.setInput(x_cand_);
-        G_.evaluate();
-        G_.getOutput(gk_cand_);
+      eval_f(x_cand_,fk_cand);
+      eval_g(x_cand_,gk_cand_);
 
-        // Calculating merit-function in candidate
-        for(int j=0; j<m_; ++j){
-          // Left-hand side violated
-          if (lbg[j] - gk_cand_[j] > 0.){
-            l1_infeas += lbg[j] - gk_cand_[j];
-          }
-          else if (gk_cand_[j] - ubg[j] > 0.){
-            l1_infeas += gk_cand_[j] - ubg[j];
-          }
-        }
-      }
+      // Calculating merit-function in candidate
+      l1_infeas = l1_merit(gk_cand_, lbg, ubg);
+      
       L1merit_cand = fk_cand + sigma_ * l1_infeas;
       // Calculating maximal merit function value so far
-      double meritmax = -1E20;
-      for(int k = 0; k < merit_mem_.size(); ++k){
-        if (merit_mem_[k] > meritmax){
-          meritmax = merit_mem_[k];
-        }
-      }
-      if (L1merit_cand <= meritmax + t * c1_ * L1dir){ 
+      double meritmax = *max_element(merit_mem_.begin(), merit_mem_.end());
+      if (L1merit_cand <= meritmax + t * c1_ * L1dir){
         // Accepting candidate
         break;
       }
@@ -352,53 +308,46 @@ void SQPInternal::evaluate(int nfdir, int nadir){
       }
       ++ls_counter;
     }
-    // Candidate accepted
-    copy(x_.begin(),x_.end(),x_old_.begin());
-    copy(x_cand_.begin(),x_cand_.end(),x_.begin());
-    fk_ = fk_cand;
-    copy(gk_cand_.begin(),gk_cand_.end(),gk_.begin());
+    
+    // Candidate accepted, update dual variables
     for(int i=0; i<m_; ++i) mu_[i] = t * qp_DUAL_A_[i] + (1 - t) * mu_[i];
     for(int i=0; i<n_; ++i) mu_x_[i] = t * qp_DUAL_X_[i] + (1 - t) * mu_x_[i];
-
-    // Evaluating objective gradient
-    F_.setInput(x_);
-    F_.setAdjSeed(1.0);
-    F_.evaluate(0, 1);
-    F_.getAdjSens(gLag_); 
-
-    // Adjoint derivative of constraint function
-    if(m_>0){
-      G_.setAdjSeed(mu_);
-      G_.evaluate(0, 1);
-      transform(gLag_.begin(),gLag_.end(),G_.adjSens().begin(),gLag_.begin(),plus<double>()); // gLag_ += G_.adjSens()
-    }
-    transform(gLag_.begin(),gLag_.end(),mu_x_.begin(),gLag_.begin(),plus<double>()); // gLag_ += mu_x_;
-
-    F_.setInput(x_old_);
-    F_.setAdjSeed(1.0);
-    F_.evaluate(0, 1);
-    F_.getAdjSens(gLag_old_);
-    if(m_>0){
-      G_.setInput(x_old_);
-      G_.setAdjSeed(mu_);
-      G_.evaluate(0, 1);
-      transform(gLag_old_.begin(),gLag_old_.end(),G_.adjSens().begin(),gLag_old_.begin(),plus<double>()); // gLag_old_ += G_.adjSens();
-    }
-    transform(gLag_old_.begin(),gLag_old_.end(),mu_x_.begin(),gLag_old_.begin(),plus<double>()); // gLag_old += mu_x_;
-
-    // Updating Lagrange Hessian if needed. (BFGS with careful updates and restarts)
+    
     if( hess_mode_ == HESS_BFGS){
+      // Evaluate the gradient of the Lagrangian with the old x but new mu (for BFGS)
+      copy(gf_.begin(),gf_.end(),gLag_old_.begin());
+      if(m_>0) DMatrix::mul_no_alloc_tn(Jk_,mu_,gLag_old_);
+      // gLag_old += mu_x_;
+      transform(gLag_old_.begin(),gLag_old_.end(),mu_x_.begin(),gLag_old_.begin(),plus<double>());
+    }
+    
+    // Candidate accepted, update the primal variable
+    copy(x_.begin(),x_.end(),x_old_.begin());
+    copy(x_cand_.begin(),x_cand_.end(),x_.begin());
+    
+    // Evaluate the constraint Jacobian
+    eval_jac_g(x_,gk_,Jk_);
+    
+    // Evaluate the gradient of the objective function
+    eval_grad_f(x_,fk_,gf_);
+    
+    // Evaluate the gradient of the Lagrangian with the new x and new mu
+    copy(gf_.begin(),gf_.end(),gLag_.begin());
+    if(m_>0) DMatrix::mul_no_alloc_tn(Jk_,mu_,gLag_);
+    // gLag += mu_x_;
+    transform(gLag_.begin(),gLag_.end(),mu_x_.begin(),gLag_.begin(),plus<double>());
+
+    // Updating Lagrange Hessian
+    if( hess_mode_ == HESS_BFGS){
+      // BFGS with careful updates and restarts
       if (iter % lbfgs_memory_ == 0){
-        // Remove off-diagonal entries
-        const vector<int>& rowind = Bk_.rowind();
-        const vector<int>& col = Bk_.col();
-        vector<double>& data = Bk_.data();
-        for(int i=0; i<rowind.size()-1; ++i){
-          for(int el=rowind[i]; el<rowind[i+1]; ++el){
-            int j = col[el];
-            if(i!=j){
-              data[el] = 0;
-            }
+        // Reset Hessian approximation by dropping all off-diagonal entries
+        const vector<int>& rowind = Bk_.rowind();      // Access sparsity (row offset)
+        const vector<int>& col = Bk_.col();            // Access sparsity (column)
+        vector<double>& data = Bk_.data();             // Access nonzero elements
+        for(int i=0; i<rowind.size()-1; ++i){          // Loop over the rows of the Hessian
+          for(int el=rowind[i]; el<rowind[i+1]; ++el){ // Loop over the nonzero elements of the row
+            if(i!=col[el]) data[el] = 0;               // Remove if off-diagonal entries
           }
         }
       }
@@ -415,45 +364,33 @@ void SQPInternal::evaluate(int nfdir, int nadir){
       
       // Get the updated Hessian
       bfgs_.getOutput(Bk_);
+    } else {
+      // Exact Hessian
+      eval_h(x_,mu_,1.0,Bk_);
     }
+    
     // Calculating optimality criterion
+    
     // Primal infeasability
-    double pr_infG = 0.;
-    double pr_infx = 0.;
-    if (!G_.isNull()){
-      // Nonlinear constraints
-      for(int j=0; j<m_; ++j){
-        // Equality
-        if (ubg[j] - lbg[j] < 1E-20){
-          pr_infG += fabs(gk_cand_[j] - lbg[j]);
-        }
-        // Inequality, left-hand side violated
-        else if(lbg[j] - gk_cand_[j] > 0.){
-          pr_infG += lbg[j] - gk_cand_[j];
-        }
-        // Inequality, right-hand side violated
-        else if(gk_cand_[j] - ubg[j] > 0.){
-          pr_infG += gk_cand_[j] - ubg[j];
-          //cout << color << "SQP: " << mu.elem(j) << defcol << endl;
-        }
-      }
-      // Bound constraints
-      for(int j=0; j<n_; ++j){
-        // Equality
-        if (ubx[j] - lbx[j] < 1E-20){
-          pr_infx += fabs(x_[j] - lbx[j]);
-        }
-        // Inequality, left-hand side violated
-        else if ( lbx[j] - x_[j] > 0.){
-          pr_infx += lbx[j] - x_[j];
-        }
-        // Inequality, right-hand side violated
-        else if ( x_[j] - ubx[j] > 0.){
-          pr_infx += x_[j] - ubx[j];
-        }
+    double pr_inf = 0;
+  
+    // Nonlinear constraints
+    for(int j=0; j<m_; ++j){
+      if(lbg[j] > gk_cand_[j]){
+        pr_inf += lbg[j] - gk_cand_[j];
+      } else if(gk_cand_[j] > ubg[j]){
+        pr_inf += gk_cand_[j] - ubg[j];
       }
     }
-    double pr_inf = pr_infG + pr_infx;
+      
+    // Bound constraints
+    for(int j=0; j<n_; ++j){
+      if ( lbx[j] > x_[j]){
+        pr_inf += lbx[j] - x_[j];
+      } else if ( x_[j] > ubx[j]){
+        pr_inf += x_[j] - ubx[j];
+      }
+    }
     
     // 1-norm of lagrange gradient
     double gLag_norm1 = 0;
@@ -563,7 +500,7 @@ double SQPInternal::quad_form(const std::vector<double>& x, const DMatrix& A){
 void SQPInternal::reset_h(){
   // Initial Hessian approximation of BFGS
   if ( hess_mode_ == HESS_BFGS){
-    Bk_.set(DMatrix::eye(n_));
+    Bk_.set(B_init_);
   }
 
   if (monitored("eval_h")) {
@@ -572,7 +509,7 @@ void SQPInternal::reset_h(){
   }
 }
 
-  void SQPInternal::eval_h(const std::vector<double>& x, const std::vector<double>& lambda, double sigma, Matrix<double>& H){
+void SQPInternal::eval_h(const std::vector<double>& x, const std::vector<double>& lambda, double sigma, Matrix<double>& H){
 
   if(hess_mode_==HESS_EXACT){
 
@@ -591,28 +528,28 @@ void SQPInternal::reset_h(){
       vector<double>& data = H.data();
       double reg_param = 0;
       for(int i=0; i<rowind.size()-1; ++i){
-	double mineig = 0;
-	for(int el=rowind[i]; el<rowind[i+1]; ++el){
-	  int j = col[el];
-	  if(i == j){
-	    mineig += data[el];
-	  } else {
-	    mineig -= fabs(data[el]);
-	  }
-	  //          cout << "(" << r << "," << col[el] << "): " << data[el] << endl; 
-	}
-	reg_param = fmin(reg_param,mineig);
+        double mineig = 0;
+        for(int el=rowind[i]; el<rowind[i+1]; ++el){
+          int j = col[el];
+          if(i == j){
+            mineig += data[el];
+          } else {
+            mineig -= fabs(data[el]);
+          }
+          //          cout << "(" << r << "," << col[el] << "): " << data[el] << endl;
+        }
+        reg_param = fmin(reg_param,mineig);
       }
       //      cout << "Regularization parameter: " << -reg_param << endl;
       if ( reg_param < 0.){
-	for(int i=0; i<rowind.size()-1; ++i){
-	  for(int el=rowind[i]; el<rowind[i+1]; ++el){
-	    int j = col[el];
-	    if(i==j){
-	      data[el] += -reg_param;
-	    }
-	  }
-	}
+        for(int i=0; i<rowind.size()-1; ++i){
+          for(int el=rowind[i]; el<rowind[i+1]; ++el){
+            int j = col[el];
+            if(i==j){
+              data[el] += -reg_param;
+            }
+          }
+        }
       }
     }
   }
@@ -623,7 +560,10 @@ void SQPInternal::reset_h(){
   }
 }
 
-  void SQPInternal::eval_g(const std::vector<double>& x, std::vector<double>& g){
+void SQPInternal::eval_g(const std::vector<double>& x, std::vector<double>& g){
+  // Quick return if no constraints
+  if(m_==0) return;
+  
   G_.setInput(x);
   G_.evaluate();
   G_.output().get(g,DENSE);
@@ -635,6 +575,9 @@ void SQPInternal::reset_h(){
 }
 
 void SQPInternal::eval_jac_g(const std::vector<double>& x, std::vector<double>& g, Matrix<double>& J){
+  // Quick return if no constraints
+  if(m_==0) return;
+
   J_.setInput(x);
   J_.evaluate();
   J_.output(1).get(g,DENSE);
@@ -666,6 +609,18 @@ void SQPInternal::eval_grad_f(const std::vector<double>& x, double& f, std::vect
   }
 }
 
+  
+void SQPInternal::eval_f(const std::vector<double>& x, double& f){
+  F_.setInput(x);
+  F_.evaluate();
+  F_.output().get(f);
+
+  if (monitored("eval_f")){
+    cout << "x = " << x << endl;
+    cout << "f = " << f << endl;
+  }
+}
+  
 void SQPInternal::solve_QP(const Matrix<double>& H, const std::vector<double>& g,
 			   const std::vector<double>& lbx, const std::vector<double>& ubx,
 			   const Matrix<double>& A, const std::vector<double>& lbA, const std::vector<double>& ubA,
@@ -716,5 +671,28 @@ void SQPInternal::solve_QP(const Matrix<double>& H, const std::vector<double>& g
   }
 }
   
+double SQPInternal::norm1(const std::vector<double>& x){
+  double ret = 0;
+  for(vector<double>::const_iterator it=x.begin(); it!=x.end(); ++it){
+    ret = fmax(ret,fabs(*it));
+  }
+  return ret;
+}
+
+double SQPInternal::l1_merit(const std::vector<double>& g, const std::vector<double>& lbg, const std::vector<double>& ubg){
+  // Calculate L1-merit function
+  double l1_infeas = 0.;
+  for(int j=0; j<g.size(); ++j){
+    if(lbg[j] > g[j]){
+      l1_infeas += lbg[j] - g[j];
+    } else if (g[j] > ubg[j]){
+      l1_infeas += g[j] - ubg[j];
+    }
+  }
+
+  // TODO: What about simple bounds?
+  
+  return l1_infeas;
+}  
 
 } // namespace CasADi

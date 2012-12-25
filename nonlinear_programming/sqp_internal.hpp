@@ -93,6 +93,9 @@ public:
   /// Hessian mode
   HessMode hess_mode_;
 
+  /// Initial Hessian approximation (BFGS)
+  DMatrix B_init_;
+  
   /// Current Hessian approximation
   DMatrix Bk_;
   
@@ -111,9 +114,6 @@ public:
   // Storage for merit function
   std::deque<double> merit_mem_;
 
-  /// Calculates inner_prod(x,mul(A,x))
-  static double quad_form(const std::vector<double>& x, const DMatrix& A);
-  
   /// Print iteration header
   void printIteration(std::ostream &stream);
   
@@ -124,23 +124,35 @@ public:
   // Reset the Hessian or Hessian approximation
   void reset_h();
 
-  // Evaluate the Hessian of the Lagrangian
-  virtual void eval_h(const std::vector<double>& x, const std::vector<double>& lambda, double sigma, Matrix<double>& H);
-
+  // Evaluate the gradient of the objective
+  virtual void eval_f(const std::vector<double>& x, double& f);
+  
+  // Evaluate the gradient of the objective
+  virtual void eval_grad_f(const std::vector<double>& x, double& f, std::vector<double>& grad_f);
+  
   // Evaluate the constraints
   virtual void eval_g(const std::vector<double>& x, std::vector<double>& g);
 
   // Evaluate the Jacobian of the constraints
   virtual void eval_jac_g(const std::vector<double>& x, std::vector<double>& g, Matrix<double>& J);
 
-  // Evaluate the gradient of the objective
-  virtual void eval_grad_f(const std::vector<double>& x, double& f, std::vector<double>& grad_f);
-
+  // Evaluate the Hessian of the Lagrangian
+  virtual void eval_h(const std::vector<double>& x, const std::vector<double>& lambda, double sigma, Matrix<double>& H);
+  
   // Solve the QP subproblem
   virtual void solve_QP(const Matrix<double>& H, const std::vector<double>& g,
 			const std::vector<double>& lbx, const std::vector<double>& ubx,
 			const Matrix<double>& A, const std::vector<double>& lbA, const std::vector<double>& ubA,
 			std::vector<double>& x_opt, std::vector<double>& lambda_x_opt, std::vector<double>& lambda_A_opt);
+  
+  // Calculate the L1 merit function
+  double l1_merit(const std::vector<double>& g, const std::vector<double>& lbg, const std::vector<double>& ubg);
+  
+  /// Calculates inner_prod(x,mul(A,x))
+  static double quad_form(const std::vector<double>& x, const DMatrix& A);
+  
+  /// Calculates 1-norm of a vector
+  static double norm1(const std::vector<double>& x);
 
 };
 

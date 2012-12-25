@@ -460,7 +460,6 @@ namespace CasADi{
     while(!getline(file, line, '\n').eof()) {
       std::istringstream reader(line);
       std::vector<T> lineData;
-      std::string::const_iterator i = line.begin();
       
       while(!reader.eof()) {
         T val;
@@ -595,6 +594,16 @@ namespace CasADi{
     }
     return true;
   }
+  
+  template<typename T>
+  double inner_prod(const std::vector<T>& a, const std::vector<T>& b){
+    T ret = 0;
+    for(int k=0; k<a.size(); ++k){
+      ret += a[k]*b[k];
+    }
+    return ret;
+  }
+  
   
 } // namespace CasADi
 
