@@ -52,6 +52,7 @@ SQPInternal::SQPInternal(const FX& F, const FX& G, const FX& H, const FX& J) : N
   addOption("merit_memory",      OT_INTEGER,      4,              "Size of memory to store history of merit function values");
   addOption("lbfgs_memory",      OT_INTEGER,     10,              "Size of L-BFGS memory.");
   addOption("regularize",        OT_BOOLEAN,  false,              "Automatic regularization of Lagrange Hessian.");
+  addOption("print_header",      OT_BOOLEAN,   true,              "Print the header with problem statistics");
   
   // Monitors
   addOption("monitor",      OT_STRINGVECTOR, GenericType(),  "", "eval_f|eval_g|eval_jac_g|eval_grad_f|eval_h|qp|dx", true);
@@ -181,6 +182,26 @@ void SQPInternal::init(){
     // Initial Hessian approximation
     B_init_ = DMatrix::eye(n_);
   }
+  
+  // Header
+  if(bool(getOption("print_header"))){
+    cout << "-------------------------------------------" << endl;
+    cout << "This is CasADi::SQPMethod." << endl;
+    switch (hess_mode_) {
+      case HESS_EXACT:
+        cout << "Using exact Hessian" << endl;
+        break;
+      case HESS_BFGS:
+        cout << "Using limited memory BFGS Hessian approximation" << endl;
+        break;
+    }
+    cout << endl;
+    cout << "Number of variables:                       " << setw(9) << n_ << endl;
+    cout << "Number of constraints:                     " << setw(9) << m_ << endl;
+    cout << "Number of nonzeros in constraint Jacobian: " << setw(9) << A_sparsity.size() << endl;
+    cout << "Number of nonzeros in Lagrangian Hessian:  " << setw(9) << H_sparsity.size() << endl;
+    cout << endl;
+  }
 }
 
 void SQPInternal::evaluate(int nfdir, int nadir){
@@ -211,34 +232,91 @@ void SQPInternal::evaluate(int nfdir, int nadir){
   fill(mu_.begin(),mu_.end(),0);
   fill(mu_x_.begin(),mu_x_.end(),0);
 
-  // Lagrange gradient in the next iterate
-  fill(gLag_.begin(),gLag_.end(),0);
-
+  // Initial constraint Jacobian
+  eval_jac_g(x_,gk_,Jk_);
+  
+  // Initial objective gradient
+  eval_grad_f(x_,fk_,gf_);
+  
   // Initialize or reset the Hessian or Hessian approximation
   if( hess_mode_ == HESS_BFGS){
     reset_h();
+    reg_ = 0;
   } else {
     eval_h(x_,mu_,1.0,Bk_);
   }
-  
-  // Initial constraint Jacobian
-  eval_jac_g(x_,gk_,Jk_);
 
-  // Initial objective gradient
-  eval_grad_f(x_,fk_,gf_);
+  // Evaluate the initial gradient of the Lagrangian
+  copy(gf_.begin(),gf_.end(),gLag_.begin());
+  if(m_>0) DMatrix::mul_no_alloc_tn(Jk_,mu_,gLag_);
+  // gLag += mu_x_;
+  transform(gLag_.begin(),gLag_.end(),mu_x_.begin(),gLag_.begin(),plus<double>());
+
+  // Number of SQP iterations
+  int iter = 0;
+
+  // Number of line-search iterations
+  int ls_iter = 0;
+  
+  // Last linesearch successfull
+  bool ls_success = true;
   
   // Reset
   merit_mem_.clear();
   sigma_ = 0.;
 
-  // Print header
-  printIteration(cout);
+  // Default stepsize
+  double t = 0;
   
   // MAIN OPTIMIZATION LOOP
-  int iter = 1;
   while(true){
+    
+    // Primal infeasability
+    double pr_inf = primalInfeasibility(x_, lbx, ubx, gk_, lbg, ubg);
+    
+    // 1-norm of lagrange gradient
+    double gLag_norm1 = norm_1(gLag_);
+    
+    // 1-norm of step
+    double dx_norm1 = norm_1(dx_);
+    
     // Print header occasionally
     if(iter % 10 == 0) printIteration(cout);
+    
+    // Printing information about the actual iterate
+    printIteration(cout,iter,fk_,pr_inf,gLag_norm1,dx_norm1,reg_,ls_iter,ls_success);
+    
+    // Call callback function if present
+    if (!callback_.isNull()) {
+      callback_.input(NLP_COST).set(fk_);
+      callback_.input(NLP_X_OPT).set(x_);
+      callback_.input(NLP_LAMBDA_G).set(mu_);
+      callback_.input(NLP_LAMBDA_X).set(mu_x_);
+      callback_.input(NLP_G).set(gk_);
+      callback_.evaluate();
+      
+      if (callback_.output(0).at(0)) {
+        cout << endl;
+        cout << "CasADi::SQPMethod: aborted by callback..." << endl;
+        break;
+      }
+    }
+    
+    // Checking convergence criteria
+    if (pr_inf < tol_pr_ && gLag_norm1 < tol_du_){
+      cout << endl;
+      cout << "CasADi::SQPMethod: Convergence achieved after " << iter << " iterations." << endl;
+      break;
+    }
+    
+    if (iter >= maxiter_){
+      cout << endl;
+      cout << "CasADi::SQPMethod: Maximum number of iterations reached." << endl;
+      break;
+    }
+    
+    // Start a new iteration
+    iter++;
     
     // Formulate the QP
     transform(lbx.begin(),lbx.end(),x_.begin(),qp_LBX_.begin(),minus<double>());
@@ -256,11 +334,11 @@ void SQPInternal::evaluate(int nfdir, int nadir){
     }
         
     // Calculate penalty parameter of merit function
-    sigma_ = std::max(sigma_,1.01*norm1(qp_DUAL_A_));
-    // sigma_ = std::max(sigma_,1.01*norm1(qp_DUAL_X_)); // FIXME: What about simple bounds?
+    sigma_ = std::max(sigma_,1.01*norm_inf(qp_DUAL_X_));
+    sigma_ = std::max(sigma_,1.01*norm_inf(qp_DUAL_A_));
 
     // Calculate L1-merit function in the actual iterate
-    double l1_infeas = l1_merit(gk_, lbg, ubg); // FIXME: What about simple bounds?
+    double l1_infeas = primalInfeasibility(x_, lbx, ubx, gk_, lbg, ubg);
 
     // Right-hand side of Armijo condition
     double F_sens = inner_prod(dx_, gf_);    
@@ -272,41 +350,48 @@ void SQPInternal::evaluate(int nfdir, int nadir){
     if (merit_mem_.size() > merit_memsize_){
       merit_mem_.pop_front();
     }
-    // Default stepsize
-    double t = 1.0;   
+    // Stepsize
+    t = 1.0;
     double fk_cand;
     // Merit function value in candidate
-    double L1merit_cand = 0.;
+    double L1merit_cand = 0;
 
-    // Line-search loop
-    int ls_counter = 1;
-    while (true){
-      for(int i=0; i<n_; ++i) x_cand_[i] = x_[i] + t * dx_[i];
-      
-      // Evaluating objective and constraints
-      eval_f(x_cand_,fk_cand);
-      eval_g(x_cand_,gk_cand_);
+    // Reset line-search counter, success marker
+    ls_iter = 0;
+    ls_success = true;
 
-      // Calculating merit-function in candidate
-      l1_infeas = l1_merit(gk_cand_, lbg, ubg);
+    // Line-search
+    if(maxiter_ls_>0){ // maxiter_ls_== 0 disables line-search
       
-      L1merit_cand = fk_cand + sigma_ * l1_infeas;
-      // Calculating maximal merit function value so far
-      double meritmax = *max_element(merit_mem_.begin(), merit_mem_.end());
-      if (L1merit_cand <= meritmax + t * c1_ * L1dir){
-        // Accepting candidate
-        break;
-      }
-      else{
+      // Line-search loop
+      while (true){
+        for(int i=0; i<n_; ++i) x_cand_[i] = x_[i] + t * dx_[i];
+      
+        // Evaluating objective and constraints
+        eval_f(x_cand_,fk_cand);
+        eval_g(x_cand_,gk_cand_);
+        ls_iter++;
+
+        // Calculating merit-function in candidate
+        l1_infeas = primalInfeasibility(x_cand_, lbx, ubx, gk_cand_, lbg, ubg);
+      
+        L1merit_cand = fk_cand + sigma_ * l1_infeas;
+        // Calculating maximal merit function value so far
+        double meritmax = *max_element(merit_mem_.begin(), merit_mem_.end());
+        if (L1merit_cand <= meritmax + t * c1_ * L1dir){
+          // Accepting candidate
+          break;
+        }
+      
+        // Line-search not successful, but we accept it.
+        if(ls_iter == maxiter_ls_){
+          ls_success = false;
+          break;
+        }
+      
         // Backtracking
-        t = beta_ * t; 
+        t = beta_ * t;
       }
-
-      // Line-search not successful, but we accept it.
-      if(ls_counter == maxiter_ls_){
-        break;
-      }
-      ++ls_counter;
     }
     
     // Candidate accepted, update dual variables
@@ -368,67 +453,6 @@ void SQPInternal::evaluate(int nfdir, int nadir){
       // Exact Hessian
       eval_h(x_,mu_,1.0,Bk_);
     }
-    
-    // Calculating optimality criterion
-    
-    // Primal infeasability
-    double pr_inf = 0;
-  
-    // Nonlinear constraints
-    for(int j=0; j<m_; ++j){
-      if(lbg[j] > gk_cand_[j]){
-        pr_inf += lbg[j] - gk_cand_[j];
-      } else if(gk_cand_[j] > ubg[j]){
-        pr_inf += gk_cand_[j] - ubg[j];
-      }
-    }
-      
-    // Bound constraints
-    for(int j=0; j<n_; ++j){
-      if ( lbx[j] > x_[j]){
-        pr_inf += lbx[j] - x_[j];
-      } else if ( x_[j] > ubx[j]){
-        pr_inf += x_[j] - ubx[j];
-      }
-    }
-    
-    // 1-norm of lagrange gradient
-    double gLag_norm1 = 0;
-    for(vector<double>::const_iterator it=gLag_.begin(); it!=gLag_.end(); ++it) gLag_norm1 += fabs(*it);
-
-    // 1-norm of step
-    double dx_norm1 = 0;
-    for(vector<double>::const_iterator it=dx_.begin(); it!=dx_.end(); ++it) dx_norm1 += fabs(*it);
-    
-    // Printing information about the actual iterate
-    printIteration(cout,iter,fk_cand,pr_inf,gLag_norm1,dx_norm1,t,ls_counter!=maxiter_ls_,ls_counter);
-    
-    // Call callback function if present
-    if (!callback_.isNull()) {
-      callback_.input(NLP_COST).set(fk_);
-      callback_.input(NLP_X_OPT).set(x_);
-      callback_.input(NLP_LAMBDA_G).set(mu_);
-      callback_.input(NLP_LAMBDA_X).set(mu_x_);
-      callback_.input(NLP_G).set(gk_);
-      callback_.evaluate();
-      
-      if (callback_.output(0).at(0)) {
-       cout << "SQP: aborted by callback...\n"; 
-       break;
-      }
-    }
-
-    // Checking convergence criteria
-    if (pr_inf < tol_pr_ && gLag_norm1 < tol_du_){
-      cout << "SQP: Convergence achieved after " << iter << " iterations.\n";
-      break;
-    }
-
-    if (iter == maxiter_){
-      cout << "SQP: Maximum number of iterations reached, quiting...\n"; 
-      break;
-    }
-    ++iter;
   }
   
   // Save results to outputs
@@ -441,32 +465,35 @@ void SQPInternal::evaluate(int nfdir, int nadir){
   // Save statistics
   stats_["iter_count"] = iter;
 }
-
+  
 void SQPInternal::printIteration(std::ostream &stream){
-  const int w=15;
-  stream << setw(w) << "iter";
-  stream << setw(w) << "obj";
-  stream << setw(w) << "pr_inf";
-  stream << setw(w) << "du_inf";
-  stream << setw(w) << "corr_norm";
-  stream << setw(w) << "ls_param";
+  stream << setw(4)  << "iter";
+  stream << setw(14) << "objective";
+  stream << setw(9) << "inf_pr";
+  stream << setw(9) << "inf_du";
+  stream << setw(9) << "||d||";
+  stream << setw(7) << "lg(rg)";
+  stream << setw(3) << "ls";
   stream << ' ';
-  stream << setw(w) << "ls_trials";
   stream << endl;
 }
   
 void SQPInternal::printIteration(std::ostream &stream, int iter, double obj, double pr_inf, double du_inf, 
-                                 double corr_norm, double ls_param, bool ls_success, int ls_trials){
-  const int w=15;
+                                 double dx_norm, double rg, int ls_trials, bool ls_success){
+  stream << setw(4) << iter;
   stream << scientific;
-  stream << setw(w) << iter;
-  stream << setw(w) << obj;
-  stream << setw(w) << pr_inf;
-  stream << setw(w) << du_inf;
-  stream << setw(w) << corr_norm;
-  stream << setw(w) << ls_param;
+  stream << setw(14) << setprecision(6) << obj;
+  stream << setw(9) << setprecision(2) << pr_inf;
+  stream << setw(9) << setprecision(2) << du_inf;
+  stream << setw(9) << setprecision(2) << dx_norm;
+  stream << fixed;
+  if(rg>0){
+    stream << setw(7) << setprecision(2) << log10(rg);
+  } else {
+    stream << setw(7) << "-";
+  }
+  stream << setw(3) << ls_trials;
   stream << (ls_success ? ' ' : 'F');
-  stream << setw(w) << ls_trials;
   stream << endl;
 }
 
@@ -504,58 +531,69 @@ void SQPInternal::reset_h(){
   }
 
   if (monitored("eval_h")) {
-    cout << "(pre) B = " << endl;
+    cout << "x = " << x_ << endl;
+    cout << "H = " << endl;
     Bk_.printSparse();
   }
 }
 
-void SQPInternal::eval_h(const std::vector<double>& x, const std::vector<double>& lambda, double sigma, Matrix<double>& H){
-
-  if(hess_mode_==HESS_EXACT){
-
-    int n_hess_in = H_.getNumInputs() - (parametric_ ? 1 : 0);
-    H_.setInput(x);
-    if(n_hess_in>1){
-      H_.setInput(lambda, n_hess_in == 4 ? 2 : 1);
-      H_.setInput(sigma, n_hess_in == 4 ? 3 : 2);
-    }
-    H_.evaluate();
-    H_.getOutput(H);
-    // Determing regularization parameter with Gershgorin theorem
-    if(regularize_){
-      const vector<int>& rowind = H.rowind();
-      const vector<int>& col = H.col();
-      vector<double>& data = H.data();
-      double reg_param = 0;
-      for(int i=0; i<rowind.size()-1; ++i){
-        double mineig = 0;
-        for(int el=rowind[i]; el<rowind[i+1]; ++el){
-          int j = col[el];
-          if(i == j){
-            mineig += data[el];
-          } else {
-            mineig -= fabs(data[el]);
-          }
-          //          cout << "(" << r << "," << col[el] << "): " << data[el] << endl;
+  double SQPInternal::getRegularization(const Matrix<double>& H){
+    const vector<int>& rowind = H.rowind();
+    const vector<int>& col = H.col();
+    const vector<double>& data = H.data();
+    double reg_param = 0;
+    for(int i=0; i<rowind.size()-1; ++i){
+      double mineig = 0;
+      for(int el=rowind[i]; el<rowind[i+1]; ++el){
+        int j = col[el];
+        if(i == j){
+          mineig += data[el];
+        } else {
+          mineig -= fabs(data[el]);
         }
-        reg_param = fmin(reg_param,mineig);
       }
-      //      cout << "Regularization parameter: " << -reg_param << endl;
-      if ( reg_param < 0.){
-        for(int i=0; i<rowind.size()-1; ++i){
-          for(int el=rowind[i]; el<rowind[i+1]; ++el){
-            int j = col[el];
-            if(i==j){
-              data[el] += -reg_param;
-            }
-          }
+      reg_param = fmin(reg_param,mineig);
+    }
+    return -reg_param;
+  }
+  
+  void SQPInternal::regularize(Matrix<double>& H, double reg){
+    const vector<int>& rowind = H.rowind();
+    const vector<int>& col = H.col();
+    vector<double>& data = H.data();
+    
+    for(int i=0; i<rowind.size()-1; ++i){
+      for(int el=rowind[i]; el<rowind[i+1]; ++el){
+        int j = col[el];
+        if(i==j){
+          data[el] += reg;
         }
       }
     }
   }
+
+  
+void SQPInternal::eval_h(const std::vector<double>& x, const std::vector<double>& lambda, double sigma, Matrix<double>& H){
+  int n_hess_in = H_.getNumInputs() - (parametric_ ? 1 : 0);
+  H_.setInput(x);
+  if(n_hess_in>1){
+    H_.setInput(lambda, n_hess_in == 4 ? 2 : 1);
+    H_.setInput(sigma, n_hess_in == 4 ? 3 : 2);
+  }
+  H_.evaluate();
+  H_.getOutput(H);
+    
+  // Determing regularization parameter with Gershgorin theorem
+  if(regularize_){
+    reg_ = getRegularization(H);
+    if(reg_ > 0){
+      regularize(H,reg_);
+    }
+  }
   
   if (monitored("eval_h")) {
-    cout << "(main loop) B = " << endl;
+    cout << "x = " << x << endl;
+    cout << "H = " << endl;
     H.printSparse();
   }
 }
@@ -569,8 +607,8 @@ void SQPInternal::eval_g(const std::vector<double>& x, std::vector<double>& g){
   G_.output().get(g,DENSE);
   
   if (monitored("eval_g")) {
-    cout << "(main loop) x = " << x << endl;
-    cout << "(main loop) G = " << g << endl;
+    cout << "x = " << x << endl;
+    cout << "g = " << g << endl;
   } 
 }
 
@@ -671,28 +709,24 @@ void SQPInternal::solve_QP(const Matrix<double>& H, const std::vector<double>& g
   }
 }
   
-double SQPInternal::norm1(const std::vector<double>& x){
-  double ret = 0;
-  for(vector<double>::const_iterator it=x.begin(); it!=x.end(); ++it){
-    ret = fmax(ret,fabs(*it));
-  }
-  return ret;
-}
-
-double SQPInternal::l1_merit(const std::vector<double>& g, const std::vector<double>& lbg, const std::vector<double>& ubg){
-  // Calculate L1-merit function
-  double l1_infeas = 0.;
-  for(int j=0; j<g.size(); ++j){
-    if(lbg[j] > g[j]){
-      l1_infeas += lbg[j] - g[j];
-    } else if (g[j] > ubg[j]){
-      l1_infeas += g[j] - ubg[j];
-    }
-  }
-
-  // TODO: What about simple bounds?
+double SQPInternal::primalInfeasibility(const std::vector<double>& x, const std::vector<double>& lbx, const std::vector<double>& ubx,
+                                        const std::vector<double>& g, const std::vector<double>& lbg, const std::vector<double>& ubg){
+  // L1-norm of the primal infeasibility
+  double pr_inf = 0;
   
-  return l1_infeas;
+  // Bound constraints
+  for(int j=0; j<x.size(); ++j){
+    pr_inf += max(0., lbx[j] - x[j]);
+    pr_inf += max(0., x[j] - ubx[j]);
+  }
+  
+  // Nonlinear constraints
+  for(int j=0; j<g.size(); ++j){
+    pr_inf += max(0., lbg[j] - g[j]);
+    pr_inf += max(0., g[j] - ubg[j]);
+  }
+  
+  return pr_inf;
 }  
 
 } // namespace CasADi
