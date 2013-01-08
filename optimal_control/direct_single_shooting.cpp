@@ -20,44 +20,44 @@
  *
  */
 
-#include "collocation_internal.hpp"
+#include "direct_single_shooting_internal.hpp"
 
 namespace CasADi{
     
-Collocation::Collocation(){
+DirectSingleShooting::DirectSingleShooting(){
 }
     
-Collocation::Collocation(const FX& ffcn, const FX& mfcn, const FX& cfcn, const FX& rfcn){
-  assignNode(new CollocationInternal(ffcn,mfcn,cfcn,rfcn));
+DirectSingleShooting::DirectSingleShooting(const FX& ffcn, const FX& mfcn, const FX& cfcn, const FX& rfcn){
+  assignNode(new DirectSingleShootingInternal(ffcn,mfcn,cfcn,rfcn));
 }
 
-const CollocationInternal* Collocation::operator->() const{
-  return (const CollocationInternal*)FX::operator->();
+const DirectSingleShootingInternal* DirectSingleShooting::operator->() const{
+  return (const DirectSingleShootingInternal*)FX::operator->();
 }
 
-CollocationInternal* Collocation::operator->(){
-  return (CollocationInternal*)FX::operator->();
+DirectSingleShootingInternal* DirectSingleShooting::operator->(){
+  return (DirectSingleShootingInternal*)FX::operator->();
 }
 
-void Collocation::getGuess(std::vector<double>& V_init) const{
+void DirectSingleShooting::getGuess(std::vector<double>& V_init) const{
   (*this)->getGuess(V_init);
 }
     
-void Collocation::getVariableBounds(std::vector<double>& V_min, std::vector<double>& V_max) const{
+void DirectSingleShooting::getVariableBounds(std::vector<double>& V_min, std::vector<double>& V_max) const{
   (*this)->getVariableBounds(V_min,V_max);
 }
     
-void Collocation::getConstraintBounds(std::vector<double>& G_min, std::vector<double>& G_max) const{
+void DirectSingleShooting::getConstraintBounds(std::vector<double>& G_min, std::vector<double>& G_max) const{
   (*this)->getConstraintBounds(G_min,G_max);
 }
 
-void Collocation::setOptimalSolution( const std::vector<double> &V_opt ){
+void DirectSingleShooting::setOptimalSolution( const std::vector<double> &V_opt ){
   (*this)->setOptimalSolution(V_opt);
 }
 
-  NLPSolver Collocation::getNLPSolver() const { return isNull() ? NLPSolver(): (*this)->nlp_solver_; }
+  NLPSolver DirectSingleShooting::getNLPSolver() const { return isNull() ? NLPSolver(): (*this)->nlp_solver_; }
   
-void Collocation::reportConstraints(std::ostream &stream) { 
+void DirectSingleShooting::reportConstraints(std::ostream &stream) { 
   (*this)->reportConstraints();
 }
 

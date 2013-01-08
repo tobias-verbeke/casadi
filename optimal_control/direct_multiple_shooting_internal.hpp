@@ -20,10 +20,10 @@
  *
  */
 
-#ifndef COLLOCATION_INTERNAL_HPP
-#define COLLOCATION_INTERNAL_HPP
+#ifndef DIRECT_MULTIPLE_SHOOTING_INTERNAL_HPP
+#define DIRECT_MULTIPLE_SHOOTING_INTERNAL_HPP
 
-#include "collocation.hpp"
+#include "direct_multiple_shooting.hpp"
 #include "../symbolic/fx/ocp_solver_internal.hpp"
 
 #include "../symbolic/fx/parallelizer.hpp"
@@ -33,18 +33,18 @@
 
 namespace CasADi{
   
-class CollocationInternal : public OCPSolverInternal{
-  friend class Collocation;
+class DirectMultipleShootingInternal : public OCPSolverInternal{
+  friend class DirectMultipleShooting;
   
   public:
     // Constructor
-    CollocationInternal(const FX& ffcn, const FX& mfcn, const FX& cfcn, const FX& rfcn);
+    DirectMultipleShootingInternal(const FX& ffcn, const FX& mfcn, const FX& cfcn, const FX& rfcn);
 
     // clone
-    virtual CollocationInternal* clone() const{ return new CollocationInternal(*this);}
+    virtual DirectMultipleShootingInternal* clone() const{ return new DirectMultipleShootingInternal(*this);}
 
     // Destructor
-    virtual ~CollocationInternal();
+    virtual ~DirectMultipleShootingInternal();
     
     // Initialize
     virtual void init();
@@ -68,6 +68,9 @@ class CollocationInternal : public OCPSolverInternal{
     void reportConstraints(std::ostream &stream=std::cout);
     
   protected:
+    // ODE/DAE integrator
+    FX integrator_;
+    
     // NLP objective function
     MXFunction F_;
     
@@ -76,13 +79,9 @@ class CollocationInternal : public OCPSolverInternal{
 
     // NLP solver
     NLPSolver nlp_solver_;
-
-    // Interpolation order
-    int deg_;
-
 };
                         
 } // namespace CasADi
 
 
-#endif // COLLOCATION_INTERNAL_HPP
+#endif // DIRECT_MULTIPLE_SHOOTING_INTERNAL_HPP

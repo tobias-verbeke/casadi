@@ -20,33 +20,33 @@
  *
  */
 
-#ifndef COLLOCATION_HPP
-#define COLLOCATION_HPP
+#ifndef DIRECT_COLLOCATION_HPP
+#define DIRECT_COLLOCATION_HPP
 
 #include "../symbolic/fx/ocp_solver.hpp"
 #include "../symbolic/fx/nlp_solver.hpp"
 
 namespace CasADi{
-  class CollocationInternal;
+  class DirectCollocationInternal;
     
   /** \brief Direct collocation
    *
    *   \author Joel Andersson
    *   \date 2012
   */ 
-class Collocation : public OCPSolver{
+class DirectCollocation : public OCPSolver{
   public:
     /// Default constructor
-    Collocation();
+    DirectCollocation();
   
     /// Constructor
-    explicit Collocation(const FX& ffcn, const FX& mfcn, const FX& cfcn=FX(), const FX& rfcn=FX());
+    explicit DirectCollocation(const FX& ffcn, const FX& mfcn, const FX& cfcn=FX(), const FX& rfcn=FX());
 
     /// Access functions of the node
-    CollocationInternal* operator->();
+    DirectCollocationInternal* operator->();
 
     /// Const access functions of the node
-    const CollocationInternal* operator->() const;
+    const DirectCollocationInternal* operator->() const;
     
     /// Get the variables
     void getGuess(std::vector<double>& V_init) const;
@@ -72,4 +72,4 @@ class Collocation : public OCPSolver{
                         
 } // namespace CasADi
 
-#endif // COLLOCATION_HPP
+#endif // DIRECT_COLLOCATION_HPP
