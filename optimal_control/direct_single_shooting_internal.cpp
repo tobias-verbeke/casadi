@@ -126,14 +126,14 @@ void DirectSingleShootingInternal::init(){
 
   // Terminal constraints
   G_ = MXFunction(V,vertcat(nlp_g));
-  G_.setOption("numeric_jacobian",false);
-  G_.setOption("ad_mode","forward");
+  G_.setOption("name","nlp_g");
   G_.init();
   
   // Objective function
   MX jk = mfcn_.call(mayerIn("x",X,"p",P)).at(0);
   nlp_j += jk;
   F_ = MXFunction(V,nlp_j);
+  F_.setOption("name","nlp_j");
   
   // Get the NLP creator function
   NLPSolverCreator nlp_solver_creator = getOption("nlp_solver");
@@ -278,7 +278,7 @@ void DirectSingleShootingInternal::setOptimalSolution(const vector<double> &V_op
 
     // Get the state trajectory
     for(int i=0; i<nx_; ++i){
-      x_opt(i,k+1) = V_opt[el++];
+      x_opt(i,k+1) = g_opt[el++];
     }
     
     // Skip the path constraints (for now)

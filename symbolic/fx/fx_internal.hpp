@@ -52,6 +52,9 @@ class FXInternal : public OptionsFunctionalityNode{
 
     /** \brief  Evaluate */
     virtual void evaluate(int nfdir, int nadir) = 0;
+  
+    /** \brief  Evaluate with directional derivative compression */
+    void evaluateCompressed(int nfdir, int nadir);
 
     /** \brief Initialize
       Initialize and make the object ready for setting arguments and evaluation. This method is typically called after setting options but before evaluating. 
@@ -122,8 +125,13 @@ class FXInternal : public OptionsFunctionalityNode{
     *    This method returns a cached instance if available, and calls FX getDerivative(int nfwd, int nadj) if no cached version is available.
     */
     FX derivative(int nfwd, int nadj);
+
     /** \brief Constructs and returns a function that calculates forward derivatives */
     virtual FX getDerivative(int nfwd, int nadj);
+
+    /** \brief Constructs and returns a function that calculates forward derivatives by creating the Jacobian then multiplying */
+    virtual FX getDerivativeViaJac(int nfwd, int nadj);
+
     //@}
 
     /** \brief  Access an input */
@@ -369,6 +377,9 @@ class FXInternal : public OptionsFunctionalityNode{
 
     /// Cache for sparsities of the Jacobian blocks
     std::vector<std::vector<CRSSparsity> > jac_sparsity_, jac_sparsity_compact_;
+
+    /// Which derivative directions are currently being compressed
+    std::vector<bool> compressed_fwd_, compressed_adj_;
 
     /// User-provided Jacobian generator function
     JacobianGenerator jacgen_;

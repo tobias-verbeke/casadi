@@ -130,6 +130,10 @@ void FXInternal::updateNumSens(bool recursive){
     it->dataF.resize(nfdir_,it->data);
     it->dataA.resize(nadir_,it->data);
   }
+
+  // Allocate memory for compression marker
+  compressed_fwd_.resize(nfdir_);
+  compressed_adj_.resize(nadir_);
 }
 
 void FXInternal::requestNumSens(int nfwd, int nadj){
@@ -870,6 +874,107 @@ void FXInternal::getPartition(int iind, int oind, CRSSparsity& D1, CRSSparsity& 
   }
 }
 
+void FXInternal::evaluateCompressed(int nfdir, int nadir){
+  // Counter for compressed forward directions
+  int nfdir_compressed=0;
+
+  // Check if any forward directions are all zero
+  for(int dir=0; dir<nfdir; ++dir){
+    
+    // Can we compress this direction?
+    compressed_fwd_[dir] = true;
+
+    // Look out for nonzeros
+    for(int ind=0; compressed_fwd_[dir] && ind<getNumInputs(); ++ind){
+      const vector<double>& v = fwdSeedNoCheck(ind,dir).data();
+      for(vector<double>::const_iterator it=v.begin(); compressed_fwd_[dir] && it!=v.end(); ++it){
+	if(*it!=0) compressed_fwd_[dir]=false;
+      }
+    }
+
+    // Skip if we can indeed compress
+    if(compressed_fwd_[dir]) continue;
+    
+    // Move the direction to a previous direction if different
+    if(dir!=nfdir_compressed){
+      for(int ind=0; ind<getNumInputs(); ++ind){
+	const vector<double>& v_old = fwdSeedNoCheck(ind,dir).data();
+	vector<double>& v_new = fwdSeedNoCheck(ind,nfdir_compressed).data();
+	copy(v_old.begin(),v_old.end(),v_new.begin());
+      }
+    }
+    
+    // Increase direction counter
+    nfdir_compressed++;
+  }
+
+  // Counter for compressed adjoint directions
+  int nadir_compressed=0;
+
+  // Check if any adjoint directions are all zero
+  for(int dir=0; dir<nadir; ++dir){
+    
+    // Can we compress this direction?
+    compressed_adj_[dir] = true;
+
+    // Look out for nonzeros
+    for(int ind=0; compressed_adj_[dir] && ind<getNumOutputs(); ++ind){
+      const vector<double>& v = adjSeedNoCheck(ind,dir).data();
+      for(vector<double>::const_iterator it=v.begin(); compressed_adj_[dir] && it!=v.end(); ++it){
+	if(*it!=0) compressed_adj_[dir]=false;
+      }
+    }
+
+    // Skip if we can indeed compress
+    if(compressed_adj_[dir]) continue;
+    
+    // Move the direction to a previous direction if different
+    if(dir!=nadir_compressed){
+      for(int ind=0; ind<getNumOutputs(); ++ind){
+	const vector<double>& v_old = adjSeedNoCheck(ind,dir).data();
+	vector<double>& v_new = adjSeedNoCheck(ind,nadir_compressed).data();
+	copy(v_old.begin(),v_old.end(),v_new.begin());
+      }
+    }
+    
+    // Increase direction counter
+    nadir_compressed++;
+  }
+  
+  // Evaluate compressed
+  evaluate(nfdir_compressed,nadir_compressed);
+
+  // Decompress forward directions in reverse order
+  for(int dir=nfdir-1; dir>=0; --dir){
+    if(compressed_fwd_[dir]){
+      for(int ind=0; ind<getNumOutputs(); ++ind){
+	fwdSensNoCheck(ind,dir).setZero();
+      }
+    } else if(--nfdir_compressed != dir){
+      for(int ind=0; ind<getNumOutputs(); ++ind){
+	const vector<double>& v_old = fwdSensNoCheck(ind,nfdir_compressed).data();
+	vector<double>& v_new = fwdSensNoCheck(ind,dir).data();
+	copy(v_old.begin(),v_old.end(),v_new.begin());
+      }
+    }
+  }
+
+  // Decompress adjoint directions in reverse order
+  for(int dir=nadir-1; dir>=0; --dir){
+    if(compressed_adj_[dir]){
+      for(int ind=0; ind<getNumInputs(); ++ind){
+	adjSensNoCheck(ind,dir).setZero();
+      }
+    } else if(--nadir_compressed != dir){
+      for(int ind=0; ind<getNumInputs(); ++ind){
+	const vector<double>& v_old = adjSensNoCheck(ind,nadir_compressed).data();
+	vector<double>& v_new = adjSensNoCheck(ind,dir).data();
+	copy(v_old.begin(),v_old.end(),v_new.begin());
+      }
+    }
+  }
+}
+
 void FXInternal::evalSX(const std::vector<SXMatrix>& arg, std::vector<SXMatrix>& res, 
       const std::vector<std::vector<SXMatrix> >& fseed, std::vector<std::vector<SXMatrix> >& fsens, 
       const std::vector<std::vector<SXMatrix> >& aseed, std::vector<std::vector<SXMatrix> >& asens,
@@ -975,10 +1080,31 @@ FX FXInternal::derivative(int nfwd, int nadj){
   // Return value
   FX& ret = derivative_fcn_[nfwd][nadj];
 
-  // Check if already cached
+  // Generate if not already cached
   if(ret.isNull()){
-    // Generate a new function
-    ret = getDerivative(nfwd,nadj);
+
+    // Get the number of scalar inputs and outputs
+    int num_in_scalar = getNumScalarInputs();
+    int num_out_scalar = getNumScalarOutputs();
+  
+    // Adjoint mode penalty factor (adjoint mode is usually more expensive to calculate)
+    int adj_penalty = 2;
+    
+    // Crude estimate of the cost of calculating the full Jacobian
+    int full_jac_cost = std::min(num_in_scalar, adj_penalty*num_out_scalar);
+    
+    // Crude estimate of the cost of calculating the directional derivatives
+    int der_dir_cost = nfwd + adj_penalty*nadj;
+    
+    // Check if it is cheaper to calculate the full Jacobian and then multiply
+    if(2*full_jac_cost < der_dir_cost){
+      // Generate the Jacobian and then multiply to get the derivative
+      //ret = getDerivativeViaJac(nfwd,nadj); // NOTE: Uncomment this line (and remove the next line) to enable this feature
+      ret = getDerivative(nfwd,nadj);    
+    } else {
+      // Generate a new function
+      ret = getDerivative(nfwd,nadj);    
+    }
     
     // Give it a suitable name
     stringstream ss;
@@ -995,6 +1121,15 @@ FX FXInternal::derivative(int nfwd, int nadj){
 
 FX FXInternal::getDerivative(int nfwd, int nadj){
   casadi_error("FXInternal::getDerivative not defined for class " << typeid(*this).name());
+}
+
+FX FXInternal::getDerivativeViaJac(int nfwd, int nadj){
+  // Wrap in an MXFunction
+  vector<MX> arg = symbolicInput();
+  vector<MX> res = shared_from_this<FX>().call(arg);
+  FX f = MXFunction(arg,res);
+  f.init();
+  return f->getDerivativeViaJac(nfwd,nadj);
 }
 
 int FXInternal::getNumScalarInputs() const{
