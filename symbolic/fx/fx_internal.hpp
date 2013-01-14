@@ -24,6 +24,7 @@
 #define FX_INTERNAL_HPP
 
 #include "fx.hpp"
+#include "../weak_ref.hpp"
 #include <set>
 
 // This macro is for documentation purposes
@@ -120,6 +121,12 @@ class FXInternal : public OptionsFunctionalityNode{
     virtual FX getNumericJacobian(int iind, int oind, bool compact, bool symmetric);
     //@}
     
+    //@{
+    /** \brief Return Jacobian of all input nonzeros with respect to all output nonzeros */
+    FX fullJacobian();
+    virtual FX getFullJacobian();
+    //@}
+
     //@{
     /** \brief Return function that calculates forward derivatives 
     *    This method returns a cached instance if available, and calls FX getDerivative(int nfwd, int nadj) if no cached version is available.
@@ -373,7 +380,10 @@ class FXInternal : public OptionsFunctionalityNode{
     bool gather_stats_;
 
     /// Cache for functions to evaluate directional derivatives
-    std::vector<std::vector<FX> > derivative_fcn_;
+    std::vector<std::vector<FX> > derivative_fcn_; // NOTE: This can result in circular dependencies!
+
+    /// Cache for full Jacobian
+    WeakRef full_jacobian_;
 
     /// Cache for sparsities of the Jacobian blocks
     std::vector<std::vector<CRSSparsity> > jac_sparsity_, jac_sparsity_compact_;

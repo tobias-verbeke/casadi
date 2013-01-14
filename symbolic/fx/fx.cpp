@@ -45,11 +45,11 @@ FX FX::create(FXInternal* node){
 }
 
 const FXInternal* FX::operator->() const{
-  return (const FXInternal*)OptionsFunctionality::operator->();
+  return static_cast<const FXInternal*>(OptionsFunctionality::operator->());
 }
 
 FXInternal* FX::operator->(){
-  return (FXInternal*)OptionsFunctionality::operator->();
+  return static_cast<FXInternal*>(OptionsFunctionality::operator->());
 }
 
 vector<MX> FX::call(const MX &arg){
@@ -169,6 +169,11 @@ FX FX::gradient(int iind, int oind){
 FX FX::hessian(int iind, int oind){
   assertInit();
   return (*this)->hessian(iind,oind);  
+}
+
+FX FX::fullJacobian(){
+  assertInit();
+  return (*this)->fullJacobian();
 }
 
 bool FX::checkNode() const{
