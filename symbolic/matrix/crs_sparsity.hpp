@@ -81,7 +81,7 @@ class CRSSparsity : public SharedObject{
     CRSSparsity(int nrow, int ncol, bool dense=false);
 
     /// Construct a sparsity pattern from vectors
-    CRSSparsity(int nrow, int ncol, std::vector<int> col, std::vector<int> rowind);
+    CRSSparsity(int nrow, int ncol, const std::vector<int>& col, const std::vector<int>& rowind);
 
     /** \brief Check if the dimensions and rowind,col vectors are compatible.
     * \param complete  set to true to also check elementwise
@@ -194,7 +194,7 @@ class CRSSparsity : public SharedObject{
 
     /** \brief Get a set of non-zero element
          return -1 if the element does not exists */
-    std::vector<int> getNZ(std::vector<int> ii, std::vector<int> jj) const;
+    std::vector<int> getNZ(const std::vector<int>& ii, const std::vector<int>& jj) const;
 //    std::vector<int> getNZNew(std::vector<int> i, std::vector<int> j);
 //    std::vector<int> getNZNew(std::vector<int> i, std::vector<int> j) const;
 
@@ -206,13 +206,13 @@ class CRSSparsity : public SharedObject{
     void getNZInplace(std::vector<int>& indices) const;
 
     /// Get the sparsity in CRS format
-    void getSparsityCRS(std::vector<int>& rowind, std::vector<int> &col) const;
+    void getSparsityCRS(std::vector<int>& rowind, std::vector<int>& col) const;
 
     /// Get the sparsity in CCS format
-    void getSparsityCCS(std::vector<int>& row, std::vector<int> &colind) const;
+    void getSparsityCCS(std::vector<int>& row, std::vector<int>& colind) const;
     
     /// Get the sparsity in sparse triplet format
-    void getSparsity(std::vector<int>& row, std::vector<int> &col) const;
+    void getSparsity(std::vector<int>& row, std::vector<int>& col) const;
     
     /** \brief Get a submatrix
     *
@@ -366,6 +366,9 @@ class CRSSparsity : public SharedObject{
     */
     void spyMatlab(const std::string& mfile) const;
 
+    // Hash the sparsity pattern
+    std::size_t hash() const;
+  
     #ifndef SWIG
     /** \brief Assign the nonzero entries of one sparsity pattern to the nonzero entries of another sparsity pattern */
     template<typename T>
