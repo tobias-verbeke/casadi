@@ -320,13 +320,38 @@ class CRSSparsity : public SharedObject{
     */
     int depthFirstSearch(int j, int top, std::vector<int>& xi, std::vector<int>& pstack, const std::vector<int>& pinv, std::vector<bool>& marked) const;
     
-    /** \brief Find the strongly connected components of a square matrix
-       See Direct Methods for Sparse Linear Systems by Davis (2006).
-    */
-    int stronglyConnectedComponents(std::vector<int>& p, std::vector<int>& r) const;
+  /** \brief Find the strongly connected components of the bigraph defined by the sparsity pattern of a square matrix
+      See Direct Methods for Sparse Linear Systems by Davis (2006).
+      Returns:
+      - Number of components
+      - Offset for each components (length: 1 + number of components) 
+      - Indices for each components, component i has indices index[offset[i]], ..., index[offset[i+1]]
+      
+      In the case that the matrix is symmetric, the result has a particular interpretation:
+      Given a symmetric matrix A and
+      n = A.stronglyConnectedComponents(p,r)
+       
+      => A[p,p] will appear block-diagonal with n blocks and
+         with the indices of the block boundaries to be found in r. 
+      
+  */
+#ifndef SWIG
+  int stronglyConnectedComponents(std::vector<int>& offset, std::vector<int>& index) const;
+#else // SWIG
+  int stronglyConnectedComponents(std::vector<int>& OUTPUT, std::vector<int>& OUTPUT) const;
+#endif // SWIG
     
     /** \brief Compute the Dulmage-Mendelsohn decomposition 
        See Direct Methods for Sparse Linear Systems by Davis (2006).
+       
+      Dulmage-Mendelsohn will try to bring your matrix into lower block-triangular (LBT) form.
+      It will not care about the distance of off-diagonal elements to the diagonal:
+      there is no guarantee you will get a block-diagonal matrix if you supply a randomly permuted block-diagonal matrix.
+      
+      If your matrix is symmetrical, this method is of limited use; permutation can make it non-symmetric.
+      
+      \sa stronglyConnectedComponents
+
     */
     int dulmageMendelsohn(std::vector<int>& rowperm, std::vector<int>& colperm, std::vector<int>& rowblock, std::vector<int>& colblock, std::vector<int>& coarse_rowblock, std::vector<int>& coarse_colblock, int seed=0) const;
 
