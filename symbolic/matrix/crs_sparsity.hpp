@@ -83,6 +83,9 @@ class CRSSparsity : public SharedObject{
     /// Construct a sparsity pattern from vectors
     CRSSparsity(int nrow, int ncol, const std::vector<int>& col, const std::vector<int>& rowind);
 
+    /** \brief  Create from node */
+    explicit CRSSparsity(CRSSparsityInternal *node);
+
     /** \brief Check if the dimensions and rowind,col vectors are compatible.
     * \param complete  set to true to also check elementwise
     * throws an error as possible result
@@ -108,11 +111,15 @@ class CRSSparsity : public SharedObject{
     /// Check if the node is pointing to the right type of object
     virtual bool checkNode() const;
 
-    /// Check if two sparsity patterns are the same
-    bool operator==(const CRSSparsity& y) const;
+    /// \name Check if two sparsity patterns are identical
+    /// @{
+    bool isEqual(const CRSSparsity& y) const;
+    bool isEqual(int nrow, int ncol, const std::vector<int>& col, const std::vector<int>& rowind) const;
+    bool operator==(const CRSSparsity& y) const{ return isEqual(y);}
+    /// @}
     
     /// Check if two sparsity patterns are difference
-    bool operator!=(const CRSSparsity& y) const{return !operator==(y);}
+    bool operator!=(const CRSSparsity& y) const{return !isEqual(y);}
     
     /// Take the union of two sparsity patterns
     CRSSparsity operator+(const CRSSparsity& b) const;

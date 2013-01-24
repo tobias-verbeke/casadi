@@ -25,10 +25,30 @@
 
 #include "crs_sparsity.hpp"
 
+// Cashing requires a multimap (preferably a hash map)
+#ifdef USE_CXX11
+// Using C++11 unordered_multimap (hash map)
+#include <unordered_map>
+#define CACHING_MULTIMAP std::unordered_multimap
+#else // USE_CXX11
+// Falling back to std::map (binary search tree)
+#include <map>
+#define CACHING_MULTIMAP std::multimap
+#endif // USE_CXX11
+#include "../weak_ref.hpp"
+
 namespace CasADi{
 
-class CRSSparsityInternal : public SharedObjectNode{
+  class CRSSparsityInternal : public SharedObjectNode{
+  private:
+    /// Multimap holding all cached sparsity patterns (put first to ensure that it is initialized before being used)
+    typedef CACHING_MULTIMAP<std::size_t,WeakRef> CachingMap;
+    static CachingMap cached_;
+
   public:
+    /// Construct a sparsity pattern from vectors, reuse cached pattern if possible
+    static CRSSparsity create(int nrow, int ncol, const std::vector<int>& col, const std::vector<int>& rowind);
+    
     /// Construct a sparsity pattern from vectors
     CRSSparsityInternal(int nrow, int ncol, const std::vector<int>& col, const std::vector<int>& rowind) : nrow_(nrow), ncol_(ncol), col_(col), rowind_(rowind) { sanityCheck(false); }
     
@@ -176,6 +196,9 @@ class CRSSparsityInternal : public SharedObjectNode{
     /// Check if two sparsity patterns are the same
     bool isEqual(const CRSSparsity& y) const;
 
+    /// Check if two sparsity patterns are the same
+    bool isEqual(int nrow, int ncol, const std::vector<int>& col, const std::vector<int>& rowind) const;
+
     /// Enlarge the matrix along the first dimension (i.e. insert rows)
     void enlargeRows(int nrow, const std::vector<int>& ii);
 
@@ -261,7 +284,6 @@ class CRSSparsityInternal : public SharedObjectNode{
     CRSSparsity getSub1(const std::vector<int>& ii, const std::vector<int>& jj, std::vector<int>& mapping) const;
     /// Time complexity: O(ii.size()*(nnz per row))
     CRSSparsity getSub2(const std::vector<int>& ii, const std::vector<int>& jj, std::vector<int>& mapping) const;
-
 };
 
 } // namespace CasADi

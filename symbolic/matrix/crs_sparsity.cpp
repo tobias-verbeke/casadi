@@ -31,8 +31,11 @@ using namespace std;
 namespace CasADi{
 
 CRSSparsity::CRSSparsity(){
-
 }
+  
+CRSSparsity::CRSSparsity(CRSSparsityInternal *node){
+  assignNode(node);
+}  
 
 CRSSparsity::CRSSparsity(int nrow, int ncol, bool dense){
   vector<int> col, rowind(nrow+1,0);
@@ -45,10 +48,12 @@ CRSSparsity::CRSSparsity(int nrow, int ncol, bool dense){
       for(int j=0; j<ncol; ++j)
         col[j+i*ncol] = j;
   }
+  //*this = CRSSparsityInternal::create(nrow, ncol, col, rowind);
   assignNode(new CRSSparsityInternal(nrow, ncol, col, rowind));
 }
 
 CRSSparsity::CRSSparsity(int nrow, int ncol, const vector<int>& col, const vector<int>& rowind){
+  //*this = CRSSparsityInternal::create(nrow, ncol, col, rowind);
   assignNode(new CRSSparsityInternal(nrow, ncol, col, rowind));
 }
     
@@ -292,8 +297,12 @@ CRSSparsity CRSSparsity::patternProduct(const CRSSparsity& y_trans, vector< vect
   return (*this)->patternProduct(y_trans,mapping);
 }
 
-bool CRSSparsity::operator==(const CRSSparsity& y) const{
+bool CRSSparsity::isEqual(const CRSSparsity& y) const{
   return (*this)->isEqual(y);
+}
+
+bool CRSSparsity::isEqual(int nrow, int ncol, const std::vector<int>& col, const std::vector<int>& rowind) const{
+  return (*this)->isEqual(nrow,ncol,col,rowind);
 }
 
 CRSSparsity CRSSparsity::operator+(const CRSSparsity& b) const {
