@@ -165,6 +165,7 @@ class Matrix : public GenericExpression<Matrix<T> >, public GenericMatrix<Matrix
     using B::empty;
     using B::scalar;
     using B::dense;
+    using B::dimString;
     using B::operator[];
     using B::operator();
 
@@ -454,8 +455,11 @@ class Matrix : public GenericExpression<Matrix<T> >, public GenericMatrix<Matrix
     //@}
     
     /// Matrix-matrix product
-    Matrix<T> mul(const Matrix<T> &y) const;
+    Matrix<T> mul_full(const Matrix<T> &y) const;
 
+    /// Matrix-matrix product
+    Matrix<T> mul(const Matrix<T> &y) const;
+    
     /// Matrix-matrix product, no memory allocation: z += mul(x,y)
     static void mul_no_alloc_nn(const Matrix<T>& x, const Matrix<T> &y, Matrix<T>& z);
     
@@ -526,11 +530,6 @@ class Matrix : public GenericExpression<Matrix<T> >, public GenericMatrix<Matrix
     void printSparse(std::ostream &stream=std::cout) const; // print sparse matrix style
     void printDense(std::ostream &stream=std::cout) const; // Print dense matrix stype
     //@}
-    
-    /** \brief Get string representation of dimensions.
-    The representation is (nrow x ncol = numel | size)
-    */
-    std::string dimString() const;
 
     // Get the sparsity pattern
     const std::vector<int>& col() const;

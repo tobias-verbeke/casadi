@@ -852,6 +852,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::AcadoIntegrator::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::AcadoIntegrator::init "
 
 Initialize the object: more documentation in the node class (
@@ -1535,6 +1539,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::AcadoIntegratorInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::AcadoIntegratorInternal::setJacSparsity "
 
@@ -2389,6 +2399,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::AcadoOCP::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::AcadoOCP::init "
 
 Initialize the object: more documentation in the node class (
@@ -2907,6 +2921,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::AcadoOCPInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::AcadoOCPInternal::setJacSparsity "
 
@@ -4313,6 +4333,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::CFunction::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::CFunction::init "
 
 Initialize the object: more documentation in the node class (
@@ -4777,6 +4801,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::CFunctionInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::CFunctionInternal::setJacSparsity "
 
@@ -5818,6 +5848,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::CollocationIntegrator::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::CollocationIntegrator::init "
 
 Initialize the object: more documentation in the node class (
@@ -6494,6 +6528,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::CollocationIntegratorInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::CollocationIntegratorInternal::setJacSparsity
 "
@@ -7833,6 +7873,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::ControlSimulator::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::ControlSimulator::init "
 
 Initialize the object: more documentation in the node class (
@@ -8387,6 +8431,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::ControlSimulatorInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::ControlSimulatorInternal::setJacSparsity "
 
@@ -9045,6 +9095,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")  CasADi::CplexInternal::getJacSparsityHierarchicalSymm
+"
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::CplexInternal::setJacSparsity "
 
@@ -9942,6 +9998,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::CplexSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::CplexSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -10015,6 +10075,12 @@ Joel Andersson
 
 C++ includes: crs_sparsity.hpp ";
 
+/*  Check if two sparsity patterns are identical  */
+
+%feature("docstring")  CasADi::CRSSparsity::isEqual "";
+
+%feature("docstring")  CasADi::CRSSparsity::isEqual "";
+
 /*  Size and element counting  */
 
 %feature("docstring")  CasADi::CRSSparsity::size1 "
@@ -10074,6 +10140,15 @@ Construct a sparsity pattern (sparse/dense) ";
 %feature("docstring")  CasADi::CRSSparsity::CRSSparsity "
 
 Construct a sparsity pattern from vectors. ";
+
+%feature("docstring")  CasADi::CRSSparsity::CRSSparsity "
+
+Create from node. ";
+
+%feature("docstring")  CasADi::CRSSparsity::reCache "
+
+Check if there is an identical copy of the sparsity pattern in the cache,
+and if so, make a shallow copy of that one. ";
 
 %feature("docstring")  CasADi::CRSSparsity::sanityCheck "
 
@@ -10422,6 +10497,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::CRSSparsity::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::CRSSparsity::init "
 
 Initialize the object: more documentation in the node class (
@@ -10617,6 +10696,10 @@ Sparsity pattern for a matrix-matrix product (details in public class) ";
 %feature("docstring")  CasADi::CRSSparsityInternal::patternUnion "
 
 Union of two sparsity patterns. ";
+
+%feature("docstring")  CasADi::CRSSparsityInternal::isEqual "
+
+Check if two sparsity patterns are the same. ";
 
 %feature("docstring")  CasADi::CRSSparsityInternal::isEqual "
 
@@ -11461,6 +11544,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::CSparse::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::CSparse::init "
 
 Initialize the object: more documentation in the node class (
@@ -11943,6 +12030,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::CSparseInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::CSparseInternal::setJacSparsity "
 
@@ -13234,6 +13327,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::CVodesIntegrator::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::CVodesIntegrator::init "
 
 Initialize the object: more documentation in the node class (
@@ -14163,6 +14260,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::CVodesInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::CVodesInternal::setJacSparsity "
 
@@ -15175,6 +15278,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::Derivative::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::Derivative::init "
 
 Initialize the object: more documentation in the node class (
@@ -15643,6 +15750,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::DerivativeInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::DerivativeInternal::setJacSparsity "
 
@@ -16548,6 +16661,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::DirectCollocation::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::DirectCollocation::init "
 
 Initialize the object: more documentation in the node class (
@@ -17101,6 +17218,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::DirectCollocationInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::DirectCollocationInternal::setJacSparsity "
 
@@ -18078,6 +18201,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::DirectMultipleShooting::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::DirectMultipleShooting::init "
 
 Initialize the object: more documentation in the node class (
@@ -18663,6 +18790,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::DirectMultipleShootingInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")
 CasADi::DirectMultipleShootingInternal::setJacSparsity "
@@ -19645,6 +19778,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::DirectSingleShooting::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::DirectSingleShooting::init "
 
 Initialize the object: more documentation in the node class (
@@ -20216,6 +20353,12 @@ recognition.
 
 Decide which ad_mode to take ";
 
+%feature("docstring")
+CasADi::DirectSingleShootingInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
+
 %feature("docstring")  CasADi::DirectSingleShootingInternal::setJacSparsity
 "
 
@@ -20473,6 +20616,24 @@ Implementations of SDPSolver are encouraged to exploit this block structure.
 |              |              |              | always dense |              |
 |              |              |              | (n x n).     |              |
 +--------------+--------------+--------------+--------------+--------------+
+| dualTol      | OT_REAL      | 0.000        | Tolerance    | CasADi::DSDP |
+|              |              |              | for dual inf | Internal     |
+|              |              |              | easibility   |              |
+|              |              |              | (translates  |              |
+|              |              |              | to primal in |              |
+|              |              |              | feasibility  |              |
+|              |              |              | in dsdp      |              |
+|              |              |              | terms)       |              |
++--------------+--------------+--------------+--------------+--------------+
+| gapTol       | OT_REAL      | 0.000        | Convergence  | CasADi::DSDP |
+|              |              |              | criterion    | Internal     |
+|              |              |              | based on     |              |
+|              |              |              | distance     |              |
+|              |              |              | between      |              |
+|              |              |              | primal and   |              |
+|              |              |              | dual         |              |
+|              |              |              | objective    |              |
++--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
 |              |              |              | wether       |              |
@@ -20492,6 +20653,10 @@ Implementations of SDPSolver are encouraged to exploit this block structure.
 |              |              |              | overrides    |              |
 |              |              |              | internal     |              |
 |              |              |              | routines     |              |
++--------------+--------------+--------------+--------------+--------------+
+| maxIter      | OT_INTEGER   | 500          | Maximum      | CasADi::DSDP |
+|              |              |              | number of    | Internal     |
+|              |              |              | iterations   |              |
 +--------------+--------------+--------------+--------------+--------------+
 | max_number_o | OT_INTEGER   | optimized_nu | Allow \"numbe | CasADi::FXIn |
 | f_adj_dir    |              | m_dir        | r_of_adj_dir | ternal       |
@@ -20552,6 +20717,14 @@ Implementations of SDPSolver are encouraged to exploit this block structure.
 |              |              |              | built-in     |              |
 |              |              |              | method       |              |
 +--------------+--------------+--------------+--------------+--------------+
+| primalTol    | OT_REAL      | 0.000        | Tolerance    | CasADi::DSDP |
+|              |              |              | for primal i | Internal     |
+|              |              |              | nfeasibility |              |
+|              |              |              | (translates  |              |
+|              |              |              | to dual infe |              |
+|              |              |              | asibility in |              |
+|              |              |              | dsdp terms)  |              |
++--------------+--------------+--------------+--------------+--------------+
 | regularity_c | OT_BOOLEAN   | true         | Throw        | CasADi::FXIn |
 | heck         |              |              | exceptions   | ternal       |
 |              |              |              | when NaN or  |              |
@@ -20572,6 +20745,15 @@ Implementations of SDPSolver are encouraged to exploit this block structure.
 |              |              |              | overrides    |              |
 |              |              |              | internal     |              |
 |              |              |              | routines     |              |
++--------------+--------------+--------------+--------------+--------------+
+| stepTol      | OT_REAL      | 0.050        | Terminate    | CasADi::DSDP |
+|              |              |              | the solver   | Internal     |
+|              |              |              | if the step  |              |
+|              |              |              | length in    |              |
+|              |              |              | the primal   |              |
+|              |              |              | is below     |              |
+|              |              |              | this         |              |
+|              |              |              | tolerance.   |              |
 +--------------+--------------+--------------+--------------+--------------+
 | store_jacobi | OT_BOOLEAN   | false        | keep         | CasADi::FXIn |
 | ans          |              |              | references   | ternal       |
@@ -20880,6 +21062,12 @@ recognition.
 
 Decide which ad_mode to take ";
 
+%feature("docstring")  CasADi::DSDPInternal::getJacSparsityHierarchicalSymm
+"
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
+
 %feature("docstring")  CasADi::DSDPInternal::setJacSparsity "
 
 Generate the sparsity of a Jacobian block. ";
@@ -21036,6 +21224,15 @@ You can cast this into the standard form with: C = blkdiag(Cj for all j) Ai
 
 Implementations of SDPSolver are encouraged to exploit this block structure.
 
+Warning: The solver DSDP breaks down when you try to achieve linear equality
+(Sum a_i x_i - c) == 0 by decomposing into two sets of inequalities: (Sum
+a_i x_i - c) >= 0 (Sum -a_i x_i - (-c)) >= 0
+
+You need to manually leave a gap between these eaualities: (Sum a_i x_i - c)
+>= 0 (Sum -a_i x_i - (-c-eps)) >= 0
+
+with eps = 1e-6 flor example.
+
 Joris Gillis
 
 >Input scheme: CasADi::SDPInput (SDP_NUM_IN = 3)
@@ -21130,6 +21327,24 @@ Joris Gillis
 |              |              |              | always dense |              |
 |              |              |              | (n x n).     |              |
 +--------------+--------------+--------------+--------------+--------------+
+| dualTol      | OT_REAL      | 0.000        | Tolerance    | CasADi::DSDP |
+|              |              |              | for dual inf | Internal     |
+|              |              |              | easibility   |              |
+|              |              |              | (translates  |              |
+|              |              |              | to primal in |              |
+|              |              |              | feasibility  |              |
+|              |              |              | in dsdp      |              |
+|              |              |              | terms)       |              |
++--------------+--------------+--------------+--------------+--------------+
+| gapTol       | OT_REAL      | 0.000        | Convergence  | CasADi::DSDP |
+|              |              |              | criterion    | Internal     |
+|              |              |              | based on     |              |
+|              |              |              | distance     |              |
+|              |              |              | between      |              |
+|              |              |              | primal and   |              |
+|              |              |              | dual         |              |
+|              |              |              | objective    |              |
++--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
 |              |              |              | wether       |              |
@@ -21149,6 +21364,10 @@ Joris Gillis
 |              |              |              | overrides    |              |
 |              |              |              | internal     |              |
 |              |              |              | routines     |              |
++--------------+--------------+--------------+--------------+--------------+
+| maxIter      | OT_INTEGER   | 500          | Maximum      | CasADi::DSDP |
+|              |              |              | number of    | Internal     |
+|              |              |              | iterations   |              |
 +--------------+--------------+--------------+--------------+--------------+
 | max_number_o | OT_INTEGER   | optimized_nu | Allow \"numbe | CasADi::FXIn |
 | f_adj_dir    |              | m_dir        | r_of_adj_dir | ternal       |
@@ -21209,6 +21428,14 @@ Joris Gillis
 |              |              |              | built-in     |              |
 |              |              |              | method       |              |
 +--------------+--------------+--------------+--------------+--------------+
+| primalTol    | OT_REAL      | 0.000        | Tolerance    | CasADi::DSDP |
+|              |              |              | for primal i | Internal     |
+|              |              |              | nfeasibility |              |
+|              |              |              | (translates  |              |
+|              |              |              | to dual infe |              |
+|              |              |              | asibility in |              |
+|              |              |              | dsdp terms)  |              |
++--------------+--------------+--------------+--------------+--------------+
 | regularity_c | OT_BOOLEAN   | true         | Throw        | CasADi::FXIn |
 | heck         |              |              | exceptions   | ternal       |
 |              |              |              | when NaN or  |              |
@@ -21229,6 +21456,15 @@ Joris Gillis
 |              |              |              | overrides    |              |
 |              |              |              | internal     |              |
 |              |              |              | routines     |              |
++--------------+--------------+--------------+--------------+--------------+
+| stepTol      | OT_REAL      | 0.050        | Terminate    | CasADi::DSDP |
+|              |              |              | the solver   | Internal     |
+|              |              |              | if the step  |              |
+|              |              |              | length in    |              |
+|              |              |              | the primal   |              |
+|              |              |              | is below     |              |
+|              |              |              | this         |              |
+|              |              |              | tolerance.   |              |
 +--------------+--------------+--------------+--------------+--------------+
 | store_jacobi | OT_BOOLEAN   | false        | keep         | CasADi::FXIn |
 | ans          |              |              | references   | ternal       |
@@ -21776,6 +22012,10 @@ Print a representation of the object. ";
 %feature("docstring")  CasADi::DSDPSolver::print "
 
 Print a destription of the object. ";
+
+%feature("docstring")  CasADi::DSDPSolver::printPtr "
+
+Print the pointer to the internal class. ";
 
 %feature("docstring")  CasADi::DSDPSolver::init "
 
@@ -22693,6 +22933,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::ExternalFunction::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::ExternalFunction::init "
 
 Initialize the object: more documentation in the node class (
@@ -23161,6 +23405,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::ExternalFunctionInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::ExternalFunctionInternal::setJacSparsity "
 
@@ -24335,6 +24585,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::FX::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::FX::init "
 
 Initialize the object: more documentation in the node class (
@@ -24826,6 +25080,11 @@ recognition.
 
 Decide which ad_mode to take ";
 
+%feature("docstring")  CasADi::FXInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
+
 %feature("docstring")  CasADi::FXInternal::setJacSparsity "
 
 Generate the sparsity of a Jacobian block. ";
@@ -25079,6 +25338,12 @@ Get the sparsity pattern. ";
 
 Access the sparsity, make a copy if there are multiple references to it. ";
 
+%feature("docstring")  CasADi::GenericMatrix::mul "
+
+Matrix-matrix multiplication. Attempts to identify quick returns on matrix-
+level and delegates to MatType::mul_full if no such quick returns are found.
+";
+
 %feature("docstring")  CasADi::GenericMatrix::sym "";
 
 %feature("docstring")  CasADi::GenericMatrix::sym "";
@@ -25283,6 +25548,10 @@ Print a representation of the object. ";
 %feature("docstring")  CasADi::GenericType::print "
 
 Print a destription of the object. ";
+
+%feature("docstring")  CasADi::GenericType::printPtr "
+
+Print the pointer to the internal class. ";
 
 %feature("docstring")  CasADi::GenericType::init "
 
@@ -26600,6 +26869,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::IdasIntegrator::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::IdasIntegrator::init "
 
 Initialize the object: more documentation in the node class (
@@ -27617,6 +27890,12 @@ recognition.
 
 Decide which ad_mode to take ";
 
+%feature("docstring")  CasADi::IdasInternal::getJacSparsityHierarchicalSymm
+"
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
+
 %feature("docstring")  CasADi::IdasInternal::setJacSparsity "
 
 Generate the sparsity of a Jacobian block. ";
@@ -28440,6 +28719,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::ImplicitFunction::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::ImplicitFunction::init "
 
 Initialize the object: more documentation in the node class (
@@ -28940,6 +29223,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::ImplicitFunctionInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::ImplicitFunctionInternal::setJacSparsity "
 
@@ -30100,6 +30389,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::Integrator::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::Integrator::init "
 
 Initialize the object: more documentation in the node class (
@@ -30698,6 +30991,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::IntegratorInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::IntegratorInternal::setJacSparsity "
 
@@ -31400,6 +31699,11 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")  CasADi::IPInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::IPInternal::setJacSparsity "
 
@@ -32377,6 +32681,10 @@ Print a representation of the object. ";
 %feature("docstring")  CasADi::IPMethod::print "
 
 Print a destription of the object. ";
+
+%feature("docstring")  CasADi::IPMethod::printPtr "
+
+Print the pointer to the internal class. ";
 
 %feature("docstring")  CasADi::IPMethod::init "
 
@@ -35700,6 +36008,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")  CasADi::IpoptInternal::getJacSparsityHierarchicalSymm
+"
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::IpoptInternal::setJacSparsity "
 
@@ -39391,6 +39705,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::IpoptSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::IpoptSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -40055,6 +40373,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::KinsolInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::KinsolInternal::setJacSparsity "
 
@@ -40984,6 +41308,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::KinsolSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::KinsolSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -41856,6 +42184,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::KnitroInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::KnitroInternal::setJacSparsity "
 
@@ -42961,6 +43295,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::KnitroSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::KnitroSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -43722,6 +44060,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::LapackLUDense::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::LapackLUDense::init "
 
 Initialize the object: more documentation in the node class (
@@ -44213,6 +44555,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::LapackLUDenseInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::LapackLUDenseInternal::setJacSparsity "
 
@@ -45052,6 +45400,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::LapackQRDense::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::LapackQRDense::init "
 
 Initialize the object: more documentation in the node class (
@@ -45535,6 +45887,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::LapackQRDenseInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::LapackQRDenseInternal::setJacSparsity "
 
@@ -46593,6 +46951,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::LiftedSQP::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::LiftedSQP::init "
 
 Initialize the object: more documentation in the node class (
@@ -47297,6 +47659,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::LiftedSQPInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::LiftedSQPInternal::setJacSparsity "
 
@@ -48003,6 +48371,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::LiftoptInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::LiftoptInternal::setJacSparsity "
 
@@ -48982,6 +49356,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::LiftoptSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::LiftoptSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -49707,6 +50085,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::LinearSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::LinearSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -50184,6 +50566,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::LinearSolverInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::LinearSolverInternal::setJacSparsity "
 
@@ -51083,7 +51471,7 @@ Make the matrix an dense n-by-m matrix. ";
 
 Make the matrix an empty n-by-m matrix. ";
 
-%feature("docstring")  CasADi::Matrix::mul "
+%feature("docstring")  CasADi::Matrix::mul_full "
 
 Matrix-matrix product. ";
 
@@ -51269,6 +51657,12 @@ Check if the matrix expression is dense. ";
 %feature("docstring")  CasADi::Matrix::scalar "
 
 Check if the matrix expression is scalar. ";
+
+%feature("docstring")  CasADi::Matrix::mul "
+
+Matrix-matrix multiplication. Attempts to identify quick returns on matrix-
+level and delegates to MatType::mul_full if no such quick returns are found.
+";
 
 %feature("docstring")  CasADi::Matrix::getRepresentation "
 
@@ -52140,6 +52534,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::MuscodInterface::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::MuscodInterface::init "
 
 Initialize the object: more documentation in the node class (
@@ -52821,7 +53219,7 @@ Division (with future.division in effect) ";
 
 %feature("docstring")  CasADi::MX::__mpower__ "";
 
-%feature("docstring")  CasADi::MX::mul "";
+%feature("docstring")  CasADi::MX::mul_full "";
 
 %feature("docstring")  CasADi::MX::inner_prod "";
 
@@ -52953,6 +53351,12 @@ Check if the matrix expression is dense. ";
 
 Check if the matrix expression is scalar. ";
 
+%feature("docstring")  CasADi::MX::mul "
+
+Matrix-matrix multiplication. Attempts to identify quick returns on matrix-
+level and delegates to MatType::mul_full if no such quick returns are found.
+";
+
 %feature("docstring")  CasADi::MX::clone "
 
 Deep copy. ";
@@ -52989,6 +53393,10 @@ Print a representation of the object. ";
 %feature("docstring")  CasADi::MX::print "
 
 Print a destription of the object. ";
+
+%feature("docstring")  CasADi::MX::printPtr "
+
+Print the pointer to the internal class. ";
 
 %feature("docstring")  CasADi::MX::init "
 
@@ -53782,6 +54190,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::MXFunction::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::MXFunction::init "
 
 Initialize the object: more documentation in the node class (
@@ -54301,6 +54713,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::MXFunctionInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::MXFunctionInternal::setJacSparsity "
 
@@ -55226,6 +55644,12 @@ recognition.
 
 Decide which ad_mode to take ";
 
+%feature("docstring")
+CasADi::NewtonImplicitInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
+
 %feature("docstring")  CasADi::NewtonImplicitInternal::setJacSparsity "
 
 Generate the sparsity of a Jacobian block. ";
@@ -56098,6 +56522,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::NewtonImplicitSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::NewtonImplicitSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -56622,6 +57050,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::NLPImplicitInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::NLPImplicitInternal::setJacSparsity "
 
@@ -57468,6 +57902,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::NLPImplicitSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::NLPImplicitSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -57996,6 +58434,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")  CasADi::NLPQPInternal::getJacSparsityHierarchicalSymm
+"
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::NLPQPInternal::setJacSparsity "
 
@@ -58852,6 +59296,10 @@ Print a representation of the object. ";
 %feature("docstring")  CasADi::NLPQPSolver::print "
 
 Print a destription of the object. ";
+
+%feature("docstring")  CasADi::NLPQPSolver::printPtr "
+
+Print the pointer to the internal class. ";
 
 %feature("docstring")  CasADi::NLPQPSolver::init "
 
@@ -59730,6 +60178,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::NLPSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::NLPSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -60345,6 +60797,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::NLPSolverInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::NLPSolverInternal::setJacSparsity "
 
@@ -62676,6 +63134,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::OCPSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::OCPSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -63215,6 +63677,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::OCPSolverInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::OCPSolverInternal::setJacSparsity "
 
@@ -63940,6 +64408,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")  CasADi::OOQPInternal::getJacSparsityHierarchicalSymm
+"
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::OOQPInternal::setJacSparsity "
 
@@ -64809,6 +65283,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::OOQPSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::OOQPSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -64984,6 +65462,10 @@ Print a representation of the object. ";
 %feature("docstring")  CasADi::OptionsFunctionality::print "
 
 Print a destription of the object. ";
+
+%feature("docstring")  CasADi::OptionsFunctionality::printPtr "
+
+Print the pointer to the internal class. ";
 
 %feature("docstring")  CasADi::OptionsFunctionality::init "
 
@@ -66063,6 +66545,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::Parallelizer::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::Parallelizer::init "
 
 Initialize the object: more documentation in the node class (
@@ -66566,6 +67052,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::ParallelizerInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::ParallelizerInternal::setJacSparsity "
 
@@ -67218,6 +67710,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::QPOasesInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::QPOasesInternal::setJacSparsity "
 
@@ -68091,6 +68589,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::QPOasesSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::QPOasesSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -68849,6 +69351,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::QPSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::QPSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -69352,6 +69858,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::QPSolverInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::QPSolverInternal::setJacSparsity "
 
@@ -70397,6 +70909,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::RKIntegrator::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::RKIntegrator::init "
 
 Initialize the object: more documentation in the node class (
@@ -70985,6 +71501,10 @@ Get all statistics obtained at the end of the last evaluate call. ";
 
 Get single statistic obtained at the end of the last evaluate call. ";
 
+%feature("docstring")  CasADi::RKIntegratorInternal::getJacSparsity "
+
+Generate the sparsity of a Jacobian block. ";
+
 %feature("docstring")  CasADi::RKIntegratorInternal::getJacSparsityPlain "
 
 A flavour of getJacSparsity without any magic. ";
@@ -70996,6 +71516,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::RKIntegratorInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::RKIntegratorInternal::setJacSparsity "
 
@@ -72095,6 +72621,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::SDPSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::SDPSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -72623,6 +73153,12 @@ recognition.
 
 Decide which ad_mode to take ";
 
+%feature("docstring")
+CasADi::SDPSolverInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
+
 %feature("docstring")  CasADi::SDPSolverInternal::setJacSparsity "
 
 Generate the sparsity of a Jacobian block. ";
@@ -72837,6 +73373,10 @@ Print a representation of the object. ";
 %feature("docstring")  CasADi::SharedObject::print "
 
 Print a destription of the object. ";
+
+%feature("docstring")  CasADi::SharedObject::printPtr "
+
+Print the pointer to the internal class. ";
 
 %feature("docstring")  CasADi::SharedObject::init "
 
@@ -73667,6 +74207,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::Simulator::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::Simulator::init "
 
 Initialize the object: more documentation in the node class (
@@ -74158,6 +74702,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::SimulatorInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::SimulatorInternal::setJacSparsity "
 
@@ -75481,6 +76031,11 @@ recognition.
 
 Decide which ad_mode to take ";
 
+%feature("docstring")  CasADi::SQPInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
+
 %feature("docstring")  CasADi::SQPInternal::setJacSparsity "
 
 Generate the sparsity of a Jacobian block. ";
@@ -76562,6 +77117,10 @@ Print a representation of the object. ";
 %feature("docstring")  CasADi::SQPMethod::print "
 
 Print a destription of the object. ";
+
+%feature("docstring")  CasADi::SQPMethod::printPtr "
+
+Print the pointer to the internal class. ";
 
 %feature("docstring")  CasADi::SQPMethod::init "
 
@@ -77647,6 +78206,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::SundialsIntegrator::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::SundialsIntegrator::init "
 
 Initialize the object: more documentation in the node class (
@@ -78485,6 +79048,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::SundialsInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::SundialsInternal::setJacSparsity "
 
@@ -79723,6 +80292,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::SXFunction::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::SXFunction::init "
 
 Initialize the object: more documentation in the node class (
@@ -80238,6 +80811,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::SXFunctionInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::SXFunctionInternal::setJacSparsity "
 
@@ -81748,6 +82327,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::Variable::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::Variable::init "
 
 Initialize the object: more documentation in the node class (
@@ -81896,6 +82479,10 @@ Print a representation of the object. ";
 %feature("docstring")  CasADi::WeakRef::print "
 
 Print a destription of the object. ";
+
+%feature("docstring")  CasADi::WeakRef::printPtr "
+
+Print the pointer to the internal class. ";
 
 %feature("docstring")  CasADi::WeakRef::init "
 
@@ -83320,6 +83907,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")  CasADi::WorhpInternal::getJacSparsityHierarchicalSymm
+"
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::WorhpInternal::setJacSparsity "
 
@@ -85041,6 +85634,10 @@ Print a representation of the object. ";
 
 Print a destription of the object. ";
 
+%feature("docstring")  CasADi::WorhpSolver::printPtr "
+
+Print the pointer to the internal class. ";
+
 %feature("docstring")  CasADi::WorhpSolver::init "
 
 Initialize the object: more documentation in the node class (
@@ -85536,6 +86133,12 @@ A flavour of getJacSparsity that does hierachical block structure
 recognition.
 
 Decide which ad_mode to take ";
+
+%feature("docstring")
+CasADi::XFunctionInternal::getJacSparsityHierarchicalSymm "
+
+A flavour of getJacSparsity that does hierachical block structure
+recognition for symmetric jacobians. ";
 
 %feature("docstring")  CasADi::XFunctionInternal::setJacSparsity "
 
@@ -87064,6 +87667,10 @@ Get the sparsity resulting from a matrix multiplication. ";
 %feature("docstring")  CasADi::hash_sparsity "
 
 Hash a sparsity pattern. ";
+
+%feature("docstring")  CasADi::hash_combine "
+
+Generate a hash value incrementally (function taken from boost) ";
 
 %feature("docstring")  CasADi::hash_combine "
 

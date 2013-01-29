@@ -377,11 +377,6 @@ class MX : public GenericExpression<MX>, public GenericMatrix<MX>, public Shared
   /** \brief Append a matrix to the end. */
   void append(const MX& y);
   
-  /** \brief Get string representation of dimensions.
-  The representation is (nrow x ncol = numel | size)
-  */
-  std::string dimString() const;
-  
   // all binary operations
   MX __add__(const MX& y) const;
   MX __sub__(const MX& y) const;
@@ -397,6 +392,7 @@ class MX : public GenericExpression<MX>, public GenericMatrix<MX>, public Shared
   MX __mrdivide__  (const MX& b) const;
   MX __mpower__(const MX& b) const;
   MX mul(const MX& y) const;
+  MX mul_full(const MX& y) const;
   MX inner_prod(const MX& y) const;
   MX outer_prod(const MX& y) const;
   MX constpow(const MX& y) const;

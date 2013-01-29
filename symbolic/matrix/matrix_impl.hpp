@@ -1208,11 +1208,6 @@ void Matrix<T>::enlarge(int nrow, int ncol, const std::vector<int>& ii, const st
 }
 
 template<class T>
-std::string Matrix<T>::dimString() const {
-  return sparsity_.dimString();
-}
-
-template<class T>
 void Matrix<T>::sanityCheck(bool complete) const {
   sparsity_.sanityCheck(complete);
   
@@ -1226,37 +1221,31 @@ void Matrix<T>::sanityCheck(bool complete) const {
 }
 
 template<class T>
-Matrix<T> Matrix<T>::mul(const Matrix<T> &y) const{
+Matrix<T> Matrix<T>::mul(const Matrix<T> &y) const {
+  return this->mul_smart(y);
+}
+
+template<class T>
+Matrix<T> Matrix<T>::mul_full(const Matrix<T> &y) const{
   // First factor
   const Matrix<T>& x = *this;
   
   // Return object (assure RVO)
   Matrix<T> ret;
-  
-  if (x.numel()==1 || y.numel()==1){
-    // Elementwise multiplication when either x or y is a scalar
-    ret = x*y;
-    
-  } else {
-    // Matrix multiplication
-    
-    casadi_assert_message(x.size2() == y.size1(),
-      "Matrix<T>::mul: dimension mismatch. Attemping product of (" << x.size1() << " x " << x.size2() << ") " << std::endl <<
-      "with (" << y.size1() << " x " << y.size2() << ") matrix."
-    );
 
-    // Form the transpose of y
-    Matrix<T> y_trans = y.trans();
-  
-    // Create the sparsity pattern for the matrix-matrix product
-    CRSSparsity spres = x.sparsity().patternProduct(y_trans.sparsity());
-  
-    // Create the return object
-    ret = Matrix<T>(spres, 0);
-  
-    // Carry out the matrix product
-    mul_no_alloc_nt(x,y_trans,ret);
-  }
+  // Matrix multiplication
+
+  // Form the transpose of y
+  Matrix<T> y_trans = y.trans();
+
+  // Create the sparsity pattern for the matrix-matrix product
+  CRSSparsity spres = x.sparsity().patternProduct(y_trans.sparsity());
+
+  // Create the return object
+  ret = Matrix<T>(spres, 0);
+
+  // Carry out the matrix product
+  mul_no_alloc_nt(x,y_trans,ret);
   
   return ret;
 }
