@@ -48,6 +48,7 @@ option(WITH_QPOASES "Compile the interface to qpOASES (the source code for qpOAS
 option(WITH_DSDP "Compile the interface to DSDP (the source code for DSDP is included)" ON)
 option(WITH_CSPARSE "Compile the interface to CSparse (the source code for CSparse is included)" ON)
 option(WITH_IPOPT "Compile the interface to IPOPT" ON)
+option(WITH_OPENCL "Compile with OpenCL support" OFF)
 
 # For code optimization
 if(CMAKE_BUILD_TYPE)
@@ -89,7 +90,7 @@ SET(${MYPATH} ${MYPATH_NEW} PARENT_SCOPE)
 endfunction() 
 
 # Check if the compiler supports C++11
-foreach(CXX11FLAG_TEST "" "-std=c++11" "-std=c++0x" "-std=gnu++0x")
+foreach(CXX11FLAG_TEST "" "-std=c++11" "-std=c++0x" "-std=gnu++0x" "-std=c++11 --DUSE_TR1_HASHMAP" "-std=c++0x -DUSE_TR1_HASHMAP")
   if(NOT USE_CXX11)
     # Try to compile test with the proposed flag
     try_compile(USE_CXX11
@@ -187,6 +188,16 @@ else(WITH_LLVM)
   endif(WITH_DL)
 endif(WITH_LLVM)
 add_feature_info(just-in-time WITH_LLVM "Just-in-time compiliation via the LLVM compiler framework.")
+
+# OpenCL
+if(WITH_OPENCL)
+  # Core depends on OpenCL for GPU calculations
+  find_package(OpenCL REQUIRED)
+  set(CASADI_DEPENDENCIES ${CASADI_DEPENDENCIES} ${OPENCL_LIBRARIES})
+  add_definitions(-DWITH_OPENCL)
+  include_directories(${OPENCL_INCLUDE_DIRS})
+endif(WITH_OPENCL)
+add_feature_info(opencl-support WITH_OPENCL "Enable just-in-time compiliation to CPUs and GPUs with OpenCL.")
 
 # Optional auxillary dependencies
 find_package(BLAS QUIET)
