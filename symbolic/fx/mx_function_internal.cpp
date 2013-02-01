@@ -32,22 +32,6 @@
 #include <stack>
 #include <typeinfo>
 
-// To reuse variables we need to be able to sort by sparsity pattern (preferably using a hash map)
-#ifdef USE_CXX11
-// Using C++11 unordered_map (hash map)
-#ifdef USE_TR1_HASHMAP
-#include <tr1/unordered_map>
-#define SPARSITY_MAP std::tr1::unordered_map
-#else // USE_TR1_HASHMAP
-#include <unordered_map>
-#define SPARSITY_MAP std::unordered_map
-#endif // USE_TR1_HASHMAP
-#else // USE_CXX11
-// Falling back to std::map (binary search tree)
-#include <map>
-#define SPARSITY_MAP std::map
-#endif // USE_CXX11
-
 using namespace std;
 
 namespace CasADi{
@@ -1139,7 +1123,28 @@ void MXFunctionInternal::allocTape(){
   }
 }
 
+void MXFunctionInternal::generateFunction(std::ostream &stream, const std::string& fname, const std::string& input_type, const std::string& output_type, const std::string& type) const{
+  stream << "#error MX_GENERATE_FUNCTION_NOT_IMPLEMENTED" << endl;
+  casadi_warning("Not implemented");
+}
 
+void MXFunctionInternal::generateSparsityPatterns(std::ostream &stream, std::map<const void*,int>& sparsity_index){
+  // Locate all sparsity patterns in the intermediate variables 
+  for(vector<AlgEl>::iterator it=algorithm_.begin(); it!=algorithm_.end(); ++it){
+    
+    // Outputs do not result in any intermediate variables
+    if(it->op==OP_OUTPUT) continue;
+
+    // For all non-null operator outputs
+    for(int c=0; c<it->res.size(); ++c){
+      if(it->res[c]>=0){
+          
+	// Print the pattern
+	printSparsity(stream,it->data->sparsity(c),sparsity_index);
+      }
+    }
+  }
+}
 
 } // namespace CasADi
 
