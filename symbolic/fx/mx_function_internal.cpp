@@ -1123,27 +1123,239 @@ void MXFunctionInternal::allocTape(){
   }
 }
 
-void MXFunctionInternal::generateFunction(std::ostream &stream, const std::string& fname, const std::string& input_type, const std::string& output_type, const std::string& type) const{
-  stream << "#error MX_GENERATE_FUNCTION_NOT_IMPLEMENTED" << endl;
-  casadi_warning("Not implemented");
-}
+void MXFunctionInternal::generateBody(std::ostream &stream, const std::string& type, const std::map<const void*,int>& sparsity_index, const std::map<const void*,int>& dependent_index) const{
+  casadi_warning("MX code generation is still experimental.");
 
-void MXFunctionInternal::generateSparsityPatterns(std::ostream &stream, std::map<const void*,int>& sparsity_index){
-  // Locate all sparsity patterns in the intermediate variables 
-  for(vector<AlgEl>::iterator it=algorithm_.begin(); it!=algorithm_.end(); ++it){
-    
-    // Outputs do not result in any intermediate variables
-    if(it->op==OP_OUTPUT) continue;
+  // Operation number (for printing)
+  int k=0;
 
-    // For all non-null operator outputs
-    for(int c=0; c<it->res.size(); ++c){
-      if(it->res[c]>=0){
-          
-	// Print the pattern
-	printSparsity(stream,it->data->sparsity(c),sparsity_index);
+  // Names of operation argument and results
+  vector<string> arg,res;
+
+  // Codegen a temporary variable
+  stream << "  int i;" << endl;
+
+  // Codegen the algorithm
+  for(vector<AlgEl>::const_iterator it=algorithm_.begin(); it!=algorithm_.end(); ++it){
+    // Mark the beginning of the operation
+    stream << "  /* " << k++ << " */" << endl; 
+
+    // Get the names of the operation arguments
+    arg.resize(it->arg.size());
+    if(it->op == OP_INPUT){
+      arg.front() = "x" + numToString(it->arg.front());
+    } else {
+      for(int i=0; i<it->arg.size(); ++i){
+	arg.at(i) = "w.a" + numToString(it->arg.front());
       }
     }
+
+    // Get the names of the operation results
+    res.resize(it->res.size());
+    if(it->op == OP_OUTPUT){
+      res.front() = "r" + numToString(it->res.front());
+    } else {
+      for(int i=0; i<it->res.size(); ++i){
+	res.at(i) = "w.a" + numToString(it->res.front());
+      }
+    }
+
+    // Print the operation
+    if(it->op==OP_OUTPUT){
+      stream << "  casadi_copy(" << output(it->res.front()).size() << "," <<  arg.front() << ",1," << res.front() << ",1);" << endl;
+    } else if(it->op==OP_INPUT){
+      stream << "  casadi_copy(" << input(it->arg.front()).size() << "," << arg.front() << ",1," << res.front() << ",1);" << endl;
+    } else {
+      it->data->generateOperation(stream,arg,res,sparsity_index,dependent_index);
+    }
   }
+}
+
+void MXFunctionInternal::generateSparsityPatterns(std::ostream &stream, std::map<const void*,int>& sparsity_index) const{  
+  // Print all sparsity patterns in the intermediate variables
+  for(int i=0; i<work_.size(); ++i){
+    printSparsity(stream,work_[i].data.sparsity(),sparsity_index);
+  }
+
+  // Also print the patterns in the embedded functions
+  for(vector<AlgEl>::const_iterator it=algorithm_.begin(); it!=algorithm_.end(); ++it){
+    if(it->op==OP_CALL){
+      it->data->getFunction()->generateSparsityPatterns(stream,sparsity_index);
+    }
+  }
+}
+
+void MXFunctionInternal::generateDependents(std::ostream &stream, const std::map<const void*,int>& sparsity_index, std::map<const void*,int>& dependent_index) const{
+  // Generate code for the embedded functions
+  for(vector<AlgEl>::const_iterator it=algorithm_.begin(); it!=algorithm_.end(); ++it){
+    if(it->op==OP_CALL){
+      printDependent(stream,it->data->getFunction(),sparsity_index,dependent_index);
+    }
+  }
+}
+
+void MXFunctionInternal::generateWork(std::ostream &stream) const{
+  // Data structure to hold intermediate variables
+  stream << "struct wstruct{" << endl;
+
+  // Declare all work variables
+  for(int i=0; i<work_.size(); ++i){
+    stream << "  d a" << i << "[" << work_[i].data.size() << "];" << endl;
+  }
+
+  // Finalize work structure
+  stream << "} w;" << endl;
+  stream << endl;
+}
+
+void MXFunctionInternal::generateAuxiliary(std::ostream &stream) const{
+  // BLAS Level 1
+
+  // SWAP: x <-> y
+  stream << "inline void casadi_swap(int n, d* x, int inc_x, d* y, int inc_y){" << endl;
+  stream << "  d t;" << endl;
+  stream << "  int i;" << endl;
+  stream << "  for(i=0; i<n; ++i){" << endl;
+  stream << "    t = *x;" << endl;
+  stream << "    *x = *y;" << endl;
+  stream << "    *y = t;" << endl;
+  stream << "    x += inc_x;" << endl;
+  stream << "    y += inc_y;" << endl;
+  stream << "  }" << endl;
+  stream << "}" << endl;
+  stream << endl;
+
+  // SCAL: x <- alpha*x
+  stream << "inline void casadi_scal(int n, d alpha, d* x, int inc_x){" << endl;
+  stream << "  int i;" << endl;
+  stream << "  for(i=0; i<n; ++i){" << endl;
+  stream << "    *x *= alpha;" << endl;
+  stream << "    x += inc_x;" << endl;
+  stream << "  }" << endl;
+  stream << "}" << endl;
+  stream << endl;
+
+  // AXPY: y <- a*x + y
+  stream << "inline void casadi_axpy(int n, d alpha, const d* x, int inc_x, d* y, int inc_y){" << endl;
+  stream << "  int i;" << endl;
+  stream << "  for(i=0; i<n; ++i){" << endl;
+  stream << "    *y += alpha**x;" << endl;
+  stream << "    x += inc_x;" << endl;
+  stream << "    y += inc_y;" << endl;
+  stream << "  }" << endl;
+  stream << "}" << endl;
+  stream << endl;
+
+  // DOT: inner_prod(x,y) -> return
+  stream << "inline d casadi_dot(int n, const d* x, int inc_x, d* y, int inc_y){" << endl;
+  stream << "  d r = 0;" << endl;
+  stream << "  int i;" << endl;
+  stream << "  for(i=0; i<n; ++i){" << endl;
+  stream << "    r += *x**y;" << endl;
+  stream << "    x += inc_x;" << endl;
+  stream << "    y += inc_y;" << endl;
+  stream << "  }" << endl;
+  stream << "  return r;" << endl;
+  stream << "}" << endl;
+  stream << endl;
+
+  // NRM2: ||x||_2 -> return
+  stream << "inline d casadi_nrm2(int n, const d* x, int inc_x){" << endl;
+  stream << "  d r = 0;" << endl;
+  stream << "  int i;" << endl;
+  stream << "  for(i=0; i<n; ++i){" << endl;
+  stream << "    r += *x**x;" << endl;
+  stream << "    x += inc_x;" << endl;
+  stream << "  }" << endl;
+  stream << "  return sqrt(r);" << endl;
+  stream << "}" << endl;
+  stream << endl;
+
+  // ASUM: ||x||_1 -> return
+  stream << "inline d casadi_asum(int n, const d* x, int inc_x){" << endl;
+  stream << "  d r = 0;" << endl;
+  stream << "  int i;" << endl;
+  stream << "  for(i=0; i<n; ++i){" << endl;
+  stream << "    r += fabs(*x);" << endl;
+  stream << "    x += inc_x;" << endl;
+  stream << "  }" << endl;
+  stream << "  return r;" << endl;
+  stream << "}" << endl;
+  stream << endl;
+
+  // IAMAX: index corresponding to the entry with the largest absolute value 
+  stream << "inline int casadi_iamax(int n, const d* x, int inc_x){" << endl;
+  stream << "  d t;" << endl;
+  stream << "  d largest_value = -1.0;" << endl;
+  stream << "  int largest_index = -1;" << endl;
+  stream << "  int i;" << endl;
+  stream << "  for(i=0; i<n; ++i){" << endl;
+  stream << "    t = fabs(*x);" << endl;
+  stream << "    x += inc_x;" << endl;
+  stream << "    if(t>largest_value){" << endl;
+  stream << "      largest_value = t;" << endl;
+  stream << "      largest_index = i;" << endl;
+  stream << "    }" << endl;
+  stream << "  }" << endl;
+  stream << "  return largest_index;" << endl;
+  stream << "}" << endl;
+  stream << endl;
+
+  // MISC CasADi
+
+  // FILL: x <- alpha
+  stream << "inline void casadi_fill(int n, d alpha, d* x, int inc_x){" << endl;
+  stream << "  int i;" << endl;
+  stream << "  for(i=0; i<n; ++i){" << endl;
+  stream << "    *x = alpha;" << endl;
+  stream << "    x += inc_x;" << endl;
+  stream << "  }" << endl;
+  stream << "}" << endl;
+  stream << endl;
+
+  // Sparse matrix-matrix multiplication, the second argument is transposed: z <- z + x*y'
+  stream << "inline void casadi_mm_nt_sparse(const d* x, const int* sp_x, const d* trans_y, const int* sp_trans_y, d* z, const int* sp_z){" << std::endl;
+
+  stream << "  int nrow_x = sp_x[0];" << endl;
+  stream << "  int ncol_x = sp_x[1];" << endl;
+  stream << "  const int* rowind_x = sp_x+2;" << endl;
+  stream << "  const int* col_x = sp_x + 2 + nrow_x+1;" << endl;
+  stream << "  int nnz_x = rowind_x[nrow_x];" << endl;
+
+  stream << "  int ncol_y = sp_trans_y[0];" << endl;
+  stream << "  int nrow_y = sp_trans_y[1];" << endl;
+  stream << "  const int* colind_y = sp_trans_y+2;" << endl;
+  stream << "  const int* row_y = sp_trans_y + 2 + ncol_y+1;" << endl;
+  stream << "  int nnz_y = colind_y[ncol_y];" << endl;
+
+  stream << "  int nrow_z = sp_z[0];" << endl;
+  stream << "  int ncol_z = sp_z[1];" << endl;
+  stream << "  const int* rowind_z = sp_z+2;" << endl;
+  stream << "  const int* col_z = sp_z + 2 + nrow_z+1;" << endl;
+  stream << "  int nnz_z = rowind_z[nrow_z];" << endl;
+  
+  stream << "  int i;" << endl;
+  stream << "  for(i=0; i<nrow_z; ++i){" << endl;
+  stream << "    int el;" << endl;
+  stream << "    for(el=rowind_z[i]; el<rowind_z[i+1]; ++el){" << endl;
+  stream << "      int j = col_z[el];" << endl;
+  stream << "      int el1 = rowind_x[i];" << endl;
+  stream << "      int el2 = colind_y[j];" << endl;
+  stream << "      while(el1 < rowind_x[i+1] && el2 < colind_y[j+1]){ " << endl;
+  stream << "        int j1 = col_x[el1];" << endl;
+  stream << "        int i2 = row_y[el2];" << endl;
+  stream << "        if(j1==i2){" << endl;
+  stream << "          z[el] += x[el1++] * trans_y[el2++];" << endl;
+  stream << "        } else if(j1<i2) {" << endl;
+  stream << "          el1++;" << endl;
+  stream << "        } else {" << endl;
+  stream << "          el2++;" << endl;
+  stream << "        }" << endl;
+  stream << "      }" << endl;
+  stream << "    }" << endl;
+  stream << "  }" << endl;
+  stream << "}" << endl;
+  stream << endl;
 }
 
 } // namespace CasADi

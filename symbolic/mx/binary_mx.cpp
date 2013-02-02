@@ -403,6 +403,38 @@ void SparseSparseOp::propagateSparsity(DMatrixPtrV& input, DMatrixPtrV& output, 
   }
 }
 
+void ScalarNonzerosOp::generateOperation(std::ostream &stream, const std::vector<std::string>& arg, const std::vector<std::string>& res, const std::map<const void*,int>& sparsity_index, const std::map<const void*,int>& dependent_index) const{
+  stream << "  for(i=0; i<" << sparsity().size() << "; ++i) ";
+  stream << res.at(0) << "[i]=";
+  casadi_math<double>::printPre(op_,stream);
+  stream << arg.at(0) << "[0]";
+  casadi_math<double>::printSep(op_,stream);
+  stream << arg.at(1) << "[i]";
+  casadi_math<double>::printPost(op_,stream);
+  stream << ";" << endl;
+}
+
+void NonzerosScalarOp::generateOperation(std::ostream &stream, const std::vector<std::string>& arg, const std::vector<std::string>& res, const std::map<const void*,int>& sparsity_index, const std::map<const void*,int>& dependent_index) const{
+  stream << "  for(i=0; i<" << sparsity().size() << "; ++i) ";
+  stream << res.at(0) << "[i]=";
+  casadi_math<double>::printPre(op_,stream);
+  stream << arg.at(0) << "[i]";
+  casadi_math<double>::printSep(op_,stream);
+  stream << arg.at(1) << "[0]";
+  casadi_math<double>::printPost(op_,stream);
+  stream << ";" << endl;
+}
+
+void NonzerosNonzerosOp::generateOperation(std::ostream &stream, const std::vector<std::string>& arg, const std::vector<std::string>& res, const std::map<const void*,int>& sparsity_index, const std::map<const void*,int>& dependent_index) const{
+  stream << "  for(i=0; i<" << sparsity().size() << "; ++i) ";
+  stream << res.at(0) << "[i]=";
+  casadi_math<double>::printPre(op_,stream);
+  stream << arg.at(0) << "[i]";
+  casadi_math<double>::printSep(op_,stream);
+  stream << arg.at(1) << "[i]";
+  casadi_math<double>::printPost(op_,stream);
+  stream << ";" << endl;
+}
 
 } // namespace CasADi
 

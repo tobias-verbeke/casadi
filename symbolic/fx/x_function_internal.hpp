@@ -97,11 +97,23 @@ class XFunctionInternal : public FXInternal{
     /** \brief  Print to a c file */
     virtual void generateCode(const std::string& filename);
 
+    /** \brief Generate auxiliary functions */
+    virtual void generateAuxiliary(std::ostream &stream) const{}  
+
     /** \brief Generate code for sparsity patterns */
-    virtual void generateSparsityPatterns(std::ostream &stream, std::map<const void*,int>& sparsity_index){}
+    virtual void generateSparsityPatterns(std::ostream &stream, std::map<const void*,int>& sparsity_index) const{}
+
+    /** \brief Generate code for dependent functions */
+    virtual void generateDependents(std::ostream &stream, const std::map<const void*,int>& sparsity_index, std::map<const void*,int>& dependent_index) const{}
+  
+    /** \brief Generate work array */
+    virtual void generateWork(std::ostream &stream) const{}
 
     /** \brief Generate code for the C functon */
-    virtual void generateFunction(std::ostream &stream, const std::string& fname, const std::string& input_type, const std::string& output_type, const std::string& type) const = 0;
+    virtual void generateFunction(std::ostream &stream, const std::string& fname, const std::string& input_type, const std::string& output_type, const std::string& type, const std::map<const void*,int>& sparsity_index, const std::map<const void*,int>& dependent_index) const;
+
+    /** \brief Generate code for the body of the C function */
+    virtual void generateBody(std::ostream &stream, const std::string& type, const std::map<const void*,int>& sparsity_index, const std::map<const void*,int>& dependent_index) const = 0;
 
     // Data members (all public)
     
@@ -1009,6 +1021,19 @@ void XFunctionInternal<PublicType,DerivedType,MatType,NodeType>::generateCode(co
   // Codegen the rest of the sparsity patterns
   generateSparsityPatterns(cfile,sparsity_index);
   
+  // Declare auxiliary functions
+  generateAuxiliary(cfile);
+
+  // Quick-hack (should be somewhere else)
+  generateCopySparse(cfile);
+
+  // Codegen the dependent functions
+  std::map<const void*,int> dependent_index;
+  generateDependents(cfile,sparsity_index,dependent_index);
+
+  // Generate work array
+  generateWork(cfile);
+
   // Function to get dimensions
   cfile << "int init(int *n_in, int *n_out){" << std::endl;
   cfile << "  *n_in = " << n_i << ";" << std::endl;
@@ -1050,38 +1075,130 @@ void XFunctionInternal<PublicType,DerivedType,MatType,NodeType>::generateCode(co
   cfile << "  *col = sp + 2 + (*nrow + 1);" << std::endl;
   cfile << "  return 0;" << std::endl;
   cfile << "}" << std::endl << std::endl;
-
-  // The sign function
-  cfile << "double sign(double x){ return x<0 ? -1 : x>0 ? 1 : x;}" << std::endl << std::endl;
   
   // Generate the actual function
-  generateFunction(cfile, "evaluate", "const double*","double*","d");
+  generateFunction(cfile, "evaluate", "const d*","d*","d",sparsity_index,dependent_index);
 
   // Define wrapper function
-  cfile << "int evaluateWrap(const double** x, double** r){" << std::endl;
-  cfile << "evaluate(";
-  bool first=true;
+  cfile << "int evaluateWrap(const d** x, d** r){" << std::endl;
+  cfile << "  evaluate(";
   
   // Pass inputs
-  for(int i=0; i<getNumInputs(); ++i){
-    if(first) first=false;
-    else      cfile << ", ";
+  for(int i=0; i<n_i; ++i){
+    if(i!=0) cfile << ",";
     cfile << "x[" << i << "]";
   }
 
   // Pass outputs
-  for(int i=0; i<getNumOutputs(); ++i){
-    if(first) first=false;
-    else      cfile << ", ";
+  for(int i=0; i<n_o; ++i){
+    if(i+n_i!= 0) cfile << ",";
     cfile << "r[" << i << "]";
   }
+
   cfile << "); " << std::endl;
-  cfile << "return 0;" << std::endl;
+  cfile << "  return 0;" << std::endl;
   cfile << "}" << std::endl << std::endl;
   
   // Close the results file
   cfile.close();
 }
+
+template<typename PublicType, typename DerivedType, typename MatType, typename NodeType>
+void XFunctionInternal<PublicType,DerivedType,MatType,NodeType>::generateFunction(std::ostream &stream, const std::string& fname, const std::string& input_type, const std::string& output_type, const std::string& type, const std::map<const void*,int>& sparsity_index, const std::map<const void*,int>& dependent_index) const{
+  // Number of inpus and outputs
+  int n_in = getNumInputs();
+  int n_out = getNumOutputs();
+  
+  // Define function
+  stream << "void " << fname << "(";
+  
+  // Declare inputs
+  for(int i=0; i<n_in; ++i){
+    stream << input_type << " x" << i;
+    if(i+1<n_in+n_out)
+      stream << ",";
+  }
+
+  // Declare outputs
+  for(int i=0; i<n_out; ++i){
+    stream << output_type << " r" << i;
+    if(i+1<n_out)
+      stream << ",";
+  }
+  stream << "){ " << std::endl;
+  
+  // Insert the function body
+  generateBody(stream,type,sparsity_index,dependent_index);
+
+  // Finalize the function
+  stream << "}" << std::endl;
+  stream << std::endl;
+
+  // Also generate a buffered function
+  stream << "void " << fname << "_buffered(";
+  
+  // Declare inputs with sparsities
+  for(int i=0; i<n_in; ++i){
+    stream << input_type << " x" << i;
+    stream << ", const int* s_x" << i;
+    if(i+1<n_in+n_out)
+      stream << ",";
+  }
+
+  // Declare outputs
+  for(int i=0; i<n_out; ++i){
+    stream << output_type << " r" << i;
+    stream << ", const int* s_r" << i;
+    if(i+1<n_out)
+      stream << ",";
+  }
+  stream << "){ " << std::endl;
+  
+  // Declare input buffers
+  for(int i=0; i<n_in; ++i){
+    stream << "  d t_x" << i << "[" << findSparsity(input(i).sparsity(),sparsity_index) << "];" << std::endl;
+  }
+
+  // Declare output buffers
+  for(int i=0; i<n_out; ++i){
+    stream << "  d t_r" << i << "[" << findSparsity(output(i).sparsity(),sparsity_index) << "];" << std::endl;
+  }
+
+  // Copy inputs to buffers
+  for(int i=0; i<n_in; ++i){
+    stream << "  casadi_copy_sparse(x" << i << ",s_x" << i << ",t_x" << i << ",s" << findSparsity(input(i).sparsity(),sparsity_index) << ");" << std::endl;
+  }
+
+  // Pass inputs
+  stream << "  " << fname << "(";
+  for(int i=0; i<n_in; ++i){
+    stream << "t_x" << i;
+    if(i+1<n_in+n_out)
+      stream << ",";
+  }
+
+  // Pass output buffers
+  for(int i=0; i<n_out; ++i){
+    stream << "t_r" << i;
+    if(i+1<n_out)
+      stream << ",";
+  }
+  stream << "); " << std::endl;
+
+  // Get result from output buffers
+  for(int i=0; i<n_out; ++i){
+    stream << "  casadi_copy_sparse(t_r" << i << ",s" << findSparsity(output(i).sparsity(),sparsity_index) << ",r" << i << ",s_r" << i << ");" << std::endl;
+  }
+
+  // Finalize the function
+  stream << "}" << std::endl;
+  stream << std::endl;
+}
+
+
+
+
+
 
 } // namespace CasADi
 

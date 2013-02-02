@@ -103,6 +103,9 @@ class MXNode : public SharedObjectNode{
 
     /** \brief  Print a part of the expression */
     virtual void printPart(std::ostream &stream, int part) const = 0;
+
+    /** \brief Generate code for the operation */
+    virtual void generateOperation(std::ostream &stream, const std::vector<std::string>& arg, const std::vector<std::string>& res, const std::map<const void*,int>& sparsity_index, const std::map<const void*,int>& dependent_index) const;
     
     /** \brief  Evaluate the function */
     virtual void evaluateD(const DMatrixPtrV& input, DMatrixPtrV& output, 
@@ -143,6 +146,9 @@ class MXNode : public SharedObjectNode{
     /** \brief  Get function reference */
     virtual FX& getFunction();
 
+    /** \brief  Get function reference */
+    virtual const FX& getFunction() const{ return const_cast<MXNode*>(this)->getFunction();}
+
     /** \brief  Get function input */
     virtual int getFunctionInput() const;
 
@@ -172,7 +178,7 @@ class MXNode : public SharedObjectNode{
     const CRSSparsity& sparsity() const;
 
     /// Get the sparsity of output oind
-    virtual const CRSSparsity& sparsity(int oind);
+    virtual const CRSSparsity& sparsity(int oind) const;
     
     /** \brief Is the node nonlinear */
     virtual bool isNonLinear(){return false;}
