@@ -1146,7 +1146,7 @@ void MXFunctionInternal::generateBody(std::ostream &stream, const std::string& t
       arg.front() = "x" + numToString(it->arg.front());
     } else {
       for(int i=0; i<it->arg.size(); ++i){
-	arg.at(i) = "w.a" + numToString(it->arg.front());
+	arg.at(i) = "w.a" + numToString(it->arg.at(i));
       }
     }
 
@@ -1156,7 +1156,7 @@ void MXFunctionInternal::generateBody(std::ostream &stream, const std::string& t
       res.front() = "r" + numToString(it->res.front());
     } else {
       for(int i=0; i<it->res.size(); ++i){
-	res.at(i) = "w.a" + numToString(it->res.front());
+	res.at(i) = "w.a" + numToString(it->res.at(i));
       }
     }
 
@@ -1320,19 +1320,19 @@ void MXFunctionInternal::generateAuxiliary(std::ostream &stream) const{
   stream << "  int ncol_x = sp_x[1];" << endl;
   stream << "  const int* rowind_x = sp_x+2;" << endl;
   stream << "  const int* col_x = sp_x + 2 + nrow_x+1;" << endl;
-  stream << "  int nnz_x = rowind_x[nrow_x];" << endl;
+  //  stream << "  int nnz_x = rowind_x[nrow_x];" << endl;
 
   stream << "  int ncol_y = sp_trans_y[0];" << endl;
   stream << "  int nrow_y = sp_trans_y[1];" << endl;
   stream << "  const int* colind_y = sp_trans_y+2;" << endl;
   stream << "  const int* row_y = sp_trans_y + 2 + ncol_y+1;" << endl;
-  stream << "  int nnz_y = colind_y[ncol_y];" << endl;
+  //  stream << "  int nnz_y = colind_y[ncol_y];" << endl;
 
   stream << "  int nrow_z = sp_z[0];" << endl;
   stream << "  int ncol_z = sp_z[1];" << endl;
   stream << "  const int* rowind_z = sp_z+2;" << endl;
   stream << "  const int* col_z = sp_z + 2 + nrow_z+1;" << endl;
-  stream << "  int nnz_z = rowind_z[nrow_z];" << endl;
+  //  stream << "  int nnz_z = rowind_z[nrow_z];" << endl;
   
   stream << "  int i;" << endl;
   stream << "  for(i=0; i<nrow_z; ++i){" << endl;
