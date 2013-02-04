@@ -341,13 +341,11 @@ void SXFunctionInternal::print(ostream &stream) const{
   }
 }
 
-void SXFunctionInternal::generateAuxiliary(std::ostream &stream) const{
-  // The sign function
-  stream << "inline double sign(double x){ return x<0 ? -1 : x>0 ? 1 : x;}" << endl;
-  stream << endl;
+void SXFunctionInternal::generateAuxiliary(CodeGenerator& gen) const{
+  gen.addAuxiliary(CodeGenerator::AUX_SIGN);
 }
 
-void SXFunctionInternal::generateBody(std::ostream &stream, const std::string& type, const std::map<const void*,int>& sparsity_index, const std::map<const void*,int>& dependent_index) const{
+void SXFunctionInternal::generateBody(std::ostream &stream, const std::string& type, CodeGenerator& gen) const{
   // Which variables have been declared
   vector<bool> declared(work_.size(),false);
  
@@ -1483,9 +1481,8 @@ void SXFunctionInternal::allocOpenCL(){
   ss << "__kernel ";
 
   // Generate the function
-  std::map<const void*,int> sparsity_index;
-  std::map<const void*,int> dependent_index;
-  generateFunction(ss, "evaluate", "__global const double*","__global double*","double",sparsity_index,dependent_index);
+  CodeGenerator gen;
+  generateFunction(ss, "evaluate", "__global const double*","__global double*","double",gen);
   
   // Form c-string
   std::string s = ss.str();

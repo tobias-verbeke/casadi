@@ -26,6 +26,7 @@
 #include "fx.hpp"
 #include "../weak_ref.hpp"
 #include <set>
+#include "code_generator.hpp"
 
 // This macro is for documentation purposes
 #define INPUTSCHEME(name)
@@ -144,36 +145,15 @@ class FXInternal : public OptionsFunctionalityNode{
     /** \brief  Print to a c file */
     virtual void generateCode(const std::string& filename);
 
-    /** \brief Generate code for sparsity patterns */
-    virtual void generateSparsityPatterns(std::ostream &stream, std::map<const void*,int>& sparsity_index) const;
+    /** \brief Generate code for function inputs and outputs */
+    void generateIO(CodeGenerator& gen);
 
     /** \brief Generate code for dependent functions */
-    virtual void generateDependents(std::ostream &stream, const std::map<const void*,int>& sparsity_index, std::map<const void*,int>& dependent_index) const;
+    virtual void generateDependencies(CodeGenerator& gen) const{}
 
     /** \brief Generate code for the C functon */
-    virtual void generateFunction(std::ostream &stream, const std::string& fname, const std::string& input_type, const std::string& output_type, const std::string& type, const std::map<const void*,int>& sparsity_index, const std::map<const void*,int>& dependent_index) const;
-  
-    /** \brief COPY sparse: y <- x, (see CRSSparsity::set) */
-    static void generateCopySparse(std::ostream &stream);
-
-    /** Convert in integer to a string */
-    static std::string numToString(int n);
-
-    /** \brief  Print to a c file */
-    static void printVector(std::ostream &cfile, const std::string& name, const std::vector<int>& v);
-  
-    /** \brief Print a sparsity pattern to stream */
-    static int printSparsity(std::ostream &stream, const CRSSparsity& sp, std::map<const void*,int>& sparsity_index);
-
-    /** \brief Find an existing sparsity pattern */
-    static int findSparsity(const CRSSparsity& sp, const std::map<const void*,int>& sparsity_index);
-
-    /** \brief Print a dependent function to stream */
-    static int printDependent(std::ostream &stream, const FX& f, const std::map<const void*,int>& sparsity_index, std::map<const void*,int>& dependent_index);
-
-    /** \brief Find an existing dependent function */
-    static int findDependent(const FX& f, const std::map<const void*,int>& dependent_index);
-
+    virtual void generateFunction(std::ostream &stream, const std::string& fname, const std::string& input_type, const std::string& output_type, const std::string& type, CodeGenerator& gen) const;
+      
     /** \brief  Access an input */
     FunctionIO& iStruct(int i){
       try{

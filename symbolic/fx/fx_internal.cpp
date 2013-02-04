@@ -156,19 +156,19 @@ void FXInternal::requestNumSens(int nfwd, int nadj){
 
 void FXInternal::print(ostream &stream) const{
   if (getNumInputs()==1) {
-    stream << " Input: " << input().dimString() << std::endl;
+    stream << " Input: " << input().dimString() << endl;
   } else{
-    stream << " Inputs (" << getNumInputs() << "):" << std::endl;
+    stream << " Inputs (" << getNumInputs() << "):" << endl;
     for (int i=0;i<getNumInputs();i++) {
-      stream << "  " << i+1 << ". " << input(i).dimString() << std::endl;
+      stream << "  " << i+1 << ". " << input(i).dimString() << endl;
     }
   }
   if (getNumOutputs()==1) {
-    stream << " Output: " << output().dimString() << std::endl;
+    stream << " Output: " << output().dimString() << endl;
   } else {
-    stream << " Outputs (" << getNumOutputs() << "):" << std::endl;
+    stream << " Outputs (" << getNumOutputs() << "):" << endl;
     for (int i=0;i<getNumOutputs();i++) {
-      stream << "  " << i+1 << ". " << output(i).dimString() << std::endl;
+      stream << "  " << i+1 << ". " << output(i).dimString() << endl;
     }
   }
 }
@@ -368,7 +368,7 @@ CRSSparsity FXInternal::getJacSparsityPlain(int iind, int oind){
     // Print
     if(verbose()){
       std::cout << "FXInternal::getJacSparsity: using " << (use_fwd ? "forward" : "adjoint") << " mode: ";
-      std::cout << nsweep << " sweeps needed for " << nz_seed << " directions" << std::endl;
+      std::cout << nsweep << " sweeps needed for " << nz_seed << " directions" << endl;
     }
     
     // Progress
@@ -386,7 +386,7 @@ CRSSparsity FXInternal::getJacSparsityPlain(int iind, int oind){
         // Print when entering a new decade
         if(progress_new / 10 > progress / 10){
           progress = progress_new;
-          std::cout << progress << " %"  << std::endl;
+          std::cout << progress << " %"  << endl;
         }
       }
       
@@ -446,7 +446,7 @@ CRSSparsity FXInternal::getJacSparsityPlain(int iind, int oind){
     // Return sparsity pattern
     if(verbose()){
       std::cout << "Formed Jacobian sparsity pattern (dimension " << ret.shape() << ", " << 100*double(ret.size())/ret.numel() << " \% nonzeros)." << endl;
-      std::cout << "FXInternal::getJacSparsity end " << std::endl;
+      std::cout << "FXInternal::getJacSparsity end " << endl;
     }
     return ret;
 }
@@ -1408,7 +1408,7 @@ void FXInternal::call(const MXVector& arg, MXVector& res,  const MXVectorVector&
       if(arg[i].isNull() || arg[i].empty() || input(i).isNull() || input(i).empty()) continue;
       casadi_assert_message(arg[i].size1()==input(i).size1() && arg[i].size2()==input(i).size2(),
                             "Evaluation::shapes of passed-in dependencies should match shapes of inputs of function." << 
-                            std::endl << "Input argument " << i << " has shape (" << input(i).size1() << 
+                            endl << "Input argument " << i << " has shape (" << input(i).size1() << 
                             "," << input(i).size2() << ") while a shape (" << arg[i].size1() << "," << arg[i].size2() << 
                             ") was supplied.");
     }
@@ -1492,156 +1492,84 @@ FX FXInternal::getNumericJacobian(int iind, int oind, bool compact, bool symmetr
   }
 
 
-void FXInternal::generateCode(const string& src_name){
-  casadi_error("FXInternal::generateCode: generateCode not defined for class " << typeid(*this).name());
-}
-
-void FXInternal::printVector(std::ostream &cfile, const std::string& name, const vector<int>& v){
-  cfile << "int " << name << "[] = {";
-  for(int i=0; i<v.size(); ++i){
-    if(i!=0) cfile << ",";
-    cfile << v[i];
+  void FXInternal::generateCode(const string& src_name){
+    casadi_error("FXInternal::generateCode: generateCode not defined for class " << typeid(*this).name());
   }
-  cfile << "};" << endl;
-}
 
-int FXInternal::printSparsity(std::ostream &stream, const CRSSparsity& sp, std::map<const void*,int>& sparsity_index){
-  // Get the current number of patterns before looking for it
-  size_t num_patterns_before = sparsity_index.size();
-
-  // Get index of the pattern
-  const void* h = static_cast<const void*>(sp.get());
-  int& ind = sparsity_index[h];
-
-  // Generate it if it does not exist
-  if(sparsity_index.size() > num_patterns_before){
-    // Add at the end
-    ind = num_patterns_before;
+  void FXInternal::generateFunction(std::ostream &stream, const std::string& fname, const std::string& input_type, const std::string& output_type, const std::string& type, CodeGenerator& gen) const{
+    casadi_error("FXInternal::generateFunction: generateFunction not defined for class " << typeid(*this).name());
+  }
+ 
+  void FXInternal::generateIO(CodeGenerator& gen){
+    // Short-hands
+    int n_i = input_.size();
+    int n_o = output_.size();
+    int n_io = n_i + n_o;
+    stringstream &s = gen.function_;
     
-    // Compact version of the sparsity pattern
-    std::vector<int> sp_compact = sp_compress(sp);
+    // Function that returns the number of inputs and outputs
+    s << "int init(int *n_in, int *n_out){" << endl;
+    s << "  *n_in = " << n_i << ";" << endl;
+    s << "  *n_out = " << n_o << ";" << endl;
+    s << "  return 0;" << endl;
+    s << "}" << endl;
+    s << endl;
+
+    // Inputs and outputs for each parsity index
+    std::multimap<int,int> io_sparsity_index;
+  
+    // The number of patterns needed for the inputs and outputs
+    int num_io_patterns = 0;
+
+    // Get the sparsity pattern of all inputs
+    for(int i=0; i<n_io; ++i){
+      // Get the sparsity pattern
+      const CRSSparsity& sp = i<n_i ? input(i).sparsity() : output(i-n_i).sparsity();
       
-    // Give it a name
-    stringstream name;
-    name << "s" << ind;
+      // Print the sparsity pattern or retrieve the index of an existing pattern
+      int ind = gen.addSparsity(sp);
+      num_io_patterns = std::max(num_io_patterns,ind+1);
+      
+      // Store the index    
+      io_sparsity_index.insert(std::pair<int,int>(ind,i));
+    }
+
+    // Function that returns the sparsity pattern
+    s << "int getSparsity(int i, int *nrow, int *ncol, int **rowind, int **col){" << endl;
     
-    // Print to file
-    printVector(stream,name.str(),sp_compact);
+    // Get the sparsity index using a switch
+    s << "  int* sp;" << endl;
+    s << "  switch(i){" << endl;
     
-    // Separate with an empty line
-    stream << endl;
+    // Loop over all sparsity patterns
+    for(int i=0; i<num_io_patterns; ++i){
+      // Get the range of matching sparsity patterns
+      typedef std::multimap<int,int>::const_iterator it_type;
+      std::pair<it_type,it_type> r = io_sparsity_index.equal_range(i);
+      
+      // Print the cases covered
+      for(it_type it=r.first; it!=r.second; ++it){
+	s << "    case " << it->second << ":" << endl;
+      }
+      
+      // Map to sparsity
+      s << "      sp = s" << i << "; break;" << endl;
+    }
+    
+    // Finalize the switch
+    s << "    default:" << endl;
+    s << "      return 1;" << endl;
+    s << "  }" << endl << endl;
+    
+    // Decompress the sparsity pattern
+    s << "  *nrow = sp[0];" << endl;
+    s << "  *ncol = sp[1];" << endl;
+    s << "  *rowind = sp + 2;" << endl;
+    s << "  *col = sp + 2 + (*nrow + 1);" << endl;
+    s << "  return 0;" << endl;
+    s << "}" << endl << endl;
   }
 
-  return ind;
-}
-
-int FXInternal::findSparsity(const CRSSparsity& sp, const std::map<const void*,int>& sparsity_index){
-  const void* h = static_cast<const void*>(sp.get());
-  std::map<const void*,int>::const_iterator it=sparsity_index.find(h);
-  casadi_assert(it!=sparsity_index.end());
-  return it->second;  
-}
-
-int FXInternal::printDependent(std::ostream &stream, const FX& f, const std::map<const void*,int>& sparsity_index, std::map<const void*,int>& dependent_index){
-  // Get the current number of functions before looking for it
-  size_t num_f_before = dependent_index.size();
-
-  // Get index of the pattern
-  const void* h = static_cast<const void*>(f.get());
-  int& ind = dependent_index[h];
-
-  // Generate it if it does not exist
-  if(dependent_index.size() > num_f_before){
-    // Add at the end
-    ind = num_f_before;
-          
-    // Give it a name
-    stringstream name;
-    name << "f" << ind;
-    
-    // Print to file
-    f->generateFunction(stream, name.str(), "const d*","d*","d",sparsity_index,dependent_index);
-  }
-
-  return ind;
-}
-
-int FXInternal::findDependent(const FX& f, const std::map<const void*,int>& dependent_index){
-  const void* h = static_cast<const void*>(f.get());
-  std::map<const void*,int>::const_iterator it=dependent_index.find(h);
-  casadi_assert(it!=dependent_index.end());
-  return it->second;
-}
-
-
-void FXInternal::generateSparsityPatterns(std::ostream &stream, std::map<const void*,int>& sparsity_index) const{
-  casadi_error("FXInternal::generateSparsityPatterns: generateSparsityPatterns not defined for class " << typeid(*this).name());
-}
-
-void FXInternal::generateDependents(std::ostream &stream, const std::map<const void*,int>& sparsity_index, std::map<const void*,int>& dependent_index) const{
-  casadi_error("FXInternal::generateDependents: generateDependents not defined for class " << typeid(*this).name());
-}
-
-void FXInternal::generateFunction(std::ostream &stream, const std::string& fname, const std::string& input_type, const std::string& output_type, const std::string& type, const std::map<const void*,int>& sparsity_index, const std::map<const void*,int>& dependent_index) const{
-  casadi_error("FXInternal::generateFunction: generateFunction not defined for class " << typeid(*this).name());
-}
-
-std::string FXInternal::numToString(int n){
-  stringstream ss;
-  ss << n;
-  return ss.str();
-}
-
-void FXInternal::generateCopySparse(std::ostream &stream){
-  // COPY: y <- x
-  stream << "inline void casadi_copy(int n, const d* x, int inc_x, d* y, int inc_y){" << endl;
-  stream << "  int i;" << endl;
-  stream << "  for(i=0; i<n; ++i){" << endl;
-  stream << "    *y = *x;" << endl;
-  stream << "    x += inc_x;" << endl;
-  stream << "    y += inc_y;" << endl;
-  stream << "  }" << endl;
-  stream << "}" << endl;
-  stream << endl;
-
-  stream << "inline void casadi_copy_sparse(const d* x, const int* sp_x, d* y, const int* sp_y){" << endl;
-  stream << "  int nrow_x = sp_x[0];" << endl;
-  stream << "  int ncol_x = sp_x[1];" << endl;
-  stream << "  const int* rowind_x = sp_x+2;" << endl;
-  stream << "  const int* col_x = sp_x + 2 + nrow_x+1;" << endl;
-  stream << "  int nnz_x = rowind_x[nrow_x];" << endl;
-  stream << "  int nrow_y = sp_y[0];" << endl;
-  stream << "  int ncol_y = sp_y[1];" << endl;
-  stream << "  const int* rowind_y = sp_y+2;" << endl;
-  stream << "  const int* col_y = sp_y + 2 + nrow_y+1;" << endl;
-  stream << "  int nnz_y = rowind_y[nrow_y];" << endl;
-  stream << "  if(sp_x==sp_y){" << endl;
-  stream << "    casadi_copy(nnz_x,x,1,y,1);" << endl;
-  stream << "  } else {" << endl;
-  stream << "    int i;" << endl;
-  stream << "    for(i=0; i<nrow_x; ++i){" << endl;
-  stream << "      int el_x = rowind_x[i];" << endl;
-  stream << "      int el_x_end = rowind_x[i+1];" << endl;
-  stream << "      int j_x = el_x<el_x_end ? col_x[el_x] : ncol_x;" << endl;
-  stream << "      int el_y;" << endl;
-  stream << "      for(el_y=rowind_y[i]; el_y!=rowind_y[i+1]; ++el_y){" << endl;
-  stream << "        int j=col_y[el_y];" << endl;
-  stream << "        while(j_x<j){" << endl;
-  stream << "          el_x++;" << endl;
-  stream << "          j_x = el_x<el_x_end ? col_x[el_x] : ncol_x;" << endl;
-  stream << "        }" << endl;
-  stream << "        if(j_x==j){" << endl;
-  stream << "          y[el_y] = x[el_x++];" << endl;
-  stream << "          j_x = el_x<el_x_end ? col_x[el_x] : ncol_x;" << endl;
-  stream << "        } else {" << endl;
-  stream << "          y[el_y] = 0;" << endl;
-  stream << "        }" << endl;
-  stream << "      }" << endl;
-  stream << "    }" << endl;
-  stream << "  }" << endl;
-  stream << "}" << endl;
-  stream << endl;
-}
 
 } // namespace CasADi
 
