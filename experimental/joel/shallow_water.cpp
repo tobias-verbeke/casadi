@@ -22,6 +22,8 @@
 
 #include <symbolic/casadi.hpp>
 #include <interfaces/qpoases/qpoases_solver.hpp>
+#include <interfaces/ipopt/ipopt_solver.hpp>
+#include <nonlinear_programming/nlp_qp_solver.hpp>
 
 #include <iomanip>
 #include <ctime>
@@ -29,7 +31,6 @@
 
 using namespace CasADi;
 using namespace std;
-
 
 class Tester{
 public:
@@ -46,7 +47,7 @@ public:
   void transcribe(bool single_shooting, bool gauss_newton);
 
   // Prepare NLP
-  void prepare(bool codegen);
+  void prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization, double reg_threshold);
  
   // Solve NLP
   void solve(int& iter_count);
@@ -77,6 +78,8 @@ public:
   bool single_shooting_;
   bool verbose_;
   bool gauss_newton_;
+  bool regularization_;
+  double reg_threshold_;
 
   // NLP
   SXFunction fg_sx_;
@@ -110,10 +113,13 @@ public:
   FX efcn_;
   
   /// Dimensions
-  int ng_, ngL_;
+  int nu_, ng_, ngL_;
 
-  /// Dual step
-  vector<double> lbg_, ubg_, lambda_g_, dlambda_g_;
+  // Simple and nonlinear bounds
+  vector<double> lbu_, ubu_, lbg_, ubg_;
+
+  /// Multipliers for the nonlinear bounds
+  vector<double> lambda_g_, dlambda_g_;
 
   int g_con_;
   int g_f_, g_g_;
@@ -139,7 +145,7 @@ public:
     int e_var, e_lam;
     int e_exp, e_expL;
 
-    vector<double> dx, init, lb, ub, opt, lam, dlam;
+    vector<double> step, init, opt, lam, dlam;
     vector<double> res, resL;
     
   };
@@ -335,7 +341,7 @@ void Tester::transcribe(bool single_shooting, bool gauss_newton){
       // Initialize with initial conditions
       //U.lift(u0_);
       //V.lift(v0_);
-      //H.lift(h0_);
+      //H.lift(DMatrix::zeros(n_boxes_  ,n_boxes_));
       
       // Initialize through simulation
       //      U.lift(U);
@@ -369,8 +375,10 @@ void Tester::transcribe(bool single_shooting, bool gauss_newton){
     
 }
 
-void Tester::prepare(bool codegen){
+void Tester::prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization, double reg_threshold){
   verbose_ = true;
+  regularization_ = regularization;
+  reg_threshold_ = reg_threshold;
   
   if(codegen){
     // Make sure that command processor is available
@@ -396,6 +404,7 @@ void Tester::prepare(bool codegen){
   }
 
   // Get the dimensions
+  nu_ = var[0].size();
   ng_ = con[0].size();
   x_.resize(var.size());
   for(int i=0; i<x_.size(); ++i){
@@ -403,19 +412,23 @@ void Tester::prepare(bool codegen){
   }
 
   // Allocate memory
+  lbu_.resize(nu_,-numeric_limits<double>::infinity());
+  ubu_.resize(nu_, numeric_limits<double>::infinity());
   lbg_.resize(ng_,-numeric_limits<double>::infinity());
   ubg_.resize(ng_, numeric_limits<double>::infinity());
-  lambda_g_.resize(ng_,0);
-  dlambda_g_.resize(ng_,0);
+  if(!gauss_newton_){
+    lambda_g_.resize(ng_,0);
+    dlambda_g_.resize(ng_,0);
+  }
  
   for(vector<Var>::iterator it=x_.begin(); it!=x_.end(); ++it){
     it->init.resize(it->n,0);
     it->opt.resize(it->n,0);
-    it->lb.resize(it->n,-numeric_limits<double>::infinity());
-    it->ub.resize(it->n, numeric_limits<double>::infinity());
-    it->lam.resize(it->n,0);
-    it->dlam.resize(it->n,0);
-    it->dx.resize(it->n,0);
+    it->step.resize(it->n,0);
+    if(!gauss_newton_){
+      it->lam.resize(it->n,0);
+      it->dlam.resize(it->n,0);
+    }
   }
 
   // Scalar objective function
@@ -437,8 +450,6 @@ void Tester::prepare(bool codegen){
 
   } else {
 
-#if 0
-#error    
     // Scalar objective function
     obj = f;
     
@@ -450,7 +461,7 @@ void Tester::prepare(bool codegen){
       lam[i] = msym(ss.str(),var[i].sparsity());
     }
 
-    // Lagrange multipliers for the nonlinear constraints that aren't eliminated
+    // Lagrange multipliers for the nonlinear constraints
     lam_g = msym("lam_g",ng_);
 
     if(verbose_){
@@ -480,40 +491,39 @@ void Tester::prepare(bool codegen){
       gL[i] = asens[0].at(i);
       makeDense(gL[i]);
     }
-    ngL_ = x_[0].n;
+    ngL_ = nu_;
 
     if(verbose_){
       cout << "Generated the gradient of the Lagrangian." << endl;
     }
-#endif
   }
 
   // Residual function
 
   // Inputs
-  vector<MX> rfcn_in(1+2*x_.size());
+  vector<MX> rfcn_in;
   int n=0;
-  rfcn_in[n] = lam_g;
-  g_con_ = n++;
-  for(int i=0; i<x_.size(); ++i){
-    rfcn_in[n] = var[i];    x_[i].g_var = n++;
-    rfcn_in[n] = lam[i];    x_[i].g_lam = n++;
+  if(!gauss_newton_){
+    rfcn_in.push_back(lam_g);       g_con_ = n++;
   }
-  casadi_assert(n==rfcn_in.size());
+  for(int i=0; i<x_.size(); ++i){
+    rfcn_in.push_back(var[i]);      x_[i].g_var = n++;
+    if(!gauss_newton_){
+      rfcn_in.push_back(lam[i]);    x_[i].g_lam = n++;
+    }
+  }
 
   // Outputs
+  vector<MX> rfcn_out;
   n=0;
-  vector<MX> rfcn_out(2+2*(x_.size()-1));
-  rfcn_out[n] = obj;               g_f_ = n++;
-  rfcn_out[n] = con[0];            g_g_ = n++;
+  rfcn_out.push_back(obj);               g_f_ = n++;
+  rfcn_out.push_back(con[0]);            g_g_ = n++;
   for(int i=1; i<x_.size(); ++i){
-    rfcn_out[n] = con[i]-var[i];   x_[i].g_d = n++;
-    if(!lam[i].isNull()){
-      rfcn_out[n] = gL[i]-lam[i];
+    rfcn_out.push_back(con[i]-var[i]);   x_[i].g_d = n++;
+    if(!gauss_newton_){
+      rfcn_out.push_back(gL[i]-lam[i]);  x_[i].g_lam_d = n++;
     }
-    x_[i].g_lam_d = n++;
   }
-  casadi_assert(n==rfcn_out.size());
 
   // Generate function
   MXFunction rfcn(rfcn_in,rfcn_out);
@@ -532,14 +542,37 @@ void Tester::prepare(bool codegen){
   }
 
   // Declare difference vector d and substitute out v
-  vector<MX> d(x_.size());
-  vector<MX> d_def(x_.size());
+  vector<MX> d;
+  vector<MX> d_def;
   stringstream ss;
   for(int i=1; i<x_.size(); ++i){
     ss.str(string());
     ss << "d" << i;
-    d[i] = msym(ss.str(),var[i].sparsity());
-    d_def[i] = con[i]-d[i];
+    MX d_i = msym(ss.str(),var[i].sparsity());
+    d.push_back(d_i);
+    d_def.push_back(con[i]-d_i);
+  }
+
+  // Declare difference vector lam_d and substitute out lam_v
+  vector<MX> lam_d;
+  vector<MX> lam_d_def;
+  if(!gauss_newton_){
+    for(int i=1; i<x_.size(); ++i){
+      ss.str(string());
+      ss << "lam_d" << i;
+      MX lam_d_i = msym(ss.str(),var[i].sparsity());
+      lam_d.push_back(lam_d_i);
+      lam_d_def.push_back(lam[i]-lam_d_i);
+    }
+  }
+
+  // Variables to be substituted and their definitions
+  vector<MX> svar, sdef;
+  svar.insert(svar.end(),var.begin()+1,var.end());
+  sdef.insert(sdef.end(),d_def.begin(),d_def.end());
+  if(!gauss_newton_){
+    svar.insert(svar.end(),lam.rbegin(),lam.rend()-1);
+    sdef.insert(sdef.end(),lam_d_def.rbegin(),lam_d_def.rend());    
   }
 
   vector<MX> ex(2);
@@ -547,60 +580,39 @@ void Tester::prepare(bool codegen){
   ex[1] = con[0];
   ex.insert(ex.end(),gL.begin(),gL.end());
  
-  vector<MX> svar, sdef;
-  svar.insert(svar.end(),var.begin()+1,var.end());
-  sdef.insert(sdef.end(),d_def.begin()+1,d_def.end());
   substituteInPlace(svar, sdef, ex, false);
-  copy(sdef.begin(),sdef.end(),d_def.begin()+1);  
+  copy(sdef.begin(),sdef.begin()+d_def.size(),d_def.begin());  
+  if(!gauss_newton_){
+    copy(sdef.rbegin(),sdef.rbegin()+lam_d_def.size(),lam_d_def.begin());
+  }
 
-  vector<MX> gL_z(x_.size());
   MX obj_z = ex[0];
   MX g_z = ex[1];
-  for(int i=0; i<x_.size(); ++i){
-    gL_z[i] = ex[2+i];
-  }
-
-  // Declare difference vector lam_d and substitute out lam_v
-  vector<MX> lam_d(x_.size());
-  vector<MX> lam_d_def(x_.size());
-  if(!gauss_newton_){
-#if 0
-#error
-    for(int i=1; i<x_.size(); ++i){
-      ss.str(string());
-      ss << "lam_d" << i;
-      lam_d[i] = msym(ss.str(),var[i].sparsity());
-      lam_d_def[i] = lam[i]-lam_d[i];
-    }
-
-    ex[0] = gL_z[0];
-    ex[1] = g_z[1];
-    ex.resize(2);
-    substituteInPlace(lam[1], lam_d_def[1], ex, false);    
-    gL_z[0] = ex[0];
-    g_z = ex[1];
-#endif
-  }
+  vector<MX> gL_z(ex.begin()+2,ex.end());
   
   // Modified function Z
-  vector<MX> z_in(1+2*x_.size());
+  vector<MX> z_in;
   n=0;
-  z_in[z_con_ = n++] = lam_g;
-  for(int i=0; i<x_.size(); ++i){
-    z_in[x_[i].z_var=n++] = i==0 ? var[0] :     d[i];
-    z_in[x_[i].z_lam=n++] = i==0 ? lam[0] : lam_d[i];    
+  if(!gauss_newton_){
+    z_in.push_back(lam_g);                       z_con_ = n++;
   }
-  casadi_assert(n==z_in.size());
+  for(int i=0; i<x_.size(); ++i){
+    z_in.push_back(i==0 ? var[0] :     d[i-1]);    x_[i].z_var = n++;
+    if(!gauss_newton_){
+      z_in.push_back(i==0 ? lam[0] : lam_d[i-1]);  x_[i].z_lam = n++;
+    }
+  }
 
   // Outputs
   n=0;
-  vector<MX> z_out(1+2*(x_.size()-1));
-  z_out[z_fg_=n++] = vertcat(gL_z[0],g_z);
+  vector<MX> z_out;
+  z_out.push_back(vertcat(gL_z[0],g_z));  z_fg_ = n++;
   for(int i=1; i<x_.size(); ++i){
-    z_out[x_[i].z_def=n++] =  d_def[i];
-    z_out[x_[i].z_defL=n++] = lam_d_def[i];
+    z_out.push_back(d_def[i-1]);            x_[i].z_def = n++;
+    if(!gauss_newton_){
+      z_out.push_back(lam_d_def[i-1]);      x_[i].z_defL = n++;
+    }
   }
-  casadi_assert(n==z_out.size());
 
   MXFunction zfcn(z_in,z_out);
   zfcn.setOption("name","zfcn");
@@ -611,17 +623,17 @@ void Tester::prepare(bool codegen){
 
   // Matrix A and B in lifted Newton
   MX B = zfcn.jac(x_[0].z_var,z_fg_);
-  MX qpH = B(Slice(0,ngL_),Slice(0,B.size2()));
-  MX qpA = B(Slice(ngL_,B.size1()),Slice(0,B.size2()));
+  MX qpH = B( Slice(    0, ngL_     ), Slice() );
+  MX qpA = B( Slice( ngL_, ngL_+ng_ ), Slice() );
   if(verbose_){
     cout << "Formed qpH (dimension " << qpH.size1() << "-by-" << qpH.size2() << ", "<< qpH.size() << " nonzeros) " <<
-    "and qpA (dimension " << qpA.size1() << "-by-" << qpA.size2() << ", "<< qpA.size() << " nonzeros)." << endl;
+               "and qpA (dimension " << qpA.size1() << "-by-" << qpA.size2() << ", "<< qpA.size() << " nonzeros)." << endl;
   }
   
   // Step in u
-  MX du = msym("du",x_[0].n);
+  MX du = msym("du",nu_);
   MX dlam_g;
-  if(!lam_g.isNull()){
+  if(!gauss_newton_){
     dlam_g = msym("dlam_g",lam_g.sparsity());
   }
   MX qpG = gL_z[0];
@@ -637,16 +649,22 @@ void Tester::prepare(bool codegen){
     vector<vector<MX> > Z_adjSeed;
     vector<vector<MX> > Z_adjSens;
     for(int sweep=0; sweep<2; ++sweep){
-      Z_fwdSeed[0][z_con_] = MX();
+      if(!gauss_newton_){
+	Z_fwdSeed[0][z_con_] = MX();
+      }
       if(sweep==0){
 	Z_fwdSeed[0][x_[0].z_var] = MX();
       } else {
 	Z_fwdSeed[0][x_[0].z_var] = du;
       }
-      Z_fwdSeed[0][x_[0].z_lam] = MX();
+      if(!gauss_newton_){
+	Z_fwdSeed[0][x_[0].z_lam] = MX();
+      }
       for(int i=1; i<x_.size(); ++i){
-	Z_fwdSeed[0][x_[i].z_var] = -d[i];
-	Z_fwdSeed[0][x_[i].z_lam] = MX();
+	Z_fwdSeed[0][x_[i].z_var] = -d[i-1];
+	if(!gauss_newton_){
+	  Z_fwdSeed[0][x_[i].z_lam] = MX();
+	}
       }      
       zfcn.eval(z_in,z_out,Z_fwdSeed,Z_fwdSens,Z_adjSeed,Z_adjSens,true);
     
@@ -656,14 +674,16 @@ void Tester::prepare(bool codegen){
       } else {
 	for(int i=1; i<x_.size(); ++i){
 	  v_exp[i] = Z_fwdSens[0][x_[i].z_def];
-	  vL_exp[i] = Z_fwdSens[0][x_[i].z_defL];
+	  if(!gauss_newton_){
+	    vL_exp[i] = Z_fwdSens[0][x_[i].z_defL];
+	  }
 	}
       }
     }
   }
   if(verbose_){
     cout << "Formed qpG (dimension " << qpG.size1() << "-by-" << qpG.size2() << ", "<< qpG.size() << " nonzeros) " <<
-    "and qpB (dimension " << qpB.size1() << "-by-" << qpB.size2() << ", "<< qpB.size() << " nonzeros)." << endl;
+               "and qpB (dimension " << qpB.size1() << "-by-" << qpB.size2() << ", "<< qpB.size() << " nonzeros)." << endl;
   }
   
   // Generate Gauss-Newton Hessian
@@ -680,21 +700,21 @@ void Tester::prepare(bool codegen){
   makeDense(qpB);
 
   // Quadratic approximation
-  vector<MX> lfcn_in(1+2+ 4*(x_.size()-1));
+  vector<MX> lfcn_in;
   n=0;
-  lfcn_in[n] = lam_g;          l_con_ = n++;
+  if(!gauss_newton_){
+    lfcn_in.push_back(lam_g);        l_con_ = n++;
+  }
   for(int i=0; i<x_.size(); ++i){
-    lfcn_in[n] = var[i];       x_[i].l_var = n++;
-    if(!lam[i].isNull()){
-      lfcn_in[n] = lam[i];
+    lfcn_in.push_back(var[i]);       x_[i].l_var = n++;
+    if(!gauss_newton_){
+      lfcn_in.push_back(lam[i]);     x_[i].l_lam = n++;
     }
-    x_[i].l_lam = n++;
     if(i>0){
-      lfcn_in[n] = d[i];       x_[i].l_res = n++;
-      if(!lam_d[i].isNull()){
-	lfcn_in[n] = lam_d[i];
+      lfcn_in.push_back(d[i-1]);       x_[i].l_res = n++;
+      if(!gauss_newton_){
+	lfcn_in.push_back(lam_d[i-1]); x_[i].l_resL = n++;
       }
-      x_[i].l_resL = n++;
     }
   }
   casadi_assert(n==lfcn_in.size());  
@@ -725,25 +745,32 @@ void Tester::prepare(bool codegen){
   // Step expansion function
   if(x_.size()>1){
     // Function input
-    vector<MX> efcn_in(3+2*x_.size());
+    vector<MX> efcn_in;
     n=0;
-    efcn_in[n] = lam_g;                        e_con_ = n++;
-    efcn_in[n] = du;                           e_du_ = n++;
-    efcn_in[n] = dlam_g;                       e_dlam_g_ = n++;
-    for(int i=0; i<x_.size(); ++i){
-      efcn_in[n] = i==0 ? var[0] :     d[i];   x_[i].e_var = n++;
-      efcn_in[n] = i==0 ? lam[0] : lam_d[i];   x_[i].e_lam = n++;
+    if(!gauss_newton_){
+      efcn_in.push_back(lam_g);                         e_con_ = n++;
     }
-    casadi_assert(n==efcn_in.size());
+    efcn_in.push_back(du);                              e_du_ = n++;
+    if(!gauss_newton_){
+      efcn_in.push_back(dlam_g);                        e_dlam_g_ = n++;
+    }
+    
+    for(int i=0; i<x_.size(); ++i){
+      efcn_in.push_back(   i==0 ? var[0] :     d[i-1]);   x_[i].e_var = n++;
+      if(!gauss_newton_){
+	efcn_in.push_back( i==0 ? lam[0] : lam_d[i-1]);   x_[i].e_lam = n++;
+      }
+    }
 
     // Function outputs
-    vector<MX> efcn_out(2*(x_.size()-1));
+    vector<MX> efcn_out;
     n=0;
     for(int i=1; i<x_.size(); ++i){
-      efcn_out[n]  = v_exp[i];                 x_[i].e_exp = n++;
-      efcn_out[n] = vL_exp[i];                 x_[i].e_expL = n++;
+      efcn_out.push_back(v_exp[i]);                     x_[i].e_exp = n++;
+      if(!gauss_newton_){
+	efcn_out.push_back(vL_exp[i]);                  x_[i].e_expL = n++;
+      }
     }
-    casadi_assert(n==efcn_out.size());
     
     // Form function object
     MXFunction efcn(efcn_in,efcn_out);
@@ -764,8 +791,18 @@ void Tester::prepare(bool codegen){
   }
   
   // Allocate a QP solver
-  qp_solver_ = QPOasesSolver(qpH.sparsity(),qpA.sparsity());
-  qp_solver_.setOption("printLevel","none");
+  if(ipopt_as_qp_solver){
+    qp_solver_ = NLPQPSolver(qpH.sparsity(),qpA.sparsity());
+    qp_solver_.setOption("nlp_solver",IpoptSolver::creator);
+    Dictionary nlp_solver_options;
+    nlp_solver_options["tol"] = 1e-12;
+    nlp_solver_options["print_level"] = 0;
+    nlp_solver_options["print_time"] = false;
+    qp_solver_.setOption("nlp_solver_options",nlp_solver_options);
+  } else {
+    qp_solver_ = QPOasesSolver(qpH.sparsity(),qpA.sparsity());
+    qp_solver_.setOption("printLevel","none");
+  }
   
   // Initialize the QP solver
   qp_solver_.init();
@@ -775,9 +812,10 @@ void Tester::prepare(bool codegen){
 
   // Residual
   for(int i=1; i<x_.size(); ++i){
-    x_[i].res.resize(d[i].size(),0);
-    int sz = lam_d[i].isNull() ? 0 : lam_d[i].size();
-    x_[i].resL.resize(sz,0);
+    x_[i].res.resize(d[i-1].size(),0);
+    if(!gauss_newton_){
+      x_[i].resL.resize(lam_d[i-1].size(),0);
+    }
   }
   
   if(verbose_){
@@ -859,11 +897,12 @@ void Tester::solve(int& iter_count){
   int k=0;  
   while(true){
 
-    // Evaluate residual
+    // Pass primal variables to the residual function
     for(vector<Var>::iterator it=x_.begin(); it!=x_.end(); ++it){
       rfcn_.setInput(it->opt,it->g_var);
     }
 
+    // Pass dual variables to the residual function
     if(!gauss_newton_){
       rfcn_.setInput(lambda_g_,g_con_);
       for(vector<Var>::iterator it=x_.begin(); it!=x_.end(); ++it){
@@ -871,23 +910,33 @@ void Tester::solve(int& iter_count){
       }
     }
 
+    // Evaluate residual function
     rfcn_.evaluate();
+
+    // Store residual
     f_k = rfcn_.output(g_f_).toScalar();
     const DMatrix& r_g = rfcn_.output(g_g_);
     for(vector<Var>::iterator it=x_.begin()+1; it!=x_.end(); ++it){
       rfcn_.getOutput(it->res,  it->g_d);
-      rfcn_.getOutput(it->resL, it->g_lam_d);
+      if(!gauss_newton_){
+	rfcn_.getOutput(it->resL, it->g_lam_d);
+      }
     }
     
-    // Construct the QP
-    lfcn_.setInput(lambda_g_,l_con_);
+    // Pass primal variables to the linearization function
     for(vector<Var>::iterator it=x_.begin(); it!=x_.end(); ++it){
       lfcn_.setInput(it->opt,it->l_var);
       if(!gauss_newton_){
 	lfcn_.setInput(it->lam,it->l_lam);	
       }
     }
+    
+    // Pass dual variables to the linearization function
+    if(!gauss_newton_){
+      lfcn_.setInput(lambda_g_,l_con_);
+    }
 
+    // Pass residual
     for(vector<Var>::iterator it=x_.begin()+1; it!=x_.end(); ++it){
       lfcn_.setInput(it->res, it->l_res);
       if(!gauss_newton_){
@@ -895,8 +944,10 @@ void Tester::solve(int& iter_count){
       }
     }
 
+    // Evaluate to get QP
     lfcn_.evaluate();
-
+    
+    // QP
     DMatrix& qpH = lfcn_.output(LIN_H);
     const DMatrix& qpG = lfcn_.output(LIN_QPG);
     const DMatrix& qpA = lfcn_.output(LIN_QPA);
@@ -904,10 +955,9 @@ void Tester::solve(int& iter_count){
 
     // Regularization
     double reg = 0;
-    bool regularization = true;
     
     // Check the smallest eigenvalue of the Hessian
-    if(regularization && x_[0].n==2){
+    if(regularization_ && x_[0].n==2){
       double a = qpH.elem(0,0);
       double b = qpH.elem(0,1);
       double c = qpH.elem(1,0);
@@ -923,10 +973,9 @@ void Tester::solve(int& iter_count){
       }
       
       double eig_smallest = (a+d)/2 - std::sqrt(4*b*c + (a-d)*(a-d))/2;
-      double threshold = 1e-8;
-      if(eig_smallest<threshold){
+      if(eig_smallest<reg_threshold_){
 	// Regularization
-	reg = threshold-eig_smallest;
+	reg = reg_threshold_-eig_smallest;
 	std::cerr << "Regularization with " << reg << " to ensure positive definite Hessian." << endl;
 	qpH(0,0) += reg;
 	qpH(1,1) += reg;
@@ -938,8 +987,8 @@ void Tester::solve(int& iter_count){
     qp_solver_.setInput(qpH,QP_H);
     qp_solver_.setInput(qpG,QP_G);
     qp_solver_.setInput(qpA,QP_A);
-    std::transform(x_[0].lb.begin(),x_[0].lb.end(),x_[0].opt.begin(),qp_solver_.input(QP_LBX).begin(),std::minus<double>());
-    std::transform(x_[0].ub.begin(),x_[0].ub.end(),x_[0].opt.begin(),qp_solver_.input(QP_UBX).begin(),std::minus<double>());
+    std::transform(lbu_.begin(),lbu_.end(), x_[0].opt.begin(),qp_solver_.input(QP_LBX).begin(),std::minus<double>());
+    std::transform(ubu_.begin(),ubu_.end(), x_[0].opt.begin(),qp_solver_.input(QP_UBX).begin(),std::minus<double>());
     std::transform(lbg_.begin(),lbg_.end(), qpB.begin(),qp_solver_.input(QP_LBA).begin(),std::minus<double>());
     std::transform(ubg_.begin(),ubg_.end(), qpB.begin(),qp_solver_.input(QP_UBA).begin(),std::minus<double>());
     qp_solver_.evaluate();
@@ -948,9 +997,11 @@ void Tester::solve(int& iter_count){
     const DMatrix& dlam_g = qp_solver_.output(QP_LAMBDA_A);    
     
     // Condensed step
-    copy(du.begin(),du.end(),x_[0].dx.begin());
-    copy(dlam_g.begin(),dlam_g.end(),dlambda_g_.begin());
-    copy(dlam_u.begin(),dlam_u.end(),x_[0].dlam.begin());
+    copy(du.begin(),du.end(),x_[0].step.begin());
+    if(!gauss_newton_){
+      copy(dlam_g.begin(),dlam_g.end(),dlambda_g_.begin());
+      copy(dlam_u.begin(),dlam_u.end(),x_[0].dlam.begin());
+    }
 
     // Expand the step
     if(x_.size()>1){
@@ -972,34 +1023,38 @@ void Tester::solve(int& iter_count){
       // Expanded primal step
       for(vector<Var>::iterator it=x_.begin()+1; it!=x_.end(); ++it){
 	const DMatrix& dv = efcn_.output(it->e_exp);
-	copy(dv.begin(),dv.end(),it->dx.begin());
+	copy(dv.begin(),dv.end(),it->step.begin());
       }
       
       // Expanded dual step
-      for(vector<Var>::iterator it=x_.begin()+1; it!=x_.end(); ++it){
-	const DMatrix& dlam_v = efcn_.output(it->e_expL);
-	copy(dlam_v.begin(),dlam_v.end(),it->dlam.begin());
+      if(!gauss_newton_){
+	for(vector<Var>::iterator it=x_.begin()+1; it!=x_.end(); ++it){
+	  const DMatrix& dlam_v = efcn_.output(it->e_expL);
+	  copy(dlam_v.begin(),dlam_v.end(),it->dlam.begin());
+	}
       }
     }
     
     // Take a full step
     for(vector<Var>::iterator it=x_.begin(); it!=x_.end(); ++it){
-      transform(it->dx.begin(),it->dx.end(),it->opt.begin(),it->opt.begin(),plus<double>());
+      transform(it->step.begin(),it->step.end(),it->opt.begin(),it->opt.begin(),plus<double>());
     }
 
-    transform(dlambda_g_.begin(),dlambda_g_.end(),lambda_g_.begin(),lambda_g_.begin(),plus<double>());
-    for(vector<Var>::iterator it=x_.begin(); it!=x_.end(); ++it){
-      if(it==x_.begin()){
-	copy(it->dlam.begin(),it->dlam.end(),it->lam.begin()); // BUG?
-      } else {
-	transform(it->dlam.begin(),it->dlam.end(),it->lam.begin(),it->lam.begin(),plus<double>()); // BUG?
+    if(!gauss_newton_){
+      transform(dlambda_g_.begin(),dlambda_g_.end(),lambda_g_.begin(),lambda_g_.begin(),plus<double>());
+      for(vector<Var>::iterator it=x_.begin(); it!=x_.end(); ++it){
+	//	if(it==x_.begin()){
+	  copy(it->dlam.begin(),it->dlam.end(),it->lam.begin()); // BUG?
+	  //	} else {
+	  transform(it->dlam.begin(),it->dlam.end(),it->lam.begin(),it->lam.begin(),plus<double>()); // BUG?
+	  //	}
       }
     }
 
     // Step size
     double norm_step=0;
     for(vector<Var>::iterator it=x_.begin(); it!=x_.end(); ++it){
-      for(vector<double>::const_iterator i=it->dx.begin(); i!=it->dx.end(); ++i){
+      for(vector<double>::const_iterator i=it->step.begin(); i!=it->step.end(); ++i){
 	norm_step += *i**i;
       }
     }
@@ -1017,25 +1072,33 @@ void Tester::solve(int& iter_count){
     
     // Constraint violation
     double norm_viol = 0;
+
+    // Variable bounds
     for(vector<Var>::iterator it=x_.begin(); it!=x_.end(); ++it){
-      for(int i=0; i<it->n; ++i){
-	double d = ::fmax(it->opt.at(i) - it->ub.at(i),0.) + ::fmax(it->lb.at(i) - it->opt.at(i),0.);
-	norm_viol += d*d;
+      if(it==x_.begin()){
+
+	// Simple bounds
+	for(int i=0; i<it->n; ++i){
+	  double d = ::fmax(it->opt[i]-ubu_[i],0.) + ::fmax(lbu_[i]-it->opt[i],0.);
+	  norm_viol += d*d;
+	}
+      } else {
+
+	// Lifted variables
+	for(int i=0; i<it->n; ++i){
+	  double d = it->res[i];
+	  norm_viol += d*d;
+	}
       }
     }
 
+    // Nonlinear bounds
     for(int i=0; i<ng_; ++i){
-      double d = ::fmax(r_g.at(i)-ubg_.at(i),0.) + ::fmax(lbg_.at(i)-r_g.at(i),0.);
+      double d = ::fmax(r_g.at(i)-ubg_[i],0.) + ::fmax(lbg_[i]-r_g.at(i),0.);
       norm_viol += d*d;
     }
-
-    for(vector<Var>::iterator it=x_.begin()+1; it!=x_.end(); ++it){
-      for(int i=0; i<it->n; ++i){
-	double d = ::fmax(it->res.at(i),0.) + ::fmax(-it->res.at(i),0.);
-	norm_viol += d*d;
-      }
-    }
-
+        
+    // Square root to get 2-norm
     norm_viol = sqrt(norm_viol);
     
     // Print progress (including the header every 10 rows)
@@ -1087,11 +1150,26 @@ void Tester::optimize(double drag_guess, double depth_guess, int& iter_count, do
     cout << "Passed initial guess" << endl;
   }
 
+  // Reset dual guess
+  if(!gauss_newton_){
+    fill(lambda_g_.begin(),lambda_g_.end(),0);
+    fill(dlambda_g_.begin(),dlambda_g_.end(),0);
+    for(vector<Var>::iterator it=x_.begin(); it!=x_.end(); ++it){
+      fill(it->lam.begin(),it->lam.end(),0);
+      fill(it->dlam.begin(),it->dlam.end(),0);
+    }
+  }
 
+  // Bounds on the variables
+  lbu_.at(0) = 1e-4; // drag positive
+  lbu_.at(1) = 1e-4; // depth positive
+
+  ubu_.at(0) = 1e2; // max drag
+  ubu_.at(1) = 1e2; // max depth
+
+  // Constraint bounds
   fill(lbg_.begin(),lbg_.end(),0);
   fill(ubg_.begin(),ubg_.end(),0);
-  x_[0].lb[0] = 0;
-  x_[0].lb[1] = 0;
 
   clock_t time1 = clock();
   solve(iter_count);
@@ -1105,9 +1183,28 @@ void Tester::optimize(double drag_guess, double depth_guess, int& iter_count, do
 
 int main(){
 
-  double drag_true = 2.0; // => u(0)
-  double depth_true = 0.01; // => u(1)
- 
+  // True parameter values
+  double drag_true = 2.0, depth_true = 0.01;
+  
+  // Use IPOPT as QP solver (can handle non-convex QPs)
+  bool ipopt_as_qp_solver = false;
+
+  // Use Gauss-Newton method
+  bool gauss_newton = true;
+
+  // Codegen the Lifted Newton functions
+  bool codegen = false;
+  
+  // Regularize the QP
+  bool regularization = true;
+
+  // Smallest allowed eigenvalue for the regularization
+  double reg_threshold = 1e-8;
+
+  // Problem size
+  //  int n_boxes = 100, n_euler = 100, n_meas = 20;
+  //  int n_boxes = 30, n_euler = 1000, n_meas = 20; // Paper
+  int n_boxes = 15, n_euler = 20, n_meas = 20;
 
   // Initial guesses
   vector<double> drag_guess, depth_guess;
@@ -1142,9 +1239,7 @@ int main(){
   vector<double> depth_est_eh(n_tests,-1);
   
   // Create a tester object
-  //Tester t(100,100,20);
-  //Tester t(30,1000,10); // Paper
-  Tester t(15,20,20);
+  Tester t(n_boxes,n_euler,n_meas);
     
   // Perform the modelling
   t.model();
@@ -1157,12 +1252,10 @@ int main(){
 
     // Transcribe as an NLP
     bool single_shooting = sol==0;
-    bool gauss_newton = true;
     t.transcribe(single_shooting,gauss_newton);
   
     // Prepare the NLP solver
-    bool codegen = false;
-    t.prepare(codegen);
+    t.prepare(codegen, ipopt_as_qp_solver, regularization, reg_threshold);
 
     // Run tests
     for(int test=0; test<n_tests; ++test){
