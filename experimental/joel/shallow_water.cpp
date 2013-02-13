@@ -35,7 +35,7 @@ using namespace std;
 class Tester{
 public:
   // Constructor
-  Tester(int n_boxes, int n_euler, int n_meas) : n_boxes_(n_boxes), n_euler_(n_euler), n_meas_(n_meas){}
+  Tester(int n_boxes, int n_euler, int n_finite_elements, int n_meas) : n_boxes_(n_boxes), n_euler_(n_euler), n_finite_elements_(n_finite_elements), n_meas_(n_meas){}
 
   // Perform the modelling
   void model();
@@ -61,6 +61,7 @@ public:
   // Dimensions
   int n_boxes_;
   int n_euler_;
+  int n_finite_elements_;
   int n_meas_;
 
   // Initial conditions
@@ -125,7 +126,8 @@ public:
   int g_f_, g_g_;
 
   int z_con_;
-  int z_fg_;
+  int z_obj_;
+  int z_g_;
 
   int l_con_;
 
@@ -241,7 +243,7 @@ void Tester::model(){
   f_step.init();
   cout << "generated single step dynamics (" << f_step.getAlgorithmSize() << " nodes)" << endl;
   
-  // Integrate over one interval
+  // Integrate over one subinterval
   vector<MX> f_in(4);
   MX P = msym("P",2);
   MX Uk = msym("Uk",n_boxes_+1, n_boxes_);
@@ -266,8 +268,31 @@ void Tester::model(){
   // Create an integrator function
   MXFunction f_mx(f_in,f_out);
   f_mx.init();
-  cout << "generated discrete dynamics, MX (" << f_mx.countNodes() << " nodes)" << endl;
+  cout << "generated discrete dynamics for one finite element (" << f_mx.countNodes() << " MX nodes)" << endl;
   
+  // Integrate over the complete interval
+  if(n_finite_elements_>1){
+    f_in[0] = P;
+    f_in[1] = Uk;
+    f_in[2] = Vk;
+    f_in[3] = Hk;
+    f_inter = f_in;
+    for(int j=0; j<n_finite_elements_; ++j){
+      // Create a call node
+      f_out = f_mx.call(f_inter);
+      
+      // Save intermediate state
+      f_inter[1] = f_out[0];
+      f_inter[2] = f_out[1];
+      f_inter[3] = f_out[2];
+    }
+    
+    // Create an integrator function
+    f_mx = MXFunction(f_in,f_out);
+    f_mx.init();
+    cout << "generated discrete dynamics for complete interval (" << f_mx.countNodes() << " MX nodes)" << endl;    
+  }
+    
   // Expand the discrete dynamics
   if(false){
     SXFunction f_sx(f_mx);
@@ -606,7 +631,8 @@ void Tester::prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization,
   // Outputs
   n=0;
   vector<MX> z_out;
-  z_out.push_back(vertcat(gL_z[0],g_z));  z_fg_ = n++;
+  z_out.push_back(gL_z[0]);                 z_obj_ = n++;
+  z_out.push_back(g_z);                     z_g_ = n++;
   for(int i=1; i<x_.size(); ++i){
     z_out.push_back(d_def[i-1]);            x_[i].z_def = n++;
     if(!gauss_newton_){
@@ -621,10 +647,15 @@ void Tester::prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization,
     cout << "Generated reconstruction function ( " << zfcn.getAlgorithmSize() << " nodes)." << endl;
   }
 
-  // Matrix A and B in lifted Newton
-  MX B = zfcn.jac(x_[0].z_var,z_fg_);
-  MX qpH = B( Slice(    0, ngL_     ), Slice() );
-  MX qpA = B( Slice( ngL_, ngL_+ng_ ), Slice() );
+  // Matrix A and B in lifted Newton  
+  MX qpH = zfcn.jac(x_[0].z_var,z_obj_,false,!gauss_newton_); // Exploit Hessian symmetry
+  MX qpA = zfcn.jac(x_[0].z_var,z_g_,false);
+
+  // Make sure that A has the right dimensions if empty
+  if(qpA.empty()){
+    qpA = MX::sparse(0,nu_);
+  }
+
   if(verbose_){
     cout << "Formed qpH (dimension " << qpH.size1() << "-by-" << qpH.size2() << ", "<< qpH.size() << " nonzeros) " <<
                "and qpA (dimension " << qpA.size1() << "-by-" << qpA.size2() << ", "<< qpA.size() << " nonzeros)." << endl;
@@ -669,8 +700,8 @@ void Tester::prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization,
       zfcn.eval(z_in,z_out,Z_fwdSeed,Z_fwdSens,Z_adjSeed,Z_adjSens,true);
     
       if(sweep==0){
-	qpG += Z_fwdSens[0][z_fg_](Slice(0,ngL_));
-	qpB += Z_fwdSens[0][z_fg_](Slice(ngL_,B.size1()));
+	qpG += Z_fwdSens[0][z_obj_];
+	qpB += Z_fwdSens[0][z_g_];
       } else {
 	for(int i=1; i<x_.size(); ++i){
 	  v_exp[i] = Z_fwdSens[0][x_[i].z_def];
@@ -830,16 +861,22 @@ void Tester::dynamicCompilation(MXFunction& f, FX& f_gen, std::string fname, std
   }
 
   // C compiler
+#ifdef __APPLE__
   string compiler = "gcc";
-  //string compiler = "clang";
+#else // __APPLE__
+  string compiler = "clang";
+#endif // __APPLE__
 
   // Optimization flag
-  //   string oflag = "-O3";
+  //string oflag = "-O3";
   string oflag = "";
 
   // Flag to get a DLL
+#ifdef __APPLE__
   string dlflag = " -dynamiclib";
-  //string dlflag = " -shared";
+#else // __APPLE__
+  string dlflag = " -shared";
+#endif // __APPLE__
 
   // Filenames
   string cname = fname + ".c";
@@ -1202,9 +1239,9 @@ int main(){
   double reg_threshold = 1e-8;
 
   // Problem size
-  //  int n_boxes = 100, n_euler = 100, n_meas = 20;
-  //  int n_boxes = 30, n_euler = 1000, n_meas = 20; // Paper
-  int n_boxes = 15, n_euler = 20, n_meas = 20;
+  // int  n_boxes = 100, n_euler = 100, n_finite_elements = 1, n_meas = 20;
+  // int  n_boxes = 30, n_euler = 40, n_finite_elements = 25, n_meas = 20; // Paper
+  int n_boxes = 15, n_euler = 20, n_finite_elements = 1, n_meas = 20;
 
   // Initial guesses
   vector<double> drag_guess, depth_guess;
@@ -1239,7 +1276,7 @@ int main(){
   vector<double> depth_est_eh(n_tests,-1);
   
   // Create a tester object
-  Tester t(n_boxes,n_euler,n_meas);
+  Tester t(n_boxes,n_euler,n_finite_elements,n_meas);
     
   // Perform the modelling
   t.model();
