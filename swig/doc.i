@@ -71,24 +71,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adj_via_sct  | OT_BOOLEAN   | true         | Generate new | CasADi::Inte |
 |              |              |              | functions    | gratorIntern |
@@ -835,6 +829,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::AcadoIntegrator::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::AcadoIntegrator::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::AcadoIntegrator::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::AcadoIntegrator::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::AcadoIntegrator::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -1000,24 +1010,18 @@ thus x := [xd,xa]
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adj_via_sct  | OT_BOOLEAN   | true         | Generate new | CasADi::Inte |
 |              |              |              | functions    | gratorIntern |
@@ -1657,6 +1661,25 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")
+CasADi::AcadoIntegratorInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")
+CasADi::AcadoIntegratorInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::AcadoIntegratorInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::AcadoIntegratorInternal::setOptionByEnumValue
+"
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::AcadoIntegratorInternal::hasOption "
 
 check if there is an option str ";
@@ -1719,24 +1742,18 @@ Get a weak reference to the object. ";
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | auto_init    | OT_BOOLEAN   | false        | initialize   | CasADi::Acad |
 |              |              |              | differential | oOCPInternal |
@@ -2426,6 +2443,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::AcadoOCP::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::AcadoOCP::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::AcadoOCP::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::AcadoOCP::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::AcadoOCP::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -2514,24 +2547,18 @@ Return a string with a destription (for SWIG) ";
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | auto_init    | OT_BOOLEAN   | false        | initialize   | CasADi::Acad |
 |              |              |              | differential | oOCPInternal |
@@ -3085,6 +3112,22 @@ Get the default of a certain option. ";
 %feature("docstring")  CasADi::AcadoOCPInternal::getOptionAllowed "
 
 Get the allowed values of a certain option. ";
+
+%feature("docstring")  CasADi::AcadoOCPInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::AcadoOCPInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::AcadoOCPInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::AcadoOCPInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
 
 %feature("docstring")  CasADi::AcadoOCPInternal::hasOption "
 
@@ -3773,24 +3816,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -4424,6 +4461,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::CFunction::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::CFunction::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::CFunction::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::CFunction::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::CFunction::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -4513,24 +4566,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -5030,6 +5077,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::CFunctionInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::CFunctionInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::CFunctionInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::CFunctionInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::CFunctionInternal::hasOption "
 
 check if there is an option str ";
@@ -5174,24 +5237,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adj_via_sct  | OT_BOOLEAN   | true         | Generate new | CasADi::Inte |
 |              |              |              | functions    | gratorIntern |
@@ -6026,6 +6083,24 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::CollocationIntegrator::getOptionAllowedIndex
+"
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")
+CasADi::CollocationIntegrator::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::CollocationIntegrator::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::CollocationIntegrator::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::CollocationIntegrator::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -6133,24 +6208,18 @@ Return a string with a destription (for SWIG) ";
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adj_via_sct  | OT_BOOLEAN   | true         | Generate new | CasADi::Inte |
 |              |              |              | functions    | gratorIntern |
@@ -6854,6 +6923,26 @@ CasADi::CollocationIntegratorInternal::getOptionAllowed "
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")
+CasADi::CollocationIntegratorInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")
+CasADi::CollocationIntegratorInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")
+CasADi::CollocationIntegratorInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")
+CasADi::CollocationIntegratorInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::CollocationIntegratorInternal::hasOption "
 
 check if there is an option str ";
@@ -7286,24 +7375,18 @@ Joris Gillis
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | control_endp | OT_BOOLEAN   | false        | Include a    | CasADi::Cont |
 | oint         |              |              | control      | rolSimulator |
@@ -8108,6 +8191,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::ControlSimulator::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::ControlSimulator::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::ControlSimulator::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::ControlSimulator::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::ControlSimulator::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -8213,24 +8312,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | control_endp | OT_BOOLEAN   | false        | Include a    | CasADi::Cont |
 | oint         |              |              | control      | rolSimulator |
@@ -8805,6 +8898,26 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")
+CasADi::ControlSimulatorInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")
+CasADi::ControlSimulatorInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::ControlSimulatorInternal::getOptionEnumValue
+"
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")
+CasADi::ControlSimulatorInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::ControlSimulatorInternal::hasOption "
 
 check if there is an option str ";
@@ -8918,24 +9031,18 @@ If H is not positive-definite, the solver should throw an error.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | barrier_maxi | OT_INTEGER   | 2.100e+09    | Maximum      | CasADi::Cple |
 | ter          |              |              | number of    | xInternal    |
@@ -9497,6 +9604,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::CplexInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::CplexInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::CplexInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::CplexInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::CplexInternal::hasOption "
 
 check if there is an option str ";
@@ -9614,24 +9737,18 @@ Attila Kozma, Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | barrier_maxi | OT_INTEGER   | 2.100e+09    | Maximum      | CasADi::Cple |
 | ter          |              |              | number of    | xInternal    |
@@ -10310,6 +10427,22 @@ Get the type name of a certain option. ";
 %feature("docstring")  CasADi::CplexSolver::getOptionAllowed "
 
 Get the allowed values of a certain option. ";
+
+%feature("docstring")  CasADi::CplexSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::CplexSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::CplexSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::CplexSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
 
 %feature("docstring")  CasADi::CplexSolver::getOptionDefault "
 
@@ -11213,24 +11346,18 @@ therefore more expensive if A is invariant.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -11880,6 +12007,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::CSparse::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::CSparse::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::CSparse::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::CSparse::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::CSparse::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -11970,24 +12113,18 @@ numerically singular, the prepare step will fail.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -12507,6 +12644,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::CSparseInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::CSparseInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::CSparseInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::CSparseInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::CSparseInternal::hasOption "
 
 check if there is an option str ";
@@ -12633,24 +12786,18 @@ times t_i.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adj_via_sct  | OT_BOOLEAN   | true         | Generate new | CasADi::Inte |
 |              |              |              | functions    | gratorIntern |
@@ -13718,6 +13865,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::CVodesIntegrator::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::CVodesIntegrator::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::CVodesIntegrator::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::CVodesIntegrator::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::CVodesIntegrator::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -13854,24 +14017,18 @@ rx, rz and rp.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adj_via_sct  | OT_BOOLEAN   | true         | Generate new | CasADi::Inte |
 |              |              |              | functions    | gratorIntern |
@@ -14785,6 +14942,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::CVodesInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::CVodesInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::CVodesInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::CVodesInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::CVodesInternal::hasOption "
 
 check if there is an option str ";
@@ -15074,24 +15247,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -15721,6 +15888,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::Derivative::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::Derivative::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::Derivative::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::Derivative::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::Derivative::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -15810,24 +15993,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -16331,6 +16508,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::DerivativeInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::DerivativeInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::DerivativeInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::DerivativeInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::DerivativeInternal::hasOption "
 
 check if there is an option str ";
@@ -16438,24 +16631,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | collocation_ | OT_STRING    | \"radau\"      | Collocation  | CasADi::Dire |
 | scheme       |              |              | scheme (rada | ctCollocatio |
@@ -17152,6 +17339,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::DirectCollocation::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::DirectCollocation::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::DirectCollocation::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::DirectCollocation::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::DirectCollocation::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -17281,24 +17484,18 @@ Return a string with a destription (for SWIG) ";
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | collocation_ | OT_STRING    | \"radau\"      | Collocation  | CasADi::Dire |
 | scheme       |              |              | scheme (rada | ctCollocatio |
@@ -17849,6 +18046,26 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")
+CasADi::DirectCollocationInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")
+CasADi::DirectCollocationInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::DirectCollocationInternal::getOptionEnumValue
+"
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")
+CasADi::DirectCollocationInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::DirectCollocationInternal::hasOption "
 
 check if there is an option str ";
@@ -17967,24 +18184,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | final_time   | OT_REAL      | 1            |              | CasADi::OCPS |
 |              |              |              |              | olverInterna |
@@ -18740,6 +18951,25 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::DirectMultipleShooting::getOptionAllowedIndex
+"
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")
+CasADi::DirectMultipleShooting::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::DirectMultipleShooting::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::DirectMultipleShooting::setOptionByEnumValue
+"
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::DirectMultipleShooting::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -18869,24 +19099,18 @@ Return a string with a destription (for SWIG) ";
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | final_time   | OT_REAL      | 1            |              | CasADi::OCPS |
 |              |              |              |              | olverInterna |
@@ -19482,6 +19706,26 @@ CasADi::DirectMultipleShootingInternal::getOptionAllowed "
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")
+CasADi::DirectMultipleShootingInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")
+CasADi::DirectMultipleShootingInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")
+CasADi::DirectMultipleShootingInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")
+CasADi::DirectMultipleShootingInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::DirectMultipleShootingInternal::hasOption "
 
 check if there is an option str ";
@@ -19604,24 +19848,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | final_time   | OT_REAL      | 1            |              | CasADi::OCPS |
 |              |              |              |              | olverInterna |
@@ -20371,6 +20609,23 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::DirectSingleShooting::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::DirectSingleShooting::setOptionByAllowedIndex
+"
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::DirectSingleShooting::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::DirectSingleShooting::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::DirectSingleShooting::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -20500,24 +20755,18 @@ Return a string with a destription (for SWIG) ";
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | final_time   | OT_REAL      | 1            |              | CasADi::OCPS |
 |              |              |              |              | olverInterna |
@@ -21095,6 +21344,26 @@ CasADi::DirectSingleShootingInternal::getOptionAllowed "
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")
+CasADi::DirectSingleShootingInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")
+CasADi::DirectSingleShootingInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")
+CasADi::DirectSingleShootingInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")
+CasADi::DirectSingleShootingInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::DirectSingleShootingInternal::hasOption "
 
 check if there is an option str ";
@@ -21229,24 +21498,18 @@ Implementations of SDPSolver are encouraged to exploit this block structure.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | calc_dual    | OT_BOOLEAN   | true         | Indicate if  | CasADi::SDPS |
 |              |              |              | dual should  | olverInterna |
@@ -21825,6 +22088,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::DSDPInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::DSDPInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::DSDPInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::DSDPInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::DSDPInternal::hasOption "
 
 check if there is an option str ";
@@ -21968,24 +22247,18 @@ Joris Gillis
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | calc_dual    | OT_BOOLEAN   | true         | Indicate if  | CasADi::SDPS |
 |              |              |              | dual should  | olverInterna |
@@ -22687,6 +22960,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::DSDPSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::DSDPSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::DSDPSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::DSDPSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::DSDPSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -22986,24 +23275,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -23635,6 +23918,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::ExternalFunction::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::ExternalFunction::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::ExternalFunction::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::ExternalFunction::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::ExternalFunction::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -23720,24 +24019,18 @@ Return a string with a destription (for SWIG) ";
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -24246,6 +24539,26 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")
+CasADi::ExternalFunctionInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")
+CasADi::ExternalFunctionInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::ExternalFunctionInternal::getOptionEnumValue
+"
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")
+CasADi::ExternalFunctionInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::ExternalFunctionInternal::hasOption "
 
 check if there is an option str ";
@@ -24679,24 +24992,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -25335,6 +25642,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::FX::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::FX::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::FX::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::FX::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::FX::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -25447,24 +25770,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -25965,6 +26282,22 @@ Get the default of a certain option. ";
 %feature("docstring")  CasADi::FXInternal::getOptionAllowed "
 
 Get the allowed values of a certain option. ";
+
+%feature("docstring")  CasADi::FXInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::FXInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::FXInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::FXInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
 
 %feature("docstring")  CasADi::FXInternal::hasOption "
 
@@ -26528,24 +26861,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adj_via_sct  | OT_BOOLEAN   | true         | Generate new | CasADi::Inte |
 |              |              |              | functions    | gratorIntern |
@@ -27679,6 +28006,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::IdasIntegrator::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::IdasIntegrator::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::IdasIntegrator::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::IdasIntegrator::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::IdasIntegrator::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -27818,24 +28161,18 @@ rx, rz and rp.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adj_via_sct  | OT_BOOLEAN   | true         | Generate new | CasADi::Inte |
 |              |              |              | functions    | gratorIntern |
@@ -28836,6 +29173,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::IdasInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::IdasInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::IdasInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::IdasInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::IdasInternal::hasOption "
 
 check if there is an option str ";
@@ -28916,24 +29269,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -29576,6 +29923,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::ImplicitFunction::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::ImplicitFunction::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::ImplicitFunction::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::ImplicitFunction::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::ImplicitFunction::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -29663,24 +30026,18 @@ Internal class.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -30219,6 +30576,26 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")
+CasADi::ImplicitFunctionInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")
+CasADi::ImplicitFunctionInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::ImplicitFunctionInternal::getOptionEnumValue
+"
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")
+CasADi::ImplicitFunctionInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::ImplicitFunctionInternal::hasOption "
 
 check if there is an option str ";
@@ -30563,24 +30940,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adj_via_sct  | OT_BOOLEAN   | true         | Generate new | CasADi::Inte |
 |              |              |              | functions    | gratorIntern |
@@ -31298,6 +31669,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::Integrator::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::Integrator::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::Integrator::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::Integrator::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::Integrator::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -31423,24 +31810,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adj_via_sct  | OT_BOOLEAN   | true         | Generate new | CasADi::Inte |
 |              |              |              | functions    | gratorIntern |
@@ -32034,6 +32415,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::IntegratorInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::IntegratorInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::IntegratorInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::IntegratorInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::IntegratorInternal::hasOption "
 
 check if there is an option str ";
@@ -32143,24 +32540,18 @@ Get a weak reference to the object. ";
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | expand_f     | OT_BOOLEAN   | false        | Expand the   | CasADi::NLPS |
 |              |              |              | objective    | olverInterna |
@@ -32769,6 +33160,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::IPInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::IPInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::IPInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::IPInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::IPInternal::hasOption "
 
 check if there is an option str ";
@@ -32890,24 +33297,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | expand_f     | OT_BOOLEAN   | false        | Expand the   | CasADi::NLPS |
 |              |              |              | objective    | olverInterna |
@@ -33663,6 +34064,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::IPMethod::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::IPMethod::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::IPMethod::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::IPMethod::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::IPMethod::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -33872,21 +34289,7 @@ n: number of decision variables (x)     m: number of constraints (A)
 | ad_mode      | OT_STRING    | automatic    | How to       | CasADi::Ipop |
 |              |              |              | calculate    | tInternal    |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
-|              |              |              | decides      |              |
-|              |              |              | which is     |              |
-|              |              |              | more         |              |
-|              |              |              | appropriate) |              |
+|              |              |              | Jacobians.   |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adaptive_mu_ | OT_STRING    | obj-constr-  | Globalizatio | CasADi::Ipop |
 | globalizatio |              | filter       | n strategy   | tInternal    |
@@ -37127,6 +37530,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::IpoptInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::IpoptInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::IpoptInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::IpoptInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::IpoptInternal::hasOption "
 
 check if there is an option str ";
@@ -37332,21 +37751,7 @@ wrong for equality constraints. Change the 'fixed_variable_treatment' to
 | ad_mode      | OT_STRING    | automatic    | How to       | CasADi::Ipop |
 |              |              |              | calculate    | tInternal    |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
-|              |              |              | decides      |              |
-|              |              |              | which is     |              |
-|              |              |              | more         |              |
-|              |              |              | appropriate) |              |
+|              |              |              | Jacobians.   |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adaptive_mu_ | OT_STRING    | obj-constr-  | Globalizatio | CasADi::Ipop |
 | globalizatio |              | filter       | n strategy   | tInternal    |
@@ -40734,6 +41139,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::IpoptSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::IpoptSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::IpoptSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::IpoptSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::IpoptSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -40897,24 +41318,18 @@ Retrieve information about variables and constraints ";
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | constraints  | OT_INTEGERVE |              |              | CasADi::Kins |
 |              | CTOR         |              |              | olInternal   |
@@ -41540,6 +41955,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::KinsolInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::KinsolInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::KinsolInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::KinsolInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::KinsolInternal::hasOption "
 
 check if there is an option str ";
@@ -41636,24 +42067,18 @@ See:   ImplicitFunction for more information
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | constraints  | OT_INTEGERVE |              |              | CasADi::Kins |
 |              | CTOR         |              |              | olInternal   |
@@ -42385,6 +42810,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::KinsolSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::KinsolSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::KinsolSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::KinsolSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::KinsolSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -42750,24 +43191,18 @@ n: number of decision variables (x)     m: number of constraints (A)
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | contype      | OT_INTEGERVE |              |              | CasADi::Knit |
 |              | CTOR         |              |              | roInternal   |
@@ -43399,6 +43834,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::KnitroInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::KnitroInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::KnitroInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::KnitroInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::KnitroInternal::hasOption "
 
 check if there is an option str ";
@@ -43619,24 +44070,18 @@ n: number of decision variables (x)     m: number of constraints (A)
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | contype      | OT_INTEGERVE |              |              | CasADi::Knit |
 |              | CTOR         |              |              | roInternal   |
@@ -44420,6 +44865,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::KnitroSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::KnitroSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::KnitroSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::KnitroSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::KnitroSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -44533,24 +44994,18 @@ therefore more expensive if A is invariant.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | allow_equili | OT_BOOLEAN   | false        |              | CasADi::Lapa |
 | bration_fail |              |              |              | ckLUDenseInt |
@@ -45208,6 +45663,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::LapackLUDense::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::LapackLUDense::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::LapackLUDense::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::LapackLUDense::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::LapackLUDense::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -45295,24 +45766,18 @@ Internal class.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | allow_equili | OT_BOOLEAN   | false        |              | CasADi::Lapa |
 | bration_fail |              |              |              | ckLUDenseInt |
@@ -45841,6 +46306,24 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::LapackLUDenseInternal::getOptionAllowedIndex
+"
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")
+CasADi::LapackLUDenseInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::LapackLUDenseInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::LapackLUDenseInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::LapackLUDenseInternal::hasOption "
 
 check if there is an option str ";
@@ -45932,24 +46415,18 @@ therefore more expensive if A is invariant.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -46599,6 +47076,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::LapackQRDense::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::LapackQRDense::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::LapackQRDense::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::LapackQRDense::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::LapackQRDense::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -46686,24 +47179,18 @@ Internal class.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -47224,6 +47711,24 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::LapackQRDenseInternal::getOptionAllowedIndex
+"
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")
+CasADi::LapackQRDenseInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::LapackQRDenseInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::LapackQRDenseInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::LapackQRDenseInternal::hasOption "
 
 check if there is an option str ";
@@ -47342,24 +47847,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | eta          | OT_REAL      | 0.000        | Linesearch   | CasADi::Lift |
 |              |              |              | parameter:   | edSQPInterna |
@@ -48198,6 +48697,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::LiftedSQP::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::LiftedSQP::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::LiftedSQP::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::LiftedSQP::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::LiftedSQP::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -48333,24 +48848,18 @@ Return a string with a destription (for SWIG) ";
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | eta          | OT_REAL      | 0.000        | Linesearch   | CasADi::Lift |
 |              |              |              | parameter:   | edSQPInterna |
@@ -49044,6 +49553,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::LiftedSQPInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::LiftedSQPInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::LiftedSQPInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::LiftedSQPInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::LiftedSQPInternal::hasOption "
 
 check if there is an option str ";
@@ -49161,24 +49686,18 @@ n: number of decision variables (x)     m: number of constraints (A)
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | expand_f     | OT_BOOLEAN   | false        | Expand the   | CasADi::NLPS |
 |              |              |              | objective    | olverInterna |
@@ -49784,6 +50303,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::LiftoptInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::LiftoptInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::LiftoptInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::LiftoptInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::LiftoptInternal::hasOption "
 
 check if there is an option str ";
@@ -49901,24 +50436,18 @@ n: number of decision variables (x)     m: number of constraints (A)
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | expand_f     | OT_BOOLEAN   | false        | Expand the   | CasADi::NLPS |
 |              |              |              | objective    | olverInterna |
@@ -50679,6 +51208,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::LiftoptSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::LiftoptSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::LiftoptSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::LiftoptSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::LiftoptSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -50772,24 +51317,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -51431,6 +51970,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::LinearSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::LinearSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::LinearSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::LinearSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::LinearSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -51522,24 +52077,18 @@ numerically singular, the prepare step will fail.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -52053,6 +52602,23 @@ Get the default of a certain option. ";
 %feature("docstring")  CasADi::LinearSolverInternal::getOptionAllowed "
 
 Get the allowed values of a certain option. ";
+
+%feature("docstring")  CasADi::LinearSolverInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::LinearSolverInternal::setOptionByAllowedIndex
+"
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::LinearSolverInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::LinearSolverInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
 
 %feature("docstring")  CasADi::LinearSolverInternal::hasOption "
 
@@ -53940,6 +54506,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::MuscodInterface::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::MuscodInterface::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::MuscodInterface::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::MuscodInterface::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::MuscodInterface::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -54158,6 +54740,22 @@ Get the default of a certain option. ";
 %feature("docstring")  CasADi::MuscodInternal::getOptionAllowed "
 
 Get the allowed values of a certain option. ";
+
+%feature("docstring")  CasADi::MuscodInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::MuscodInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::MuscodInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::MuscodInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
 
 %feature("docstring")  CasADi::MuscodInternal::hasOption "
 
@@ -54913,24 +55511,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -55632,6 +56224,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::MXFunction::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::MXFunction::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::MXFunction::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::MXFunction::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::MXFunction::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -55721,24 +56329,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -56298,6 +56900,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::MXFunctionInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::MXFunctionInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::MXFunctionInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::MXFunctionInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::MXFunctionInternal::hasOption "
 
 check if there is an option str ";
@@ -56688,24 +57306,18 @@ ImplicitFunction.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -57278,6 +57890,25 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::NewtonImplicitInternal::getOptionAllowedIndex
+"
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")
+CasADi::NewtonImplicitInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::NewtonImplicitInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::NewtonImplicitInternal::setOptionByEnumValue
+"
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::NewtonImplicitInternal::hasOption "
 
 check if there is an option str ";
@@ -57372,24 +58003,18 @@ Joris Gillis
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -58074,6 +58699,23 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::NewtonImplicitSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::NewtonImplicitSolver::setOptionByAllowedIndex
+"
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::NewtonImplicitSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::NewtonImplicitSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::NewtonImplicitSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -58178,24 +58820,18 @@ ImplicitFunction.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -58740,6 +59376,23 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::NLPImplicitInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::NLPImplicitInternal::setOptionByAllowedIndex
+"
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::NLPImplicitInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::NLPImplicitInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::NLPImplicitInternal::hasOption "
 
 check if there is an option str ";
@@ -58824,24 +59477,18 @@ Joris Gillis
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -59502,6 +60149,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::NLPImplicitSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::NLPImplicitSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::NLPImplicitSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::NLPImplicitSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::NLPImplicitSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -59639,24 +60302,18 @@ If H is not positive-definite, the solver should throw an error.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -60172,6 +60829,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::NLPQPInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::NLPQPInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::NLPQPInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::NLPQPInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::NLPQPInternal::hasOption "
 
 check if there is an option str ";
@@ -60289,24 +60962,18 @@ Joris Gillis
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -60945,6 +61612,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::NLPQPSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::NLPQPSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::NLPQPSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::NLPQPSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::NLPQPSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -61088,24 +61771,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | expand_f     | OT_BOOLEAN   | false        | Expand the   | CasADi::NLPS |
 |              |              |              | objective    | olverInterna |
@@ -61846,6 +62523,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::NLPSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::NLPSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::NLPSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::NLPSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::NLPSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -61989,24 +62682,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | expand_f     | OT_BOOLEAN   | false        | Expand the   | CasADi::NLPS |
 |              |              |              | objective    | olverInterna |
@@ -62602,6 +63289,22 @@ Get the default of a certain option. ";
 %feature("docstring")  CasADi::NLPSolverInternal::getOptionAllowed "
 
 Get the allowed values of a certain option. ";
+
+%feature("docstring")  CasADi::NLPSolverInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::NLPSolverInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::NLPSolverInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::NLPSolverInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
 
 %feature("docstring")  CasADi::NLPSolverInternal::hasOption "
 
@@ -64243,24 +64946,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | final_time   | OT_REAL      | 1            |              | CasADi::OCPS |
 |              |              |              |              | olverInterna |
@@ -64906,6 +65603,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::OCPSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::OCPSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::OCPSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::OCPSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::OCPSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -65039,24 +65752,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | final_time   | OT_REAL      | 1            |              | CasADi::OCPS |
 |              |              |              |              | olverInterna |
@@ -65587,6 +66294,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::OCPSolverInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::OCPSolverInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::OCPSolverInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::OCPSolverInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::OCPSolverInternal::hasOption "
 
 check if there is an option str ";
@@ -65789,24 +66512,18 @@ If H is not positive-definite, the solver should throw an error.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | artol        | OT_REAL      | 0.000        | tolerance as | CasADi::OOQP |
 |              |              |              | provided     | Internal     |
@@ -66346,6 +67063,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::OOQPInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::OOQPInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::OOQPInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::OOQPInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::OOQPInternal::hasOption "
 
 check if there is an option str ";
@@ -66467,24 +67200,18 @@ reInit();
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | artol        | OT_REAL      | 0.000        | tolerance as | CasADi::OOQP |
 |              |              |              | provided     | Internal     |
@@ -67131,6 +67858,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::OOQPSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::OOQPSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::OOQPSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::OOQPSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::OOQPSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -67311,6 +68054,23 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::OptionsFunctionality::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::OptionsFunctionality::setOptionByAllowedIndex
+"
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::OptionsFunctionality::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::OptionsFunctionality::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::OptionsFunctionality::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -67448,6 +68208,26 @@ Get the default of a certain option. ";
 %feature("docstring")  CasADi::OptionsFunctionalityNode::getOptionAllowed "
 
 Get the allowed values of a certain option. ";
+
+%feature("docstring")
+CasADi::OptionsFunctionalityNode::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")
+CasADi::OptionsFunctionalityNode::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::OptionsFunctionalityNode::getOptionEnumValue
+"
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")
+CasADi::OptionsFunctionalityNode::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
 
 %feature("docstring")  CasADi::OptionsFunctionalityNode::hasOption "
 
@@ -67747,24 +68527,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -68421,6 +69195,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::Parallelizer::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::Parallelizer::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::Parallelizer::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::Parallelizer::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::Parallelizer::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -68510,24 +69300,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -69066,6 +69850,23 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::ParallelizerInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::ParallelizerInternal::setOptionByAllowedIndex
+"
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::ParallelizerInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::ParallelizerInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::ParallelizerInternal::hasOption "
 
 check if there is an option str ";
@@ -69216,21 +70017,136 @@ If H is not positive-definite, the solver should throw an error.
 | ad_mode      | OT_STRING    | automatic    | How to       | CasADi::QPOa |
 |              |              |              | calculate    | sesInternal  |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
-|              |              |              | decides      |              |
-|              |              |              | which is     |              |
-|              |              |              | more         |              |
-|              |              |              | appropriate) |              |
+|              |              |              | Jacobians.   |              |
++--------------+--------------+--------------+--------------+--------------+
+| boundRelaxat | OT_REAL      | double       | Initial      | CasADi::QPOa |
+| ion          |              |              | relaxation   | sesInternal  |
+|              |              |              | of bounds to |              |
+|              |              |              | start        |              |
+|              |              |              | homotopy and |              |
+|              |              |              | initial      |              |
+|              |              |              | value for    |              |
+|              |              |              | far bounds.  |              |
++--------------+--------------+--------------+--------------+--------------+
+| boundToleran | OT_REAL      | double       | If upper and | CasADi::QPOa |
+| ce           |              |              | lower bounds | sesInternal  |
+|              |              |              | differ less  |              |
+|              |              |              | than this    |              |
+|              |              |              | tolerance,   |              |
+|              |              |              | they are     |              |
+|              |              |              | regarded     |              |
+|              |              |              | equal, i.e.  |              |
+|              |              |              | as equality  |              |
+|              |              |              | constraint.  |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableCholes | OT_INTEGER   | int          | Specifies    | CasADi::QPOa |
+| kyRefactoris |              |              | the          | sesInternal  |
+| ation        |              |              | frequency of |              |
+|              |              |              | a full re-fa |              |
+|              |              |              | ctorisation  |              |
+|              |              |              | of projected |              |
+|              |              |              | Hessian      |              |
+|              |              |              | matrix: 0:   |              |
+|              |              |              | turns them   |              |
+|              |              |              | off, 1: uses |              |
+|              |              |              | them at each |              |
+|              |              |              | iteration    |              |
+|              |              |              | etc.         |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableDriftC | OT_INTEGER   | int          | Specifies    | CasADi::QPOa |
+| orrection    |              |              | the          | sesInternal  |
+|              |              |              | frequency of |              |
+|              |              |              | drift        |              |
+|              |              |              | corrections: |              |
+|              |              |              | 0: turns     |              |
+|              |              |              | them off.    |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableEquali | OT_BOOLEAN   | BooleanType_ | Specifies    | CasADi::QPOa |
+| ties         |              | to_bool      | whether      | sesInternal  |
+|              |              |              | equalities   |              |
+|              |              |              | should be    |              |
+|              |              |              | treated as   |              |
+|              |              |              | always       |              |
+|              |              |              | active       |              |
+|              |              |              | (True) or    |              |
+|              |              |              | not (False)  |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableFarBou | OT_BOOLEAN   | BooleanType_ | Enables the  | CasADi::QPOa |
+| nds          |              | to_bool      | use of far   | sesInternal  |
+|              |              |              | bounds.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableFlippi | OT_BOOLEAN   | BooleanType_ | Enables the  | CasADi::QPOa |
+| ngBounds     |              | to_bool      | use of       | sesInternal  |
+|              |              |              | flipping     |              |
+|              |              |              | bounds.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableFullLI | OT_BOOLEAN   | BooleanType_ | Enables      | CasADi::QPOa |
+| Tests        |              | to_bool      | condition-   | sesInternal  |
+|              |              |              | hardened     |              |
+|              |              |              | (but more    |              |
+|              |              |              | expensive)   |              |
+|              |              |              | LI test.     |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableNZCTes | OT_BOOLEAN   | BooleanType_ | Enables      | CasADi::QPOa |
+| ts           |              | to_bool      | nonzero      | sesInternal  |
+|              |              |              | curvature    |              |
+|              |              |              | tests.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableRampin | OT_BOOLEAN   | BooleanType_ | Enables      | CasADi::QPOa |
+| g            |              | to_bool      | ramping.     | sesInternal  |
++--------------+--------------+--------------+--------------+--------------+
+| enableRegula | OT_BOOLEAN   | BooleanType_ | Enables      | CasADi::QPOa |
+| risation     |              | to_bool      | automatic    | sesInternal  |
+|              |              |              | Hessian regu |              |
+|              |              |              | larisation.  |              |
++--------------+--------------+--------------+--------------+--------------+
+| epsDen       | OT_REAL      | double       | Denominator  | CasADi::QPOa |
+|              |              |              | tolerance    | sesInternal  |
+|              |              |              | for ratio    |              |
+|              |              |              | tests.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| epsFlipping  | OT_REAL      | double       | Tolerance of | CasADi::QPOa |
+|              |              |              | squared      | sesInternal  |
+|              |              |              | Cholesky     |              |
+|              |              |              | diagonal     |              |
+|              |              |              | factor which |              |
+|              |              |              | triggers     |              |
+|              |              |              | flipping     |              |
+|              |              |              | bound.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| epsIterRef   | OT_REAL      | double       | Early        | CasADi::QPOa |
+|              |              |              | termination  | sesInternal  |
+|              |              |              | tolerance    |              |
+|              |              |              | for          |              |
+|              |              |              | iterative    |              |
+|              |              |              | refinement.  |              |
++--------------+--------------+--------------+--------------+--------------+
+| epsLITests   | OT_REAL      | double       | Tolerance    | CasADi::QPOa |
+|              |              |              | for linear   | sesInternal  |
+|              |              |              | independence |              |
+|              |              |              | tests.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| epsNZCTests  | OT_REAL      | double       | Tolerance    | CasADi::QPOa |
+|              |              |              | for nonzero  | sesInternal  |
+|              |              |              | curvature    |              |
+|              |              |              | tests.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| epsNum       | OT_REAL      | double       | Numerator    | CasADi::QPOa |
+|              |              |              | tolerance    | sesInternal  |
+|              |              |              | for ratio    |              |
+|              |              |              | tests.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| epsRegularis | OT_REAL      | double       | Scaling      | CasADi::QPOa |
+| ation        |              |              | factor of    | sesInternal  |
+|              |              |              | identity     |              |
+|              |              |              | matrix used  |              |
+|              |              |              | for Hessian  |              |
+|              |              |              | regularisati |              |
+|              |              |              | on.          |              |
++--------------+--------------+--------------+--------------+--------------+
+| finalRamping | OT_REAL      | double       | Final value  | CasADi::QPOa |
+|              |              |              | for ramping  | sesInternal  |
+|              |              |              | strategy.    |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | False        | Flag to      | CasADi::QPOa |
 |              |              |              | indicate     | sesInternal  |
@@ -69238,6 +70154,37 @@ If H is not positive-definite, the solver should throw an error.
 |              |              |              | statistics   |              |
 |              |              |              | must be      |              |
 |              |              |              | gathered     |              |
++--------------+--------------+--------------+--------------+--------------+
+| growFarBound | OT_REAL      | double       | Factor to    | CasADi::QPOa |
+| s            |              |              | grow far     | sesInternal  |
+|              |              |              | bounds.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| initialFarBo | OT_REAL      | double       | Initial size | CasADi::QPOa |
+| unds         |              |              | for far      | sesInternal  |
+|              |              |              | bounds.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| initialRampi | OT_REAL      | double       | Start value  | CasADi::QPOa |
+| ng           |              |              | for ramping  | sesInternal  |
+|              |              |              | strategy.    |              |
++--------------+--------------+--------------+--------------+--------------+
+| initialStatu | OT_STRING    | SubjectToSta | Initial      | CasADi::QPOa |
+| sBounds      |              | tus_to_strin | status of    | sesInternal  |
+|              |              | g            | bounds at    |              |
+|              |              |              | first        |              |
+|              |              |              | iteration:   |              |
+|              |              |              | \"inactive\":  |              |
+|              |              |              | all bounds   |              |
+|              |              |              | inactive,    |              |
+|              |              |              | \"lower\": all |              |
+|              |              |              | bounds       |              |
+|              |              |              | active at    |              |
+|              |              |              | their lower  |              |
+|              |              |              | bound,       |              |
+|              |              |              | \"upper\": all |              |
+|              |              |              | bounds       |              |
+|              |              |              | active at    |              |
+|              |              |              | their upper  |              |
+|              |              |              | bound.       |              |
 +--------------+--------------+--------------+--------------+--------------+
 | jacobian_gen | OT_JACOBIANG | None         | Function     | CasADi::QPOa |
 | erator       | ENERATOR     |              | pointer that | sesInternal  |
@@ -69251,6 +70198,22 @@ If H is not positive-definite, the solver should throw an error.
 |              |              |              | overrides    |              |
 |              |              |              | internal     |              |
 |              |              |              | routines     |              |
++--------------+--------------+--------------+--------------+--------------+
+| maxDualJump  | OT_REAL      | double       | Maximum      | CasADi::QPOa |
+|              |              |              | allowed jump | sesInternal  |
+|              |              |              | in dual      |              |
+|              |              |              | variables in |              |
+|              |              |              | linear       |              |
+|              |              |              | independence |              |
+|              |              |              | tests.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| maxPrimalJum | OT_REAL      | double       | Maximum      | CasADi::QPOa |
+| p            |              |              | allowed jump | sesInternal  |
+|              |              |              | in primal    |              |
+|              |              |              | variables in |              |
+|              |              |              | nonzero      |              |
+|              |              |              | curvature    |              |
+|              |              |              | tests.       |              |
 +--------------+--------------+--------------+--------------+--------------+
 | max_number_o | OT_INTEGER   | 64           | Allow \"numbe | CasADi::QPOa |
 | f_adj_dir    |              |              | r_of_adj_dir | sesInternal  |
@@ -69283,6 +70246,18 @@ If H is not positive-definite, the solver should throw an error.
 +--------------+--------------+--------------+--------------+--------------+
 | name         | OT_STRING    | unnamed_shar | n/a          | CasADi::QPOa |
 |              |              | ed_object    |              | sesInternal  |
++--------------+--------------+--------------+--------------+--------------+
+| numRefinemen | OT_INTEGER   | int          | Maximum      | CasADi::QPOa |
+| tSteps       |              |              | number of    | sesInternal  |
+|              |              |              | iterative    |              |
+|              |              |              | refinement   |              |
+|              |              |              | steps.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| numRegularis | OT_INTEGER   | int          | Maximum      | CasADi::QPOa |
+| ationSteps   |              |              | number of    | sesInternal  |
+|              |              |              | successive r |              |
+|              |              |              | egularisatio |              |
+|              |              |              | n steps.     |              |
 +--------------+--------------+--------------+--------------+--------------+
 | number_of_ad | OT_INTEGER   | 1            | number of    | CasADi::QPOa |
 | j_dir        |              |              | adjoint      | sesInternal  |
@@ -69360,6 +70335,12 @@ If H is not positive-definite, the solver should throw an error.
 |              |              |              | Jacobians    |              |
 |              |              |              | multiple     |              |
 |              |              |              | times        |              |
++--------------+--------------+--------------+--------------+--------------+
+| terminationT | OT_REAL      | double       | Relative     | CasADi::QPOa |
+| olerance     |              |              | termination  | sesInternal  |
+|              |              |              | tolerance to |              |
+|              |              |              | stop         |              |
+|              |              |              | homotopy.    |              |
 +--------------+--------------+--------------+--------------+--------------+
 | user_data    | OT_VOIDPTR   | None         | A user-      | CasADi::QPOa |
 |              |              |              | defined      | sesInternal  |
@@ -69752,6 +70733,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::QPOasesInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::QPOasesInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::QPOasesInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::QPOasesInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::QPOasesInternal::hasOption "
 
 check if there is an option str ";
@@ -69882,21 +70879,136 @@ Joris Gillis, Joel Andersson
 | ad_mode      | OT_STRING    | automatic    | How to       | CasADi::QPOa |
 |              |              |              | calculate    | sesInternal  |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
-|              |              |              | decides      |              |
-|              |              |              | which is     |              |
-|              |              |              | more         |              |
-|              |              |              | appropriate) |              |
+|              |              |              | Jacobians.   |              |
++--------------+--------------+--------------+--------------+--------------+
+| boundRelaxat | OT_REAL      | double       | Initial      | CasADi::QPOa |
+| ion          |              |              | relaxation   | sesInternal  |
+|              |              |              | of bounds to |              |
+|              |              |              | start        |              |
+|              |              |              | homotopy and |              |
+|              |              |              | initial      |              |
+|              |              |              | value for    |              |
+|              |              |              | far bounds.  |              |
++--------------+--------------+--------------+--------------+--------------+
+| boundToleran | OT_REAL      | double       | If upper and | CasADi::QPOa |
+| ce           |              |              | lower bounds | sesInternal  |
+|              |              |              | differ less  |              |
+|              |              |              | than this    |              |
+|              |              |              | tolerance,   |              |
+|              |              |              | they are     |              |
+|              |              |              | regarded     |              |
+|              |              |              | equal, i.e.  |              |
+|              |              |              | as equality  |              |
+|              |              |              | constraint.  |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableCholes | OT_INTEGER   | int          | Specifies    | CasADi::QPOa |
+| kyRefactoris |              |              | the          | sesInternal  |
+| ation        |              |              | frequency of |              |
+|              |              |              | a full re-fa |              |
+|              |              |              | ctorisation  |              |
+|              |              |              | of projected |              |
+|              |              |              | Hessian      |              |
+|              |              |              | matrix: 0:   |              |
+|              |              |              | turns them   |              |
+|              |              |              | off, 1: uses |              |
+|              |              |              | them at each |              |
+|              |              |              | iteration    |              |
+|              |              |              | etc.         |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableDriftC | OT_INTEGER   | int          | Specifies    | CasADi::QPOa |
+| orrection    |              |              | the          | sesInternal  |
+|              |              |              | frequency of |              |
+|              |              |              | drift        |              |
+|              |              |              | corrections: |              |
+|              |              |              | 0: turns     |              |
+|              |              |              | them off.    |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableEquali | OT_BOOLEAN   | BooleanType_ | Specifies    | CasADi::QPOa |
+| ties         |              | to_bool      | whether      | sesInternal  |
+|              |              |              | equalities   |              |
+|              |              |              | should be    |              |
+|              |              |              | treated as   |              |
+|              |              |              | always       |              |
+|              |              |              | active       |              |
+|              |              |              | (True) or    |              |
+|              |              |              | not (False)  |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableFarBou | OT_BOOLEAN   | BooleanType_ | Enables the  | CasADi::QPOa |
+| nds          |              | to_bool      | use of far   | sesInternal  |
+|              |              |              | bounds.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableFlippi | OT_BOOLEAN   | BooleanType_ | Enables the  | CasADi::QPOa |
+| ngBounds     |              | to_bool      | use of       | sesInternal  |
+|              |              |              | flipping     |              |
+|              |              |              | bounds.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableFullLI | OT_BOOLEAN   | BooleanType_ | Enables      | CasADi::QPOa |
+| Tests        |              | to_bool      | condition-   | sesInternal  |
+|              |              |              | hardened     |              |
+|              |              |              | (but more    |              |
+|              |              |              | expensive)   |              |
+|              |              |              | LI test.     |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableNZCTes | OT_BOOLEAN   | BooleanType_ | Enables      | CasADi::QPOa |
+| ts           |              | to_bool      | nonzero      | sesInternal  |
+|              |              |              | curvature    |              |
+|              |              |              | tests.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| enableRampin | OT_BOOLEAN   | BooleanType_ | Enables      | CasADi::QPOa |
+| g            |              | to_bool      | ramping.     | sesInternal  |
++--------------+--------------+--------------+--------------+--------------+
+| enableRegula | OT_BOOLEAN   | BooleanType_ | Enables      | CasADi::QPOa |
+| risation     |              | to_bool      | automatic    | sesInternal  |
+|              |              |              | Hessian regu |              |
+|              |              |              | larisation.  |              |
++--------------+--------------+--------------+--------------+--------------+
+| epsDen       | OT_REAL      | double       | Denominator  | CasADi::QPOa |
+|              |              |              | tolerance    | sesInternal  |
+|              |              |              | for ratio    |              |
+|              |              |              | tests.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| epsFlipping  | OT_REAL      | double       | Tolerance of | CasADi::QPOa |
+|              |              |              | squared      | sesInternal  |
+|              |              |              | Cholesky     |              |
+|              |              |              | diagonal     |              |
+|              |              |              | factor which |              |
+|              |              |              | triggers     |              |
+|              |              |              | flipping     |              |
+|              |              |              | bound.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| epsIterRef   | OT_REAL      | double       | Early        | CasADi::QPOa |
+|              |              |              | termination  | sesInternal  |
+|              |              |              | tolerance    |              |
+|              |              |              | for          |              |
+|              |              |              | iterative    |              |
+|              |              |              | refinement.  |              |
++--------------+--------------+--------------+--------------+--------------+
+| epsLITests   | OT_REAL      | double       | Tolerance    | CasADi::QPOa |
+|              |              |              | for linear   | sesInternal  |
+|              |              |              | independence |              |
+|              |              |              | tests.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| epsNZCTests  | OT_REAL      | double       | Tolerance    | CasADi::QPOa |
+|              |              |              | for nonzero  | sesInternal  |
+|              |              |              | curvature    |              |
+|              |              |              | tests.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| epsNum       | OT_REAL      | double       | Numerator    | CasADi::QPOa |
+|              |              |              | tolerance    | sesInternal  |
+|              |              |              | for ratio    |              |
+|              |              |              | tests.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| epsRegularis | OT_REAL      | double       | Scaling      | CasADi::QPOa |
+| ation        |              |              | factor of    | sesInternal  |
+|              |              |              | identity     |              |
+|              |              |              | matrix used  |              |
+|              |              |              | for Hessian  |              |
+|              |              |              | regularisati |              |
+|              |              |              | on.          |              |
++--------------+--------------+--------------+--------------+--------------+
+| finalRamping | OT_REAL      | double       | Final value  | CasADi::QPOa |
+|              |              |              | for ramping  | sesInternal  |
+|              |              |              | strategy.    |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | False        | Flag to      | CasADi::QPOa |
 |              |              |              | indicate     | sesInternal  |
@@ -69904,6 +71016,37 @@ Joris Gillis, Joel Andersson
 |              |              |              | statistics   |              |
 |              |              |              | must be      |              |
 |              |              |              | gathered     |              |
++--------------+--------------+--------------+--------------+--------------+
+| growFarBound | OT_REAL      | double       | Factor to    | CasADi::QPOa |
+| s            |              |              | grow far     | sesInternal  |
+|              |              |              | bounds.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| initialFarBo | OT_REAL      | double       | Initial size | CasADi::QPOa |
+| unds         |              |              | for far      | sesInternal  |
+|              |              |              | bounds.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| initialRampi | OT_REAL      | double       | Start value  | CasADi::QPOa |
+| ng           |              |              | for ramping  | sesInternal  |
+|              |              |              | strategy.    |              |
++--------------+--------------+--------------+--------------+--------------+
+| initialStatu | OT_STRING    | SubjectToSta | Initial      | CasADi::QPOa |
+| sBounds      |              | tus_to_strin | status of    | sesInternal  |
+|              |              | g            | bounds at    |              |
+|              |              |              | first        |              |
+|              |              |              | iteration:   |              |
+|              |              |              | \"inactive\":  |              |
+|              |              |              | all bounds   |              |
+|              |              |              | inactive,    |              |
+|              |              |              | \"lower\": all |              |
+|              |              |              | bounds       |              |
+|              |              |              | active at    |              |
+|              |              |              | their lower  |              |
+|              |              |              | bound,       |              |
+|              |              |              | \"upper\": all |              |
+|              |              |              | bounds       |              |
+|              |              |              | active at    |              |
+|              |              |              | their upper  |              |
+|              |              |              | bound.       |              |
 +--------------+--------------+--------------+--------------+--------------+
 | jacobian_gen | OT_JACOBIANG | None         | Function     | CasADi::QPOa |
 | erator       | ENERATOR     |              | pointer that | sesInternal  |
@@ -69917,6 +71060,22 @@ Joris Gillis, Joel Andersson
 |              |              |              | overrides    |              |
 |              |              |              | internal     |              |
 |              |              |              | routines     |              |
++--------------+--------------+--------------+--------------+--------------+
+| maxDualJump  | OT_REAL      | double       | Maximum      | CasADi::QPOa |
+|              |              |              | allowed jump | sesInternal  |
+|              |              |              | in dual      |              |
+|              |              |              | variables in |              |
+|              |              |              | linear       |              |
+|              |              |              | independence |              |
+|              |              |              | tests.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| maxPrimalJum | OT_REAL      | double       | Maximum      | CasADi::QPOa |
+| p            |              |              | allowed jump | sesInternal  |
+|              |              |              | in primal    |              |
+|              |              |              | variables in |              |
+|              |              |              | nonzero      |              |
+|              |              |              | curvature    |              |
+|              |              |              | tests.       |              |
 +--------------+--------------+--------------+--------------+--------------+
 | max_number_o | OT_INTEGER   | 64           | Allow \"numbe | CasADi::QPOa |
 | f_adj_dir    |              |              | r_of_adj_dir | sesInternal  |
@@ -69949,6 +71108,18 @@ Joris Gillis, Joel Andersson
 +--------------+--------------+--------------+--------------+--------------+
 | name         | OT_STRING    | unnamed_shar | n/a          | CasADi::QPOa |
 |              |              | ed_object    |              | sesInternal  |
++--------------+--------------+--------------+--------------+--------------+
+| numRefinemen | OT_INTEGER   | int          | Maximum      | CasADi::QPOa |
+| tSteps       |              |              | number of    | sesInternal  |
+|              |              |              | iterative    |              |
+|              |              |              | refinement   |              |
+|              |              |              | steps.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| numRegularis | OT_INTEGER   | int          | Maximum      | CasADi::QPOa |
+| ationSteps   |              |              | number of    | sesInternal  |
+|              |              |              | successive r |              |
+|              |              |              | egularisatio |              |
+|              |              |              | n steps.     |              |
 +--------------+--------------+--------------+--------------+--------------+
 | number_of_ad | OT_INTEGER   | 1            | number of    | CasADi::QPOa |
 | j_dir        |              |              | adjoint      | sesInternal  |
@@ -70026,6 +71197,12 @@ Joris Gillis, Joel Andersson
 |              |              |              | Jacobians    |              |
 |              |              |              | multiple     |              |
 |              |              |              | times        |              |
++--------------+--------------+--------------+--------------+--------------+
+| terminationT | OT_REAL      | double       | Relative     | CasADi::QPOa |
+| olerance     |              |              | termination  | sesInternal  |
+|              |              |              | tolerance to |              |
+|              |              |              | stop         |              |
+|              |              |              | homotopy.    |              |
 +--------------+--------------+--------------+--------------+--------------+
 | user_data    | OT_VOIDPTR   | None         | A user-      | CasADi::QPOa |
 |              |              |              | defined      | sesInternal  |
@@ -70541,6 +71718,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::QPOasesSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::QPOasesSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::QPOasesSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::QPOasesSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::QPOasesSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -70680,24 +71873,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -71323,6 +72510,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::QPSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::QPSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::QPSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::QPSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::QPSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -71452,24 +72655,18 @@ Internal class.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -71968,6 +73165,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::QPSolverInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::QPSolverInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::QPSolverInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::QPSolverInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::QPSolverInternal::hasOption "
 
 check if there is an option str ";
@@ -72157,24 +73370,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adj_via_sct  | OT_BOOLEAN   | true         | Generate new | CasADi::Inte |
 |              |              |              | functions    | gratorIntern |
@@ -72933,6 +74140,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::RKIntegrator::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::RKIntegrator::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::RKIntegrator::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::RKIntegrator::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::RKIntegrator::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -73040,24 +74263,18 @@ Return a string with a destription (for SWIG) ";
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adj_via_sct  | OT_BOOLEAN   | true         | Generate new | CasADi::Inte |
 |              |              |              | functions    | gratorIntern |
@@ -73674,6 +74891,23 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::RKIntegratorInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::RKIntegratorInternal::setOptionByAllowedIndex
+"
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::RKIntegratorInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::RKIntegratorInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::RKIntegratorInternal::hasOption "
 
 check if there is an option str ";
@@ -74019,24 +75253,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | calc_dual    | OT_BOOLEAN   | true         | Indicate if  | CasADi::SDPS |
 |              |              |              | dual should  | olverInterna |
@@ -74697,6 +75925,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::SDPSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::SDPSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::SDPSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::SDPSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::SDPSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -74815,24 +76059,18 @@ Internal class.
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | calc_dual    | OT_BOOLEAN   | true         | Indicate if  | CasADi::SDPS |
 |              |              |              | dual should  | olverInterna |
@@ -75366,6 +76604,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::SDPSolverInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::SDPSolverInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::SDPSolverInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::SDPSolverInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::SDPSolverInternal::hasOption "
 
 check if there is an option str ";
@@ -75650,24 +76904,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -76331,6 +77579,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::Simulator::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::Simulator::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::Simulator::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::Simulator::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::Simulator::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -76433,24 +77697,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -76963,6 +78221,22 @@ Get the default of a certain option. ";
 %feature("docstring")  CasADi::SimulatorInternal::getOptionAllowed "
 
 Get the allowed values of a certain option. ";
+
+%feature("docstring")  CasADi::SimulatorInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::SimulatorInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::SimulatorInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::SimulatorInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
 
 %feature("docstring")  CasADi::SimulatorInternal::hasOption "
 
@@ -77586,24 +78860,18 @@ Get a weak reference to the object. ";
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | beta         | OT_REAL      | 0.800        | Line-search  | CasADi::SQPI |
 |              |              |              | parameter,   | nternal      |
@@ -78335,6 +79603,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::SQPInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::SQPInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::SQPInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::SQPInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::SQPInternal::hasOption "
 
 check if there is an option str ";
@@ -78466,24 +79750,18 @@ Attila Kozma, Joel Andersson and Joris Gillis
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | beta         | OT_REAL      | 0.800        | Line-search  | CasADi::SQPI |
 |              |              |              | parameter,   | nternal      |
@@ -79334,6 +80612,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::SQPMethod::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::SQPMethod::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::SQPMethod::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::SQPMethod::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::SQPMethod::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -79476,24 +80770,18 @@ Constructor. ";
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adj_via_sct  | OT_BOOLEAN   | true         | Generate new | CasADi::Inte |
 |              |              |              | functions    | gratorIntern |
@@ -80446,6 +81734,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::SundialsIntegrator::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::SundialsIntegrator::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::SundialsIntegrator::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::SundialsIntegrator::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::SundialsIntegrator::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -80568,24 +81872,18 @@ Return a string with a destription (for SWIG) ";
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | adj_via_sct  | OT_BOOLEAN   | true         | Generate new | CasADi::Inte |
 |              |              |              | functions    | gratorIntern |
@@ -81422,6 +82720,22 @@ Get the default of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::SundialsInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::SundialsInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::SundialsInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::SundialsInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::SundialsInternal::hasOption "
 
 check if there is an option str ";
@@ -81810,24 +83124,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -82590,6 +83898,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::SXFunction::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::SXFunction::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::SXFunction::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::SXFunction::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::SXFunction::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -82680,24 +84004,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -83264,6 +84582,22 @@ Get the default of a certain option. ";
 %feature("docstring")  CasADi::SXFunctionInternal::getOptionAllowed "
 
 Get the allowed values of a certain option. ";
+
+%feature("docstring")  CasADi::SXFunctionInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::SXFunctionInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::SXFunctionInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::SXFunctionInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
 
 %feature("docstring")  CasADi::SXFunctionInternal::hasOption "
 
@@ -85731,21 +87065,7 @@ n: number of decision variables (x)     m: number of constraints (A)
 | ad_mode      | OT_STRING    | automatic    | How to       | CasADi::Worh |
 |              |              |              | calculate    | pInternal    |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
-|              |              |              | decides      |              |
-|              |              |              | which is     |              |
-|              |              |              | more         |              |
-|              |              |              | appropriate) |              |
+|              |              |              | Jacobians.   |              |
 +--------------+--------------+--------------+--------------+--------------+
 | eps          | OT_REAL      | 0.000        | Machine      | CasADi::Worh |
 |              |              |              | epsilon      | pInternal    |
@@ -85918,6 +87238,196 @@ n: number of decision variables (x)     m: number of constraints (A)
 |              |              |              | about        |              |
 |              |              |              | execution    |              |
 |              |              |              | time         |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipBarrier | OT_REAL      | 7.800        | IP barrier   | CasADi::Worh |
+|              |              |              | parameter.   | pInternal    |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipComTol  | OT_REAL      | 0.000        | IP complemen | CasADi::Worh |
+|              |              |              | tarity       | pInternal    |
+|              |              |              | tolerance.   |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipFracBou | OT_REAL      | 0.880        | IP fraction- | CasADi::Worh |
+| nd           |              |              | to-the-      | pInternal    |
+|              |              |              | boundary     |              |
+|              |              |              | parameter.   |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipLsMetho | OT_STRING    | None         | Select the   | CasADi::Worh |
+| d            |              |              | direct       | pInternal    |
+|              |              |              | linear       |              |
+|              |              |              | solver used  |              |
+|              |              |              | by the IP    |              |
+|              |              |              | method.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipMinAlph | OT_REAL      | 0.000        | IP line      | CasADi::Worh |
+| a            |              |              | search       | pInternal    |
+|              |              |              | minimum step |              |
+|              |              |              | size.        |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipRelaxDi | OT_REAL      | 2            | The          | CasADi::Worh |
+| v            |              |              | relaxation   | pInternal    |
+|              |              |              | term is      |              |
+|              |              |              | divided by   |              |
+|              |              |              | this value   |              |
+|              |              |              | if           |              |
+|              |              |              | successful.  |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipRelaxMa | OT_REAL      | 0.000        | Maximum      | CasADi::Worh |
+| x            |              |              | relaxation   | pInternal    |
+|              |              |              | value.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipRelaxMi | OT_REAL      | 0.000        | Mimimum      | CasADi::Worh |
+| n            |              |              | relaxation   | pInternal    |
+|              |              |              | value.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipRelaxMu | OT_REAL      | 10           | The          | CasADi::Worh |
+| lt           |              |              | relaxation   | pInternal    |
+|              |              |              | term is      |              |
+|              |              |              | multiplied   |              |
+|              |              |              | by this      |              |
+|              |              |              | value if uns |              |
+|              |              |              | uccessful.   |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipResTol  | OT_REAL      | 0.000        | IP residuals | CasADi::Worh |
+|              |              |              | tolerance.   | pInternal    |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipTryRela | OT_BOOLEAN   | True         | Enable       | CasADi::Worh |
+| x            |              |              | relaxation   | pInternal    |
+|              |              |              | strategy     |              |
+|              |              |              | when         |              |
+|              |              |              | encountering |              |
+|              |              |              | an error.    |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_lsItMaxIt | OT_INTEGER   | 1000         | Maximum      | CasADi::Worh |
+| er           |              |              | number of    | pInternal    |
+|              |              |              | iterations   |              |
+|              |              |              | of the       |              |
+|              |              |              | iterative    |              |
+|              |              |              | linear       |              |
+|              |              |              | solvers.     |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_lsItMetho | OT_STRING    | None         | Select the   | CasADi::Worh |
+| d            |              |              | iterative    | pInternal    |
+|              |              |              | linear       |              |
+|              |              |              | solver.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_lsItPreco | OT_STRING    | None         | Select preco | CasADi::Worh |
+| ndMethod     |              |              | nditioner    | pInternal    |
+|              |              |              | for the      |              |
+|              |              |              | iterative    |              |
+|              |              |              | linear       |              |
+|              |              |              | solver.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_lsRefineM | OT_INTEGER   | 10           | Maximum      | CasADi::Worh |
+| axIter       |              |              | number of    | pInternal    |
+|              |              |              | iterative    |              |
+|              |              |              | refinement   |              |
+|              |              |              | steps of the |              |
+|              |              |              | direct       |              |
+|              |              |              | linear       |              |
+|              |              |              | solvers.     |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_lsScale   | OT_BOOLEAN   | True         | Enables      | CasADi::Worh |
+|              |              |              | scaling on   | pInternal    |
+|              |              |              | linear       |              |
+|              |              |              | solver       |              |
+|              |              |              | level.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_lsTol     | OT_REAL      | 0.000        | Tolerance    | CasADi::Worh |
+|              |              |              | for the      | pInternal    |
+|              |              |              | linear       |              |
+|              |              |              | solver.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_lsTrySimp | OT_BOOLEAN   | False        | Some         | CasADi::Worh |
+| le           |              |              | matrices can | pInternal    |
+|              |              |              | be solved    |              |
+|              |              |              | without      |              |
+|              |              |              | calling a    |              |
+|              |              |              | linear       |              |
+|              |              |              | equation sol |              |
+|              |              |              | ver.Currentl |              |
+|              |              |              | y only       |              |
+|              |              |              | diagonal     |              |
+|              |              |              | matrices are |              |
+|              |              |              | supported.   |              |
+|              |              |              | Non-diagonal |              |
+|              |              |              | matrices     |              |
+|              |              |              | will         |              |
+|              |              |              | besolved     |              |
+|              |              |              | with the     |              |
+|              |              |              | chosen       |              |
+|              |              |              | linear       |              |
+|              |              |              | equation     |              |
+|              |              |              | solver.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_maxIter   | OT_INTEGER   | 80           | Imposes an   | CasADi::Worh |
+|              |              |              | upper limit  | pInternal    |
+|              |              |              | on the       |              |
+|              |              |              | number of    |              |
+|              |              |              | minor solver |              |
+|              |              |              | iterations,  |              |
+|              |              |              | i.e. for     |              |
+|              |              |              | thequadratic |              |
+|              |              |              | subproblem   |              |
+|              |              |              | solver. If   |              |
+|              |              |              | the limit is |              |
+|              |              |              | reached      |              |
+|              |              |              | before conve |              |
+|              |              |              | rgence,WORHP |              |
+|              |              |              | will         |              |
+|              |              |              | activate QP  |              |
+|              |              |              | recovery     |              |
+|              |              |              | strategies   |              |
+|              |              |              | to prevent a |              |
+|              |              |              | solver       |              |
+|              |              |              | breakdown.   |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_method    | OT_STRING    | None         | Select the   | CasADi::Worh |
+|              |              |              | solution     | pInternal    |
+|              |              |              | method used  |              |
+|              |              |              | by the QP    |              |
+|              |              |              | solver.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_nsnBeta   | OT_REAL      | 0.900        | NSN stepsize | CasADi::Worh |
+|              |              |              | decrease     | pInternal    |
+|              |              |              | factor.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_nsnGradSt | OT_BOOLEAN   | True         | Enable       | CasADi::Worh |
+| ep           |              |              | gradient     | pInternal    |
+|              |              |              | steps in the |              |
+|              |              |              | NSN method.  |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_nsnKKT    | OT_REAL      | 0.000        | NSN KKT      | CasADi::Worh |
+|              |              |              | tolerance.   | pInternal    |
++--------------+--------------+--------------+--------------+--------------+
+| qp_nsnLsMeth | OT_STRING    | None         | Select the   | CasADi::Worh |
+| od           |              |              | direct       | pInternal    |
+|              |              |              | linear       |              |
+|              |              |              | solver used  |              |
+|              |              |              | by the NSN   |              |
+|              |              |              | method.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_nsnMinAlp | OT_REAL      | 0.000        | NSN line     | CasADi::Worh |
+| ha           |              |              | search       | pInternal    |
+|              |              |              | minimum step |              |
+|              |              |              | size.        |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_nsnSigma  | OT_REAL      | 0.010        | NSN line     | CasADi::Worh |
+|              |              |              | search slope | pInternal    |
+|              |              |              | parameter.   |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_printLeve | OT_STRING    | None         | Controls the | CasADi::Worh |
+| l            |              |              | amount of QP | pInternal    |
+|              |              |              | solver       |              |
+|              |              |              | output.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_scaleInte | OT_BOOLEAN   | False        | Enable       | CasADi::Worh |
+| rn           |              |              | scaling on   | pInternal    |
+|              |              |              | QP level.    |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_strict    | OT_BOOLEAN   | True         | Use strict   | CasADi::Worh |
+|              |              |              | termination  | pInternal    |
+|              |              |              | criteria in  |              |
+|              |              |              | IP method.   |              |
 +--------------+--------------+--------------+--------------+--------------+
 | regularity_c | OT_BOOLEAN   | True         | Throw        | CasADi::Worh |
 | heck         |              |              | exceptions   | pInternal    |
@@ -86404,6 +87914,22 @@ Get the default of a certain option. ";
 %feature("docstring")  CasADi::WorhpInternal::getOptionAllowed "
 
 Get the allowed values of a certain option. ";
+
+%feature("docstring")  CasADi::WorhpInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::WorhpInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::WorhpInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::WorhpInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
 
 %feature("docstring")  CasADi::WorhpInternal::hasOption "
 
@@ -87227,21 +88753,7 @@ n: number of decision variables (x)     m: number of constraints (A)
 | ad_mode      | OT_STRING    | automatic    | How to       | CasADi::Worh |
 |              |              |              | calculate    | pInternal    |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
-|              |              |              | decides      |              |
-|              |              |              | which is     |              |
-|              |              |              | more         |              |
-|              |              |              | appropriate) |              |
+|              |              |              | Jacobians.   |              |
 +--------------+--------------+--------------+--------------+--------------+
 | eps          | OT_REAL      | 0.000        | Machine      | CasADi::Worh |
 |              |              |              | epsilon      | pInternal    |
@@ -87414,6 +88926,196 @@ n: number of decision variables (x)     m: number of constraints (A)
 |              |              |              | about        |              |
 |              |              |              | execution    |              |
 |              |              |              | time         |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipBarrier | OT_REAL      | 7.800        | IP barrier   | CasADi::Worh |
+|              |              |              | parameter.   | pInternal    |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipComTol  | OT_REAL      | 0.000        | IP complemen | CasADi::Worh |
+|              |              |              | tarity       | pInternal    |
+|              |              |              | tolerance.   |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipFracBou | OT_REAL      | 0.880        | IP fraction- | CasADi::Worh |
+| nd           |              |              | to-the-      | pInternal    |
+|              |              |              | boundary     |              |
+|              |              |              | parameter.   |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipLsMetho | OT_STRING    | None         | Select the   | CasADi::Worh |
+| d            |              |              | direct       | pInternal    |
+|              |              |              | linear       |              |
+|              |              |              | solver used  |              |
+|              |              |              | by the IP    |              |
+|              |              |              | method.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipMinAlph | OT_REAL      | 0.000        | IP line      | CasADi::Worh |
+| a            |              |              | search       | pInternal    |
+|              |              |              | minimum step |              |
+|              |              |              | size.        |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipRelaxDi | OT_REAL      | 2            | The          | CasADi::Worh |
+| v            |              |              | relaxation   | pInternal    |
+|              |              |              | term is      |              |
+|              |              |              | divided by   |              |
+|              |              |              | this value   |              |
+|              |              |              | if           |              |
+|              |              |              | successful.  |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipRelaxMa | OT_REAL      | 0.000        | Maximum      | CasADi::Worh |
+| x            |              |              | relaxation   | pInternal    |
+|              |              |              | value.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipRelaxMi | OT_REAL      | 0.000        | Mimimum      | CasADi::Worh |
+| n            |              |              | relaxation   | pInternal    |
+|              |              |              | value.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipRelaxMu | OT_REAL      | 10           | The          | CasADi::Worh |
+| lt           |              |              | relaxation   | pInternal    |
+|              |              |              | term is      |              |
+|              |              |              | multiplied   |              |
+|              |              |              | by this      |              |
+|              |              |              | value if uns |              |
+|              |              |              | uccessful.   |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipResTol  | OT_REAL      | 0.000        | IP residuals | CasADi::Worh |
+|              |              |              | tolerance.   | pInternal    |
++--------------+--------------+--------------+--------------+--------------+
+| qp_ipTryRela | OT_BOOLEAN   | True         | Enable       | CasADi::Worh |
+| x            |              |              | relaxation   | pInternal    |
+|              |              |              | strategy     |              |
+|              |              |              | when         |              |
+|              |              |              | encountering |              |
+|              |              |              | an error.    |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_lsItMaxIt | OT_INTEGER   | 1000         | Maximum      | CasADi::Worh |
+| er           |              |              | number of    | pInternal    |
+|              |              |              | iterations   |              |
+|              |              |              | of the       |              |
+|              |              |              | iterative    |              |
+|              |              |              | linear       |              |
+|              |              |              | solvers.     |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_lsItMetho | OT_STRING    | None         | Select the   | CasADi::Worh |
+| d            |              |              | iterative    | pInternal    |
+|              |              |              | linear       |              |
+|              |              |              | solver.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_lsItPreco | OT_STRING    | None         | Select preco | CasADi::Worh |
+| ndMethod     |              |              | nditioner    | pInternal    |
+|              |              |              | for the      |              |
+|              |              |              | iterative    |              |
+|              |              |              | linear       |              |
+|              |              |              | solver.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_lsRefineM | OT_INTEGER   | 10           | Maximum      | CasADi::Worh |
+| axIter       |              |              | number of    | pInternal    |
+|              |              |              | iterative    |              |
+|              |              |              | refinement   |              |
+|              |              |              | steps of the |              |
+|              |              |              | direct       |              |
+|              |              |              | linear       |              |
+|              |              |              | solvers.     |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_lsScale   | OT_BOOLEAN   | True         | Enables      | CasADi::Worh |
+|              |              |              | scaling on   | pInternal    |
+|              |              |              | linear       |              |
+|              |              |              | solver       |              |
+|              |              |              | level.       |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_lsTol     | OT_REAL      | 0.000        | Tolerance    | CasADi::Worh |
+|              |              |              | for the      | pInternal    |
+|              |              |              | linear       |              |
+|              |              |              | solver.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_lsTrySimp | OT_BOOLEAN   | False        | Some         | CasADi::Worh |
+| le           |              |              | matrices can | pInternal    |
+|              |              |              | be solved    |              |
+|              |              |              | without      |              |
+|              |              |              | calling a    |              |
+|              |              |              | linear       |              |
+|              |              |              | equation sol |              |
+|              |              |              | ver.Currentl |              |
+|              |              |              | y only       |              |
+|              |              |              | diagonal     |              |
+|              |              |              | matrices are |              |
+|              |              |              | supported.   |              |
+|              |              |              | Non-diagonal |              |
+|              |              |              | matrices     |              |
+|              |              |              | will         |              |
+|              |              |              | besolved     |              |
+|              |              |              | with the     |              |
+|              |              |              | chosen       |              |
+|              |              |              | linear       |              |
+|              |              |              | equation     |              |
+|              |              |              | solver.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_maxIter   | OT_INTEGER   | 80           | Imposes an   | CasADi::Worh |
+|              |              |              | upper limit  | pInternal    |
+|              |              |              | on the       |              |
+|              |              |              | number of    |              |
+|              |              |              | minor solver |              |
+|              |              |              | iterations,  |              |
+|              |              |              | i.e. for     |              |
+|              |              |              | thequadratic |              |
+|              |              |              | subproblem   |              |
+|              |              |              | solver. If   |              |
+|              |              |              | the limit is |              |
+|              |              |              | reached      |              |
+|              |              |              | before conve |              |
+|              |              |              | rgence,WORHP |              |
+|              |              |              | will         |              |
+|              |              |              | activate QP  |              |
+|              |              |              | recovery     |              |
+|              |              |              | strategies   |              |
+|              |              |              | to prevent a |              |
+|              |              |              | solver       |              |
+|              |              |              | breakdown.   |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_method    | OT_STRING    | None         | Select the   | CasADi::Worh |
+|              |              |              | solution     | pInternal    |
+|              |              |              | method used  |              |
+|              |              |              | by the QP    |              |
+|              |              |              | solver.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_nsnBeta   | OT_REAL      | 0.900        | NSN stepsize | CasADi::Worh |
+|              |              |              | decrease     | pInternal    |
+|              |              |              | factor.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_nsnGradSt | OT_BOOLEAN   | True         | Enable       | CasADi::Worh |
+| ep           |              |              | gradient     | pInternal    |
+|              |              |              | steps in the |              |
+|              |              |              | NSN method.  |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_nsnKKT    | OT_REAL      | 0.000        | NSN KKT      | CasADi::Worh |
+|              |              |              | tolerance.   | pInternal    |
++--------------+--------------+--------------+--------------+--------------+
+| qp_nsnLsMeth | OT_STRING    | None         | Select the   | CasADi::Worh |
+| od           |              |              | direct       | pInternal    |
+|              |              |              | linear       |              |
+|              |              |              | solver used  |              |
+|              |              |              | by the NSN   |              |
+|              |              |              | method.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_nsnMinAlp | OT_REAL      | 0.000        | NSN line     | CasADi::Worh |
+| ha           |              |              | search       | pInternal    |
+|              |              |              | minimum step |              |
+|              |              |              | size.        |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_nsnSigma  | OT_REAL      | 0.010        | NSN line     | CasADi::Worh |
+|              |              |              | search slope | pInternal    |
+|              |              |              | parameter.   |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_printLeve | OT_STRING    | None         | Controls the | CasADi::Worh |
+| l            |              |              | amount of QP | pInternal    |
+|              |              |              | solver       |              |
+|              |              |              | output.      |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_scaleInte | OT_BOOLEAN   | False        | Enable       | CasADi::Worh |
+| rn           |              |              | scaling on   | pInternal    |
+|              |              |              | QP level.    |              |
++--------------+--------------+--------------+--------------+--------------+
+| qp_strict    | OT_BOOLEAN   | True         | Use strict   | CasADi::Worh |
+|              |              |              | termination  | pInternal    |
+|              |              |              | criteria in  |              |
+|              |              |              | IP method.   |              |
 +--------------+--------------+--------------+--------------+--------------+
 | regularity_c | OT_BOOLEAN   | True         | Throw        | CasADi::Worh |
 | heck         |              |              | exceptions   | pInternal    |
@@ -88042,6 +89744,22 @@ Get the type name of a certain option. ";
 
 Get the allowed values of a certain option. ";
 
+%feature("docstring")  CasADi::WorhpSolver::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::WorhpSolver::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::WorhpSolver::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::WorhpSolver::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
+
 %feature("docstring")  CasADi::WorhpSolver::getOptionDefault "
 
 Get the default of a certain option. ";
@@ -88133,24 +89851,18 @@ Joel Andersson
 | ad_mode      | OT_STRING    | \"automatic\"  | How to       | CasADi::FXIn |
 |              |              |              | calculate    | ternal       |
 |              |              |              | the          |              |
-|              |              |              | Jacobians:   |              |
-|              |              |              | \"forward\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | forward      |              |
-|              |              |              | mode)        |              |
-|              |              |              | \"reverse\"    |              |
-|              |              |              | (only        |              |
-|              |              |              | adjoint      |              |
-|              |              |              | mode) or     |              |
-|              |              |              | \"automatic\"  |              |
-|              |              |              | (a heuristic |              |
+|              |              |              | Jacobians.   |              |
+|              |              |              | (forward:    |              |
+|              |              |              | only forward |              |
+|              |              |              | mode|reverse |              |
+|              |              |              | : only       |              |
+|              |              |              | adjoint mode |              |
+|              |              |              | |automatic:  |              |
+|              |              |              | a heuristic  |              |
 |              |              |              | decides      |              |
 |              |              |              | which is     |              |
 |              |              |              | more         |              |
 |              |              |              | appropriate) |              |
-|              |              |              | (forward|rev |              |
-|              |              |              | erse|automat |              |
-|              |              |              | ic)          |              |
 +--------------+--------------+--------------+--------------+--------------+
 | gather_stats | OT_BOOLEAN   | false        | Flag to      | CasADi::FXIn |
 |              |              |              | indicate     | ternal       |
@@ -88682,6 +90394,22 @@ Get the default of a certain option. ";
 %feature("docstring")  CasADi::XFunctionInternal::getOptionAllowed "
 
 Get the allowed values of a certain option. ";
+
+%feature("docstring")  CasADi::XFunctionInternal::getOptionAllowedIndex "
+
+Get the index into allowed options of a certain option. ";
+
+%feature("docstring")  CasADi::XFunctionInternal::setOptionByAllowedIndex "
+
+Set a certain option by giving its index into the allowed values. ";
+
+%feature("docstring")  CasADi::XFunctionInternal::getOptionEnumValue "
+
+Get the enum value corresponding to th certain option. ";
+
+%feature("docstring")  CasADi::XFunctionInternal::setOptionByEnumValue "
+
+Set a certain option by giving an enum value. ";
 
 %feature("docstring")  CasADi::XFunctionInternal::hasOption "
 

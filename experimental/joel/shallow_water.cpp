@@ -109,7 +109,7 @@ public:
   
   /// Quadratic approximation
   FX lfcn_;
-  
+
   /// Step expansion
   FX efcn_;
   
@@ -172,18 +172,27 @@ void Tester::model(){
     x[i] = (i+0.5)*dx;
     y[i] = (i+0.5)*dy;
   }
-  
+
   // Initial conditions
   u0_ = DMatrix::zeros(n_boxes_+1,n_boxes_  );
   v0_ = DMatrix::zeros(n_boxes_  ,n_boxes_+1);
-  h0_ = DMatrix::zeros(n_boxes_  ,n_boxes_  ); 
+  h0_ = DMatrix::zeros(n_boxes_  ,n_boxes_  );
+  bool any_point_in_domain = false;
   for(int i=0; i<n_boxes_; ++i){
     for(int j=0; j<n_boxes_; ++j){
       double spdist = sqrt(pow((x[i]-0.04),2.) + pow((y[j]-0.04),2.));
       if(spdist<sprad/3.0){
 	h0_.elem(i,j) = spheight * cos(3.0*M_PI*spdist/(2.0*sprad));
+	any_point_in_domain = true;
       }
     }
+  }
+
+  // Make sure that there is at least one point with nonzero initial values
+  if(!any_point_in_domain){
+    int i_splash = std::min(int(0.04/dx),n_boxes_-1);
+    int j_splash = std::min(int(0.04/dy),n_boxes_-1);
+    h0_.elem(i_splash,j_splash) = spheight;
   }
   
   // Free parameters
@@ -381,6 +390,10 @@ void Tester::transcribe(bool single_shooting, bool gauss_newton){
   // Reshape to a vector
   nlp_f = flatten(nlp_f);
 
+
+  // Add some regularization on p
+  //  nlp_f.append(1e-3*P);
+
   // Form scalar objective function if not Gauss-Newton
   if(!gauss_newton_){
     nlp_f = inner_prod(nlp_f,nlp_f)/2;
@@ -419,11 +432,11 @@ void Tester::prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization,
   vinit_fcn_ = vinit_fcn;
 
   // Extract the expressions
-  vector<MX> var = vdef_fcn.inputExpr();
-  vector<MX> con = vdef_fcn.outputExpr();
-
-  MX f = con.front();
-  con.erase(con.begin());
+  vector<MX> vdef_in = vdef_fcn.inputExpr();
+  vector<MX> vdef_out = vdef_fcn.outputExpr();
+  vector<MX> var = vdef_in;
+  MX f = vdef_out.front();
+  vector<MX> con(vdef_out.begin()+1,vdef_out.end());
   for(int i=0; i<con.size(); ++i){
     makeDense(con[i]);
   }
@@ -459,22 +472,20 @@ void Tester::prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization,
   // Scalar objective function
   MX obj;
 
-  // Lagrangian gradient of the objective function with respect to u and v
-  vector<MX> gL(x_.size());
+  // Definition of the lifted dual variables
+  vector<MX> lam_con(x_.size());
 
   // Multipliers
   MX lam_g;
   vector<MX> lam(x_.size());
 
-  if(gauss_newton_){
-    
+  if(gauss_newton_){    
     // Least square objective
     obj = inner_prod(f,f)/2;
-    gL[0] = f;
-    ngL_ = gL[0].size();
+    lam_con[0] = f;
+    ngL_ = lam_con[0].size();
 
   } else {
-
     // Scalar objective function
     obj = f;
     
@@ -493,28 +504,15 @@ void Tester::prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization,
       cout << "Allocated intermediate variables." << endl;
     }
    
-    // Lagrangian
-    MX lag = obj;
-    if(!con[0].empty()) lag += inner_prod(lam_g,con[0]);
-    if(!var[0].empty()) lag += inner_prod(lam[0],var[0]);
-    for(int i=1; i<x_.size(); ++i){
-      if(!con[i].empty()) lag += inner_prod(flatten(lam[i]),flatten(con[i])); // note: equal to trace(mul(lam.T,con))
-    }
-
-    // Lagrangian function
-    MXFunction lfcn(var,lag);
-    lfcn.init();
-
-    // Adjoint sweep to get gradient
-    vector<MX> lfcn_in = lfcn.inputExpr();
-    vector<MX> lfcn_out = lfcn.outputExpr();
+    // Adjoint sweep to get the definitions of the lifted dual variables (Equation 3.8 in Albersmeyer2010)
     vector<vector<MX> > fseed,fsens,aseed(1),asens(1);
-    aseed[0].resize(1,1.0);
-    asens[0].resize(2);
-    lfcn.eval(lfcn_in,lfcn_out,fseed,fsens,aseed,asens,true);
+    aseed[0].push_back(1.0);
+    aseed[0].push_back(lam_g);
+    aseed[0].insert(aseed[0].end(),lam.begin()+1,lam.end());
+    vdef_fcn.eval(vdef_in,vdef_out,fseed,fsens,aseed,asens,true);
+
     for(int i=0; i<x_.size(); ++i){
-      gL[i] = asens[0].at(i);
-      makeDense(gL[i]);
+      lam_con[i] = asens[0].at(i);
     }
     ngL_ = nu_;
 
@@ -546,7 +544,7 @@ void Tester::prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization,
   for(int i=1; i<x_.size(); ++i){
     rfcn_out.push_back(con[i]-var[i]);   x_[i].g_d = n++;
     if(!gauss_newton_){
-      rfcn_out.push_back(gL[i]-lam[i]);  x_[i].g_lam_d = n++;
+      rfcn_out.push_back(lam_con[i]-lam[i]);  x_[i].g_lam_d = n++;
     }
   }
 
@@ -578,7 +576,7 @@ void Tester::prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization,
     d_def.push_back(con[i]-d_i);
   }
 
-  // Declare difference vector lam_d and substitute out lam_v
+  // Declare difference vector lam_d and substitute out lam
   vector<MX> lam_d;
   vector<MX> lam_d_def;
   if(!gauss_newton_){
@@ -587,7 +585,7 @@ void Tester::prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization,
       ss << "lam_d" << i;
       MX lam_d_i = msym(ss.str(),var[i].sparsity());
       lam_d.push_back(lam_d_i);
-      lam_d_def.push_back(lam[i]-lam_d_i);
+      lam_d_def.push_back(lam_con[i]-lam_d_i);
     }
   }
 
@@ -601,19 +599,17 @@ void Tester::prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization,
   }
 
   vector<MX> ex(2);
-  ex[0] = obj;
-  ex[1] = con[0];
-  ex.insert(ex.end(),gL.begin(),gL.end());
- 
+  ex[0] = con[0];
+  ex[1] = lam_con[0];
+
   substituteInPlace(svar, sdef, ex, false);
   copy(sdef.begin(),sdef.begin()+d_def.size(),d_def.begin());  
   if(!gauss_newton_){
     copy(sdef.rbegin(),sdef.rbegin()+lam_d_def.size(),lam_d_def.begin());
   }
 
-  MX obj_z = ex[0];
-  MX g_z = ex[1];
-  vector<MX> gL_z(ex.begin()+2,ex.end());
+  MX g_z = ex[0];
+  MX gL_z = ex[1];
   
   // Modified function Z
   vector<MX> z_in;
@@ -631,7 +627,7 @@ void Tester::prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization,
   // Outputs
   n=0;
   vector<MX> z_out;
-  z_out.push_back(gL_z[0]);                 z_obj_ = n++;
+  z_out.push_back(gL_z);                    z_obj_ = n++;
   z_out.push_back(g_z);                     z_g_ = n++;
   for(int i=1; i<x_.size(); ++i){
     z_out.push_back(d_def[i-1]);            x_[i].z_def = n++;
@@ -647,89 +643,122 @@ void Tester::prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization,
     cout << "Generated reconstruction function ( " << zfcn.getAlgorithmSize() << " nodes)." << endl;
   }
 
-  // Matrix A and B in lifted Newton  
-  MX qpH = zfcn.jac(x_[0].z_var,z_obj_,false,!gauss_newton_); // Exploit Hessian symmetry
-  MX qpA = zfcn.jac(x_[0].z_var,z_g_,false);
-
-  // Make sure that A has the right dimensions if empty
-  if(qpA.empty()){
-    qpA = MX::sparse(0,nu_);
-  }
-
-  if(verbose_){
-    cout << "Formed qpH (dimension " << qpH.size1() << "-by-" << qpH.size2() << ", "<< qpH.size() << " nonzeros) " <<
-               "and qpA (dimension " << qpA.size1() << "-by-" << qpA.size2() << ", "<< qpA.size() << " nonzeros)." << endl;
-  }
-  
-  // Step in u
-  MX du = msym("du",nu_);
-  MX dlam_g;
-  if(!gauss_newton_){
-    dlam_g = msym("dlam_g",lam_g.sparsity());
-  }
-  MX qpG = gL_z[0];
-  MX qpB = g_z;
-  vector<MX> v_exp(x_.size());
-  vector<MX> vL_exp(x_.size());
+  // Directional derivative of Z
+  vector<vector<MX> > Z_fwdSeed(1,z_in);
+  vector<vector<MX> > Z_fwdSens(1,z_out);
+  vector<vector<MX> > Z_adjSeed;
+  vector<vector<MX> > Z_adjSens;
 
   if(x_.size()>1){
+    // Expression a + A*du in Lifted Newton (Section 2.1 in Alberspeyer2010)
+    MX du = msym("du",nu_);   // Step in u
+    MX dlam_g;                // Step lambda_g
+    if(!gauss_newton_){
+      dlam_g = msym("dlam_g",lam_g.sparsity());
+    }
     
-    // Directional derivative of Z
-    vector<vector<MX> > Z_fwdSeed(1,z_in);
-    vector<vector<MX> > Z_fwdSens(1,z_out);
-    vector<vector<MX> > Z_adjSeed;
-    vector<vector<MX> > Z_adjSens;
-    for(int sweep=0; sweep<2; ++sweep){
-      if(!gauss_newton_){
-	Z_fwdSeed[0][z_con_] = MX();
-      }
-      if(sweep==0){
-	Z_fwdSeed[0][x_[0].z_var] = MX();
-      } else {
-	Z_fwdSeed[0][x_[0].z_var] = du;
-      }
-      if(!gauss_newton_){
-	Z_fwdSeed[0][x_[0].z_lam] = MX();
-      }
+    // Interpret the Jacobian-vector multiplication as a forward directional derivative
+    fill(Z_fwdSeed[0].begin(),Z_fwdSeed[0].end(),MX());
+    Z_fwdSeed[0][x_[0].z_var] = du;
+    for(int i=1; i<x_.size(); ++i){
+      Z_fwdSeed[0][x_[i].z_var] = -d[i-1];
+    }
+    if(!gauss_newton_){
+      Z_fwdSeed[0][z_con_] = dlam_g;
       for(int i=1; i<x_.size(); ++i){
-	Z_fwdSeed[0][x_[i].z_var] = -d[i-1];
-	if(!gauss_newton_){
-	  Z_fwdSeed[0][x_[i].z_lam] = MX();
-	}
-      }      
-      zfcn.eval(z_in,z_out,Z_fwdSeed,Z_fwdSens,Z_adjSeed,Z_adjSens,true);
-    
-      if(sweep==0){
-	qpG += Z_fwdSens[0][z_obj_];
-	qpB += Z_fwdSens[0][z_g_];
-      } else {
-	for(int i=1; i<x_.size(); ++i){
-	  v_exp[i] = Z_fwdSens[0][x_[i].z_def];
-	  if(!gauss_newton_){
-	    vL_exp[i] = Z_fwdSens[0][x_[i].z_defL];
-	  }
-	}
+	Z_fwdSeed[0][x_[i].z_lam] = -lam_d[i-1];
       }
     }
-  }
-  if(verbose_){
-    cout << "Formed qpG (dimension " << qpG.size1() << "-by-" << qpG.size2() << ", "<< qpG.size() << " nonzeros) " <<
-               "and qpB (dimension " << qpB.size1() << "-by-" << qpB.size2() << ", "<< qpB.size() << " nonzeros)." << endl;
+    zfcn.eval(z_in,z_out,Z_fwdSeed,Z_fwdSens,Z_adjSeed,Z_adjSens,true);    
+    
+    // Step expansion function inputs
+    vector<MX> efcn_in;
+    n=0;
+    if(!gauss_newton_){
+      efcn_in.push_back(lam_g);                         e_con_ = n++;
+    }
+    efcn_in.push_back(du);                              e_du_ = n++;
+    if(!gauss_newton_){
+      efcn_in.push_back(dlam_g);                        e_dlam_g_ = n++;
+    }
+    
+    for(int i=0; i<x_.size(); ++i){
+      efcn_in.push_back(   i==0 ? var[0] :     d[i-1]);   x_[i].e_var = n++;
+      if(!gauss_newton_){
+	efcn_in.push_back( i==0 ? lam[0] : lam_d[i-1]);   x_[i].e_lam = n++;
+      }
+    }
+    
+    // Step expansion function outputs
+    vector<MX> efcn_out;
+    n=0;
+    for(int i=1; i<x_.size(); ++i){
+      efcn_out.push_back(Z_fwdSens[0][x_[i].z_def]);    x_[i].e_exp = n++;
+      if(!gauss_newton_){
+	efcn_out.push_back(Z_fwdSens[0][x_[i].z_defL]); x_[i].e_expL = n++;
+      }
+    }
+    
+    // Step expansion function
+    MXFunction efcn(efcn_in,efcn_out);
+    efcn.setOption("number_of_fwd_dir",0);
+    efcn.setOption("number_of_adj_dir",0);
+    efcn.setOption("name","efcn");
+    efcn.init();
+    if(verbose_){
+      cout << "Generated step expansion function ( " << efcn.getAlgorithmSize() << " nodes)." << endl;
+    }
+    
+    // Generate c code and load as DLL
+    if(codegen){
+      dynamicCompilation(efcn,efcn_,"efcn","step expansion function");
+    } else {
+      efcn_ = efcn;
+    }
   }
   
-  // Generate Gauss-Newton Hessian
-  if(gauss_newton_){
-    qpG = mul(trans(qpH),qpG);
-    qpH = mul(trans(qpH),qpH);
-    if(verbose_){
-      cout << "Gauss Newton Hessian (dimension " << qpH.size1() << "-by-" << qpH.size2() << ", "<< qpH.size() << " nonzeros)." << endl;
+  // Equation (2.12 in Alberspeyer2010)
+  fill(Z_fwdSeed[0].begin(),Z_fwdSeed[0].end(),MX());
+  for(int i=1; i<x_.size(); ++i){
+    Z_fwdSeed[0][x_[i].z_var] = d[i-1];
+  }
+  if(!gauss_newton_){
+    for(int i=1; i<x_.size(); ++i){
+      Z_fwdSeed[0][x_[i].z_lam] = lam_d[i-1];
     }
   }
+  zfcn.eval(z_in,z_out,Z_fwdSeed,Z_fwdSens,Z_adjSeed,Z_adjSens,true);   
+
+  // Vector(s) b in Lifted Newton
+  MX b_obj = z_out[z_obj_] - Z_fwdSens[0][z_obj_];
+  MX b_g = z_out[z_g_] - Z_fwdSens[0][z_g_];
+  
+  // Differentiate with respect to the step to get the matrix B in Lifted Newton
+  MX B_obj = zfcn.jac(x_[0].z_var,z_obj_,false,!gauss_newton_); // Exploit Hessian symmetry
+  MX B_g = zfcn.jac(x_[0].z_var,z_g_);
+  
+  // Make sure that B_g has the right dimensions if empty
+  if(B_g.empty()){
+    B_g = MX::sparse(0,nu_);
+  }
+  
+  // Get the condensed QP
+  MX qpH = gauss_newton_ ? mul(trans(B_obj),B_obj) : B_obj;
+  MX qpG = gauss_newton_ ? mul(trans(B_obj),b_obj) : b_obj;
+  MX qpA = B_g;
+  MX qpB = b_g;
   
   // Make sure qpG and qpB are dense vectors
   makeDense(qpG);
   makeDense(qpB);
-
+  
+  if(verbose_){
+    cout << "Formed qpH (" << qpH.size1() << "-by-" << qpH.size2() << ", "<< qpH.size() << " nnz)," << endl;
+    cout << "       qpG (" << qpG.size1() << "-by-" << qpG.size2() << ", "<< qpG.size() << " nnz)," << endl;
+    cout << "       qpA (" << qpA.size1() << "-by-" << qpA.size2() << ", "<< qpA.size() << " nnz) and" << endl;
+    cout << "       qpB (" << qpB.size1() << "-by-" << qpB.size2() << ", "<< qpB.size() << " nnz)." << endl;
+  }
+  
   // Quadratic approximation
   vector<MX> lfcn_in;
   n=0;
@@ -756,102 +785,53 @@ void Tester::prepare(bool codegen, bool ipopt_as_qp_solver, bool regularization,
   lfcn_out[LIN_QPB] = qpB;
   lfcn_out[LIN_QPA] = qpA;
   
-
   MXFunction lfcn(lfcn_in,lfcn_out);
   lfcn.setOption("name","lfcn");
-  lfcn.setOption("number_of_fwd_dir",0);
-  lfcn.setOption("number_of_adj_dir",0);
-  lfcn.init();
-  if(verbose_){
-    cout << "Generated linearization function ( " << lfcn.getAlgorithmSize() << " nodes)." << endl;
-  }
-
-  // Generate c code and load as DLL
-  if(codegen){
-    dynamicCompilation(lfcn,lfcn_,"lfcn","linearization function");
-  } else {
-    lfcn_ = lfcn;
-  }
-
-  // Step expansion function
-  if(x_.size()>1){
-    // Function input
-    vector<MX> efcn_in;
-    n=0;
-    if(!gauss_newton_){
-      efcn_in.push_back(lam_g);                         e_con_ = n++;
-    }
-    efcn_in.push_back(du);                              e_du_ = n++;
-    if(!gauss_newton_){
-      efcn_in.push_back(dlam_g);                        e_dlam_g_ = n++;
-    }
-    
-    for(int i=0; i<x_.size(); ++i){
-      efcn_in.push_back(   i==0 ? var[0] :     d[i-1]);   x_[i].e_var = n++;
-      if(!gauss_newton_){
-	efcn_in.push_back( i==0 ? lam[0] : lam_d[i-1]);   x_[i].e_lam = n++;
-      }
-    }
-
-    // Function outputs
-    vector<MX> efcn_out;
-    n=0;
-    for(int i=1; i<x_.size(); ++i){
-      efcn_out.push_back(v_exp[i]);                     x_[i].e_exp = n++;
-      if(!gauss_newton_){
-	efcn_out.push_back(vL_exp[i]);                  x_[i].e_expL = n++;
-      }
-    }
-    
-    // Form function object
-    MXFunction efcn(efcn_in,efcn_out);
-    efcn.setOption("number_of_fwd_dir",0);
-    efcn.setOption("number_of_adj_dir",0);
-    efcn.setOption("name","efcn");
-    efcn.init();
+    lfcn.setOption("number_of_fwd_dir",0);
+    lfcn.setOption("number_of_adj_dir",0);
+    lfcn.init();
     if(verbose_){
-      cout << "Generated step expansion function ( " << efcn.getAlgorithmSize() << " nodes)." << endl;
+      cout << "Generated linearization function ( " << lfcn.getAlgorithmSize() << " nodes)." << endl;
     }
-
+    
     // Generate c code and load as DLL
     if(codegen){
-      dynamicCompilation(efcn,efcn_,"efcn","step expansion function");
+      dynamicCompilation(lfcn,lfcn_,"lfcn","linearization function");
     } else {
-      efcn_ = efcn;
+      lfcn_ = lfcn;
     }
-  }
-  
-  // Allocate a QP solver
-  if(ipopt_as_qp_solver){
-    qp_solver_ = NLPQPSolver(qpH.sparsity(),qpA.sparsity());
-    qp_solver_.setOption("nlp_solver",IpoptSolver::creator);
-    Dictionary nlp_solver_options;
-    nlp_solver_options["tol"] = 1e-12;
-    nlp_solver_options["print_level"] = 0;
-    nlp_solver_options["print_time"] = false;
-    qp_solver_.setOption("nlp_solver_options",nlp_solver_options);
-  } else {
-    qp_solver_ = QPOasesSolver(qpH.sparsity(),qpA.sparsity());
-    qp_solver_.setOption("printLevel","none");
-  }
-  
-  // Initialize the QP solver
-  qp_solver_.init();
-  if(verbose_){
-    cout << "Allocated QP solver." << endl;
-  }
 
-  // Residual
-  for(int i=1; i<x_.size(); ++i){
-    x_[i].res.resize(d[i-1].size(),0);
-    if(!gauss_newton_){
-      x_[i].resL.resize(lam_d[i-1].size(),0);
+    // Allocate a QP solver
+    if(ipopt_as_qp_solver){
+      qp_solver_ = NLPQPSolver(qpH.sparsity(),qpA.sparsity());
+      qp_solver_.setOption("nlp_solver",IpoptSolver::creator);
+      Dictionary nlp_solver_options;
+      nlp_solver_options["tol"] = 1e-12;
+      nlp_solver_options["print_level"] = 0;
+      nlp_solver_options["print_time"] = false;
+      qp_solver_.setOption("nlp_solver_options",nlp_solver_options);
+    } else {
+      qp_solver_ = QPOasesSolver(qpH.sparsity(),qpA.sparsity());
+      qp_solver_.setOption("printLevel","none");
     }
-  }
-  
-  if(verbose_){
-    cout << "NLP preparation completed" << endl;
-  }
+    
+    // Initialize the QP solver
+    qp_solver_.init();
+    if(verbose_){
+      cout << "Allocated QP solver." << endl;
+    }
+    
+    // Residual
+    for(int i=1; i<x_.size(); ++i){
+      x_[i].res.resize(d[i-1].size(),0);
+      if(!gauss_newton_){
+	x_[i].resL.resize(lam_d[i-1].size(),0);
+      }
+    }
+    
+    if(verbose_){
+      cout << "NLP preparation completed" << endl;
+    }
 }
 
 void Tester::dynamicCompilation(MXFunction& f, FX& f_gen, std::string fname, std::string fdescr){
@@ -1029,30 +1009,39 @@ void Tester::solve(int& iter_count){
     std::transform(lbg_.begin(),lbg_.end(), qpB.begin(),qp_solver_.input(QP_LBA).begin(),std::minus<double>());
     std::transform(ubg_.begin(),ubg_.end(), qpB.begin(),qp_solver_.input(QP_UBA).begin(),std::minus<double>());
     qp_solver_.evaluate();
-    const DMatrix& du = qp_solver_.output(QP_PRIMAL);
-    const DMatrix& dlam_u = qp_solver_.output(QP_LAMBDA_X);
-    const DMatrix& dlam_g = qp_solver_.output(QP_LAMBDA_A);    
     
     // Condensed step
+    const DMatrix& du = qp_solver_.output(QP_PRIMAL);
     copy(du.begin(),du.end(),x_[0].step.begin());
+    
     if(!gauss_newton_){
+      const DMatrix& dlam_g = qp_solver_.output(QP_LAMBDA_A);
       copy(dlam_g.begin(),dlam_g.end(),dlambda_g_.begin());
+
+      const DMatrix& dlam_u = qp_solver_.output(QP_LAMBDA_X);
       copy(dlam_u.begin(),dlam_u.end(),x_[0].dlam.begin());
     }
 
     // Expand the step
     if(x_.size()>1){
       efcn_.setInput(du,e_du_);
-      efcn_.setInput(lfcn_.input(x_[0].l_var),x_[0].e_var);
-      for(int i=1; i<x_.size(); ++i){
-	efcn_.setInput(lfcn_.input(x_[i].l_res),x_[i].e_var);
+      for(vector<Var>::iterator it=x_.begin(); it!=x_.end(); ++it){
+	if(it==x_.begin()){
+	  efcn_.setInput(it->opt,it->e_var);
+	} else {
+	  efcn_.setInput(it->res,it->e_var);
+	}
       }
+
       if(!gauss_newton_){
-	efcn_.setInput(dlam_g,e_dlam_g_);
-	efcn_.setInput(lfcn_.input(l_con_),e_con_);
-	efcn_.setInput(lfcn_.input(x_[0].l_lam),x_[0].e_lam);
-	for(int i=1; i<x_.size(); ++i){
-	  efcn_.setInput(lfcn_.input(x_[i].l_resL),x_[i].e_lam);
+	efcn_.setInput(dlambda_g_,e_dlam_g_);
+	efcn_.setInput(lambda_g_,e_con_);
+	for(vector<Var>::iterator it=x_.begin(); it!=x_.end(); ++it){
+	  if(it==x_.begin()){
+	    efcn_.setInput(it->lam,it->e_lam);
+	  } else {
+	    efcn_.setInput(it->resL,it->e_lam);
+	  }
 	}
       }
       efcn_.evaluate();
@@ -1080,11 +1069,11 @@ void Tester::solve(int& iter_count){
     if(!gauss_newton_){
       transform(dlambda_g_.begin(),dlambda_g_.end(),lambda_g_.begin(),lambda_g_.begin(),plus<double>());
       for(vector<Var>::iterator it=x_.begin(); it!=x_.end(); ++it){
-	//	if(it==x_.begin()){
-	  copy(it->dlam.begin(),it->dlam.end(),it->lam.begin()); // BUG?
-	  //	} else {
-	  transform(it->dlam.begin(),it->dlam.end(),it->lam.begin(),it->lam.begin(),plus<double>()); // BUG?
-	  //	}
+	if(it==x_.begin()){
+	  //copy(it->dlam.begin(),it->dlam.end(),it->lam.begin()); // BUG?
+	} else {
+	  transform(it->dlam.begin(),it->dlam.end(),it->lam.begin(),it->lam.begin(),plus<double>());
+	}
       }
     }
 
@@ -1140,14 +1129,20 @@ void Tester::solve(int& iter_count){
     
     // Print progress (including the header every 10 rows)
     if(k % 10 == 0){
-      cout << setw(4) << "iter" << setw(20) << "objective" << setw(20) << "norm_step" << setw(20) << "norm_viol" << endl;
+      cout << setw(4) << "iter" << setw(20) << "objective" << setw(20) << "drag"          << setw(20) << "depth"          << setw(20) << "norm_step" << setw(20) << "norm_viol" << endl;
     }
-    cout   << setw(4) <<     k  << setw(20) <<  f_k        << setw(20) <<  norm_step  << setw(20) <<  norm_viol  << endl;
+    cout   << setw(4) <<     k  << setw(20) <<  f_k        << setw(20) << x_[0].opt.at(0) << setw(20) << x_[0].opt.at(1) << setw(20) <<  norm_step  << setw(20) <<  norm_viol  << endl;
     
     
     // Check if stopping criteria is satisfied
     if(norm_viol + norm_step < toldx_){
       cout << "Convergence achieved!" << endl;
+      break;
+    }
+
+    // Check if not-a-number
+    if(f_k!=f_k || norm_step != norm_step || norm_viol != norm_viol){
+      cout << "Aborted, nan detected" << endl;
       break;
     }
     
@@ -1224,27 +1219,28 @@ int main(){
   double drag_true = 2.0, depth_true = 0.01;
   
   // Use IPOPT as QP solver (can handle non-convex QPs)
-  bool ipopt_as_qp_solver = false;
+  bool ipopt_as_qp_solver = true;
 
   // Use Gauss-Newton method
-  bool gauss_newton = true;
+  bool gauss_newton = false;
 
   // Codegen the Lifted Newton functions
   bool codegen = false;
   
   // Regularize the QP
-  bool regularization = true;
+  bool regularization = false;
 
   // Smallest allowed eigenvalue for the regularization
   double reg_threshold = 1e-8;
 
   // Problem size
   // int  n_boxes = 100, n_euler = 100, n_finite_elements = 1, n_meas = 20;
-  // int  n_boxes = 30, n_euler = 40, n_finite_elements = 25, n_meas = 20; // Paper
+  //int  n_boxes = 30, n_euler = 40, n_finite_elements = 25, n_meas = 20; // Paper
   int n_boxes = 15, n_euler = 20, n_finite_elements = 1, n_meas = 20;
 
   // Initial guesses
   vector<double> drag_guess, depth_guess;
+  drag_guess.push_back( 2.0); depth_guess.push_back(0.01); // Optimal solution
   drag_guess.push_back( 0.5); depth_guess.push_back(0.01);
   drag_guess.push_back( 5.0); depth_guess.push_back(0.01);
   drag_guess.push_back(15.0); depth_guess.push_back(0.01);
