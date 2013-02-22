@@ -41,7 +41,7 @@ SCPgenInternal::SCPgenInternal(const FX& F, const FX& G, const FX& H, const FX& 
   addOption("qp_solver_options", OT_DICTIONARY, GenericType(),    "Options to be passed to the QP solver");
   addOption("hessian_approximation", OT_STRING, "limited-memory", "limited-memory|exact");
   addOption("maxiter",           OT_INTEGER,      50,             "Maximum number of SQP iterations");
-  addOption("maxiter_ls",        OT_INTEGER,       3,             "Maximum number of linesearch iterations");
+  addOption("maxiter_ls",        OT_INTEGER,       1,             "Maximum number of linesearch iterations");
   addOption("tol_pr",            OT_REAL,       1e-6,             "Stopping criterion for primal infeasibility");
   addOption("tol_du",            OT_REAL,       1e-6,             "Stopping criterion for dual infeasability");
   addOption("c1",                OT_REAL,       1E-4,             "Armijo condition, coefficient of decrease in merit");
@@ -572,6 +572,30 @@ void SCPgenInternal::init(){
       cout << "NLP preparation completed" << endl;
     }
   
+  // Header
+  if(bool(getOption("print_header"))){
+    cout << "-------------------------------------------" << endl;
+    cout << "This is CasADi::SCPgen." << endl;
+    if(gauss_newton_) {
+      cout << "Using Gauss-Newton Hessian" << endl;
+    } else {
+      cout << "Using exact Hessian" << endl;
+    }
+
+    // Count the total number of variables
+    int n_lifted = 0;
+    for(vector<Var>::const_iterator i=x_.begin()+1; i!=x_.end(); ++i){
+      n_lifted += i->n;
+    }
+
+    cout << endl;
+    cout << "Number of reduced variables:               " << setw(9) << n_ << endl;
+    cout << "Number of reduced constraints:             " << setw(9) << m_ << endl;
+    cout << "Number of lifted variables/constraints:    " << setw(9) << n_lifted << endl;
+    cout << "Total number of variables:                 " << setw(9) << (n_+n_lifted) << endl;
+    cout << "Total number of constraints:               " << setw(9) << (m_+n_lifted) << endl;
+    cout << endl;
+  }
 }
 
 void SCPgenInternal::evaluate(int nfdir, int nadir){
